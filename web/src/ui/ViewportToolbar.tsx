@@ -1,5 +1,12 @@
-import { ActionIcon, Badge, Group, Paper, SegmentedControl, Switch, Tooltip } from '@mantine/core';
-import { IconArrowsMove, IconFocus2, IconResize, IconRotate, IconScissors } from '@tabler/icons-react';
+import { ActionIcon, Group, SegmentedControl, Text, Tooltip } from '@mantine/core';
+import {
+  IconArrowsMove,
+  IconFocus2,
+  IconMagnet,
+  IconResize,
+  IconRotate,
+  IconScissors,
+} from '@tabler/icons-react';
 import { useMemo } from 'react';
 
 import { countObjects } from '../engine/evaluate';
@@ -24,9 +31,11 @@ export function ViewportToolbar() {
       style={{ position: 'absolute', left: 12, top: 12, zIndex: 10, pointerEvents: 'none' }}
       wrap="wrap"
     >
-      <Paper shadow="sm" radius="md" p={4} style={{ pointerEvents: 'auto' }}>
+      <Group gap={2} p={4} wrap="nowrap" className="mm-float">
         <SegmentedControl
           size="xs"
+          radius="xl"
+          bg="transparent"
           value={mode}
           onChange={(v) => setMode(v as TransformMode)}
           data={[
@@ -56,36 +65,44 @@ export function ViewportToolbar() {
             },
           ]}
         />
-      </Paper>
-      <Paper shadow="sm" radius="md" px="xs" py={6} style={{ pointerEvents: 'auto' }}>
-        <Switch size="xs" label="Snap" checked={snap} onChange={(e) => setSnap(e.currentTarget.checked)} />
-      </Paper>
-      <Paper shadow="sm" radius="md" p={4} style={{ pointerEvents: 'auto' }}>
+        <Tooltip label={snap ? 'Snap to grid: on' : 'Snap to grid: off'}>
+          <ActionIcon
+            radius="xl"
+            variant={snap ? 'light' : 'subtle'}
+            color={snap ? 'violet' : 'gray'}
+            onClick={() => setSnap(!snap)}
+            aria-label="Snap to grid"
+            aria-pressed={snap}
+          >
+            <IconMagnet size={17} />
+          </ActionIcon>
+        </Tooltip>
         <Tooltip label="Fit everything in view (F)">
-          <ActionIcon variant="subtle" onClick={requestFrame} aria-label="Fit everything in view">
-            <IconFocus2 size={18} />
+          <ActionIcon radius="xl" onClick={requestFrame} aria-label="Fit everything in view">
+            <IconFocus2 size={17} />
           </ActionIcon>
         </Tooltip>
         <Tooltip label="Cut through the model">
           <ActionIcon
-            variant="subtle"
+            radius="xl"
             onClick={openCutTool}
             aria-label="Cut through the model"
             data-testid="open-cut"
           >
-            <IconScissors size={18} />
+            <IconScissors size={17} />
           </ActionIcon>
         </Tooltip>
-      </Paper>
-      <Badge
-        size="lg"
-        variant="white"
-        color={count > WARN_OBJECTS ? 'orange' : 'gray'}
+      </Group>
+      <Text
+        size="xs"
+        fw={600}
+        px={6}
+        c={count > WARN_OBJECTS ? 'orange' : 'dimmed'}
         style={{ pointerEvents: 'auto' }}
         data-testid="object-count"
       >
         {fmtCount(count)} {count === 1 ? 'object' : 'objects'}
-      </Badge>
+      </Text>
     </Group>
   );
 }

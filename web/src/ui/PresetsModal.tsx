@@ -31,7 +31,7 @@ export function PresetsModal() {
               await new Promise((r) => setTimeout(r, 400));
               openCutTool();
               notifications.show({
-                color: 'indigo',
+                color: 'violet',
                 message:
                   'Opened the real human heart. Pick a standard view in the cut panel, or drag the sliders.',
               });
@@ -56,7 +56,7 @@ export function PresetsModal() {
             onClick={() => {
               loadProject(p.build());
               setOpen('presetsOpen', false);
-              notifications.show({ color: 'indigo', message: `Opened “${p.title}”. Press Undo to go back.` });
+              notifications.show({ color: 'violet', message: `Opened “${p.title}”. Press Undo to go back.` });
             }}
           >
             <Card withBorder padding="sm" radius="md" h="100%" className="tile-button">

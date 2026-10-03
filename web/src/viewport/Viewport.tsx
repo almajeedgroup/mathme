@@ -37,11 +37,11 @@ export function Viewport() {
       <Grid
         args={[400, 400]}
         cellSize={1}
-        cellThickness={0.6}
-        cellColor="#adb5bd"
+        cellThickness={0.5}
+        cellColor="#d6cbf5"
         sectionSize={10}
-        sectionThickness={1.1}
-        sectionColor="#748ffc"
+        sectionThickness={0.9}
+        sectionColor="#b49aff"
         fadeDistance={260}
         fadeStrength={1.5}
         infiniteGrid
@@ -52,7 +52,7 @@ export function Viewport() {
       <CutSheet />
       <OrbitControls makeDefault enableDamping={false} />
       <GizmoHelper alignment="bottom-right" margin={[72, 72]}>
-        <GizmoViewport axisColors={['#fa5252', '#40c057', '#4c6ef5']} labelColor="white" />
+        <GizmoViewport axisColors={['#ff2d94', '#2fb380', '#3841c9']} labelColor="white" />
       </GizmoHelper>
       <CameraFramer contentRef={contentRef} />
       <Bridge contentRef={contentRef} />
@@ -132,7 +132,7 @@ function SelectionOutline() {
   return (
     <>
       {boxes.map((b, i) => (
-        <box3Helper key={i} args={[b, '#f76707']} raycast={() => null} />
+        <box3Helper key={i} args={[b, '#ff2d94']} raycast={() => null} />
       ))}
     </>
   );

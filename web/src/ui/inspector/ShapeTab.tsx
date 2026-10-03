@@ -29,7 +29,7 @@ export function ShapeTab({ node }: { node: ObjectNode | PatternNode }) {
   if (node.source.kind === 'custom') {
     const custom = library.find((c) => c.id === (node.source as { customId: string }).customId);
     return (
-      <Alert color="indigo" title={custom ? `My shape: ${custom.name}` : 'Missing shape'}>
+      <Alert color="violet" title={custom ? `My shape: ${custom.name}` : 'Missing shape'}>
         {custom
           ? `Made of ${custom.parts.length} parts. To change it, add it again from “Mine”, edit the parts, then save it as a new shape.`
           : 'This custom shape was deleted.'}

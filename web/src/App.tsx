@@ -1,4 +1,4 @@
-import { AppShell, Divider, ScrollArea, Stack } from '@mantine/core';
+import { AppShell, ScrollArea, Stack } from '@mantine/core';
 import { useEffect } from 'react';
 
 import { ensureLinkedMeshes } from './services/modelAssets';
@@ -44,9 +44,9 @@ export function App() {
 
   return (
     <AppShell
-      header={{ height: 60 }}
-      navbar={{ width: 290, breakpoint: 'sm', collapsed: { mobile: !navOpen } }}
-      aside={{ width: 350, breakpoint: 'md', collapsed: { mobile: !asideOpen } }}
+      header={{ height: 56 }}
+      navbar={{ width: 264, breakpoint: 'sm', collapsed: { mobile: !navOpen } }}
+      aside={{ width: 320, breakpoint: 'md', collapsed: { mobile: !asideOpen } }}
       padding={0}
     >
       <AppShell.Header>
@@ -54,11 +54,9 @@ export function App() {
       </AppShell.Header>
       <AppShell.Navbar>
         <ScrollArea h="100%" type="auto" offsetScrollbars>
-          <Stack p="sm" gap="md">
+          <Stack p="sm" gap="lg">
             <ShapeLibrary />
-            <Divider />
             <PatternPicker />
-            <Divider />
             <Outliner />
           </Stack>
         </ScrollArea>
@@ -67,7 +65,7 @@ export function App() {
         <Inspector />
       </AppShell.Aside>
       <AppShell.Main h="100dvh">
-        <div style={{ position: 'relative', height: 'calc(100dvh - 60px)' }}>
+        <div style={{ position: 'relative', height: 'calc(100dvh - 56px)' }}>
           <ViewportErrorBoundary>
             <Viewport />
           </ViewportErrorBoundary>

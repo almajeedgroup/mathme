@@ -1,4 +1,4 @@
-import { ActionIcon, Paper, SimpleGrid, Stack, Tabs, Text, Tooltip, UnstyledButton } from '@mantine/core';
+import { ActionIcon, SimpleGrid, Stack, Tabs, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { notifications } from './notify';
 
@@ -23,20 +23,14 @@ export function TileButton({
   return (
     <Tooltip label={description ?? label} multiline w={220} withArrow openDelay={400} disabled={!description}>
       <UnstyledButton onClick={onClick} data-testid={testId} aria-label={`Add ${label}`}>
-        <Paper
-          withBorder
-          p={6}
-          radius="md"
-          style={{ textAlign: 'center', height: '100%' }}
-          className="tile-button"
-        >
-          <div style={{ fontSize: 22, lineHeight: 1.2 }} aria-hidden>
+        <div className="tile-button">
+          <div className="tile-icon" aria-hidden>
             {icon}
           </div>
           <Text size="xs" lh={1.2} mt={2}>
             {label}
           </Text>
-        </Paper>
+        </div>
       </UnstyledButton>
     </Tooltip>
   );
@@ -44,7 +38,7 @@ export function TileButton({
 
 function ShapeGrid({ category }: { category: ShapeCategory }) {
   return (
-    <SimpleGrid cols={3} spacing={6}>
+    <SimpleGrid cols={3} spacing={2}>
       {SHAPE_LIST.filter((s) => s.category === category && !s.hidden).map((s) => (
         <TileButton
           key={s.type}
@@ -64,21 +58,19 @@ export function ShapeLibrary() {
   const removeCustomShape = useProjectStore((s) => s.removeCustomShape);
   return (
     <Stack gap={6}>
-      <Text fw={700} size="sm">
-        1. Add a shape
-      </Text>
-      <Tabs defaultValue="basic" variant="pills" radius="md">
-        <Tabs.List grow mb={6}>
-          <Tabs.Tab value="basic" px={6}>
+      <Text className="mm-label">Add a shape</Text>
+      <Tabs defaultValue="basic" variant="pills" radius="xl">
+        <Tabs.List grow mb={4}>
+          <Tabs.Tab value="basic" px={6} py={4} fz="xs">
             Basic
           </Tabs.Tab>
-          <Tabs.Tab value="solid" px={6}>
+          <Tabs.Tab value="solid" px={6} py={4} fz="xs">
             Solids
           </Tabs.Tab>
-          <Tabs.Tab value="custom" px={6}>
+          <Tabs.Tab value="custom" px={6} py={4} fz="xs">
             Make
           </Tabs.Tab>
-          <Tabs.Tab value="mine" px={6}>
+          <Tabs.Tab value="mine" px={6} py={4} fz="xs">
             Mine{library.length ? ` (${library.length})` : ''}
           </Tabs.Tab>
         </Tabs.List>
@@ -97,7 +89,7 @@ export function ShapeLibrary() {
               Your own shapes appear here. Select a few objects, press Group, then “Save as my shape”.
             </Text>
           ) : (
-            <SimpleGrid cols={3} spacing={6}>
+            <SimpleGrid cols={3} spacing={2}>
               {library.map((c) => (
                 <div key={c.id} style={{ position: 'relative' }}>
                   <TileButton

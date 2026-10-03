@@ -24,9 +24,7 @@ export function Outliner() {
   }, [nodes]);
   return (
     <Stack gap={4}>
-      <Text fw={700} size="sm">
-        In your scene
-      </Text>
+      <Text className="mm-label">In your scene</Text>
       {nodes.length === 0 ? (
         <Text size="xs" c="dimmed">
           Nothing yet. Add a shape above or try a ready-made idea.
@@ -67,9 +65,10 @@ function OutlinerRow({
         wrap="nowrap"
         role="treeitem"
         aria-selected={selected}
+        className="mm-row"
         pl={depth * 14}
         style={{
-          borderRadius: 6,
+          borderRadius: 999,
           background: selected ? 'var(--mantine-primary-color-light)' : undefined,
         }}
       >
@@ -83,7 +82,9 @@ function OutlinerRow({
           data-testid="outliner-row"
         >
           <Group gap={6} wrap="nowrap">
-            <span aria-hidden>{nodeIcon(node)}</span>
+            <span aria-hidden className="mm-row-icon">
+              {nodeIcon(node)}
+            </span>
             {editing ? (
               <TextInput
                 size="xs"
@@ -110,28 +111,30 @@ function OutlinerRow({
             )}
           </Group>
         </UnstyledButton>
-        <Tooltip label={node.visible ? 'Hide' : 'Show'}>
-          <ActionIcon
-            size="sm"
-            variant="subtle"
-            color="gray"
-            onClick={() => toggleVisible(node.id)}
-            aria-label={node.visible ? `Hide ${node.name}` : `Show ${node.name}`}
-          >
-            {node.visible ? <IconEye size={14} /> : <IconEyeOff size={14} />}
-          </ActionIcon>
-        </Tooltip>
-        <Tooltip label="Delete">
-          <ActionIcon
-            size="sm"
-            variant="subtle"
-            color="red"
-            onClick={() => removeNodes([node.id])}
-            aria-label={`Delete ${node.name}`}
-          >
-            <IconTrash size={14} />
-          </ActionIcon>
-        </Tooltip>
+        <Group gap={0} wrap="nowrap" className="mm-row-actions">
+          <Tooltip label={node.visible ? 'Hide' : 'Show'}>
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              color="gray"
+              onClick={() => toggleVisible(node.id)}
+              aria-label={node.visible ? `Hide ${node.name}` : `Show ${node.name}`}
+            >
+              {node.visible ? <IconEye size={14} /> : <IconEyeOff size={14} />}
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Delete">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              color="gray"
+              onClick={() => removeNodes([node.id])}
+              aria-label={`Delete ${node.name}`}
+            >
+              <IconTrash size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
       </Group>
       {children.map((c) => (
         <OutlinerRow key={c.id} node={c} depth={depth + 1} byParent={byParent} />

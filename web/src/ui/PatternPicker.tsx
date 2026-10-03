@@ -17,13 +17,11 @@ export function PatternPicker() {
         : 'Select an object first to copy it, or start with spheres.';
   return (
     <Stack gap={6}>
-      <Text fw={700} size="sm">
-        2. Make a pattern
-      </Text>
+      <Text className="mm-label">Make a pattern</Text>
       <Text size="xs" c="dimmed">
         {hint}
       </Text>
-      <SimpleGrid cols={3} spacing={6}>
+      <SimpleGrid cols={3} spacing={2}>
         {PATTERN_LIST.map((p) => (
           <TileButton
             key={p.type}

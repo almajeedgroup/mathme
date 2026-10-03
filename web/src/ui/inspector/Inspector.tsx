@@ -83,6 +83,8 @@ function NodeInspector({ node }: { node: SceneNode }) {
         <TextInput
           flex={1}
           size="sm"
+          variant="unstyled"
+          styles={{ input: { fontFamily: 'Urbanist, "DM Sans", sans-serif', fontWeight: 800, fontSize: 18 } }}
           aria-label="Name"
           value={node.name}
           onChange={(e) => {
@@ -91,12 +93,12 @@ function NodeInspector({ node }: { node: SceneNode }) {
           }}
         />
         <Tooltip label="Duplicate (Ctrl+D)">
-          <ActionIcon variant="light" onClick={duplicateSelection} aria-label="Duplicate">
+          <ActionIcon onClick={duplicateSelection} aria-label="Duplicate">
             <IconCopy size={16} />
           </ActionIcon>
         </Tooltip>
         <Tooltip label="Delete (Del)">
-          <ActionIcon variant="light" color="red" onClick={deleteSelection} aria-label="Delete">
+          <ActionIcon onClick={deleteSelection} aria-label="Delete">
             <IconTrash size={16} />
           </ActionIcon>
         </Tooltip>
@@ -104,7 +106,7 @@ function NodeInspector({ node }: { node: SceneNode }) {
       <Tabs value={active.value} onChange={setTab} variant="pills" radius="xl" keepMounted={false}>
         <Tabs.List mb="sm" style={{ gap: 4 }}>
           {tabs.map((t) => (
-            <Tabs.Tab key={t.value} value={t.value} px={10} py={4} data-testid={`tab-${t.value}`}>
+            <Tabs.Tab key={t.value} value={t.value} px={10} py={3} fz="sm" data-testid={`tab-${t.value}`}>
               {t.label}
             </Tabs.Tab>
           ))}

@@ -35,12 +35,12 @@ export function TopBar() {
           size="sm"
           aria-label="Shapes and patterns"
         />
-        <img src="./favicon.svg" width={28} height={28} alt="" />
-        <Text fw={800} size="lg" visibleFrom="md" style={{ whiteSpace: 'nowrap' }}>
-          MathMe 3D Studio
+        <img src="./favicon.svg" width={26} height={26} alt="" />
+        <Text className="mm-wordmark" visibleFrom="md" aria-label="MathMe 3D Studio">
+          MATHME
         </Text>
         <Tooltip label="MathMe home page">
-          <ActionIcon component="a" href={HOME_URL} variant="subtle" size="lg" aria-label="Home page">
+          <ActionIcon component="a" href={HOME_URL} size="lg" aria-label="Home page">
             <IconHome size={18} />
           </ActionIcon>
         </Tooltip>
@@ -49,17 +49,18 @@ export function TopBar() {
       <CommandBar />
       <Group gap={6} wrap="nowrap">
         <Tooltip label="Undo (Ctrl+Z)">
-          <ActionIcon variant="default" size="lg" onClick={undo} disabled={!canUndo} aria-label="Undo">
+          <ActionIcon size="lg" onClick={undo} disabled={!canUndo} aria-label="Undo">
             <IconArrowBackUp size={18} />
           </ActionIcon>
         </Tooltip>
         <Tooltip label="Redo (Ctrl+Y)">
-          <ActionIcon variant="default" size="lg" onClick={redo} disabled={!canRedo} aria-label="Redo">
+          <ActionIcon size="lg" onClick={redo} disabled={!canRedo} aria-label="Redo">
             <IconArrowForwardUp size={18} />
           </ActionIcon>
         </Tooltip>
         <Button
-          variant="light"
+          variant="subtle"
+          color="gray"
           leftSection={<IconBulb size={16} />}
           onClick={() => setOpen('presetsOpen', true)}
           visibleFrom="xs"
@@ -67,6 +68,7 @@ export function TopBar() {
           Ideas
         </Button>
         <Button
+          className="mm-cta"
           leftSection={<IconDownload size={16} />}
           onClick={() => setOpen('exportOpen', true)}
           data-testid="open-export"
@@ -74,12 +76,11 @@ export function TopBar() {
           Export
         </Button>
         <Tooltip label="Help">
-          <ActionIcon variant="subtle" size="lg" onClick={() => setOpen('helpOpen', true)} aria-label="Help">
+          <ActionIcon size="lg" onClick={() => setOpen('helpOpen', true)} aria-label="Help">
             <IconHelp size={18} />
           </ActionIcon>
         </Tooltip>
         <ActionIcon
-          variant="subtle"
           size="lg"
           hiddenFrom="md"
           onClick={() => setOpen('asideOpen', !asideOpen)}

@@ -20,7 +20,7 @@ export function CommandBar() {
     setError(null);
     const summary = applyCommand(result);
     notifications.show({
-      color: 'indigo',
+      color: 'violet',
       message: result.notes.length ? `${summary}. ${result.notes.join(' ')}` : `Made ${summary}.`,
     });
   };
@@ -33,9 +33,10 @@ export function CommandBar() {
             flex={1}
             size="sm"
             radius="xl"
+            variant="filled"
             data-testid="command-input"
             aria-label="Recipe"
-            placeholder="Type a recipe: 100 spheres → spiral → radius 20 → rotation 30° → size 0.5–2"
+            placeholder="Type a recipe: 100 spheres → spiral → radius 20"
             value={text}
             error={Boolean(error)}
             onChange={(e) => {

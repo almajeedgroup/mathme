@@ -25,7 +25,7 @@ function shapeWith(type: ShapeType, params: Record<string, unknown>) {
   return src;
 }
 
-function project(name: string, nodes: Project['nodes'], background = '#f1f3f5'): Project {
+function project(name: string, nodes: Project['nodes'], background = '#f6f3ff'): Project {
   return { ...emptyProject(name), nodes, background };
 }
 

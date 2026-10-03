@@ -9,18 +9,132 @@ body {
   overflow: hidden;
 }
 
+/* Deck colours (see src/theme.ts) */
+:root {
+  --mm-violet: #915bff;
+  --mm-lime: #f8fd6e;
+  --mm-pink: #ff2d94;
+  --mm-blue: #3841c9;
+  --mm-ink: #1b1230;
+  --mm-line: #ece6fb;
+  --mm-soft: #f6f3ff;
+  --mm-label: #7a6e94;
+}
+
+[data-mantine-color-scheme='dark'] {
+  --mm-line: #2c2640;
+  --mm-soft: #1f1a2e;
+  --mm-label: #a99cc6;
+}
+
+/* Quiet panel edges */
+.mantine-AppShell-header,
+.mantine-AppShell-navbar,
+.mantine-AppShell-aside {
+  border-color: var(--mm-line) !important;
+}
+
+/* Small uppercase section labels */
+.mm-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mm-label);
+}
+
+.mm-wordmark {
+  font-family: Urbanist, 'DM Sans', system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Shape and pattern tiles: no box until you point at one */
 .tile-button {
+  padding: 8px 4px 6px;
+  border-radius: 14px;
+  text-align: center;
+  height: 100%;
   transition:
     transform 80ms ease,
-    border-color 80ms ease,
     background-color 80ms ease;
 }
 
-.tile-button:hover {
-  border-color: var(--mantine-primary-color-filled);
-  background-color: var(--mantine-primary-color-light);
+.tile-icon {
+  font-size: 20px;
+  line-height: 1.2;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition:
+    filter 80ms ease,
+    opacity 80ms ease;
+}
+
+.tile-button:hover,
+:focus-visible > .tile-button {
+  background-color: var(--mm-soft);
+}
+
+.tile-button:hover .tile-icon,
+:focus-visible > .tile-button .tile-icon {
+  filter: none;
+  opacity: 1;
 }
 
 .tile-button:active {
   transform: scale(0.96);
+}
+
+/* Floating viewport bar */
+.mm-float {
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--mantine-color-body) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--mm-line);
+  border-radius: 999px;
+}
+
+/* Disabled icon buttons stay flat */
+.mantine-ActionIcon-root[data-disabled] {
+  background: transparent !important;
+  border-color: transparent !important;
+  opacity: 0.35;
+}
+
+.mm-row-icon {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+/* Outline rows show their buttons only when pointed at */
+.mm-row .mm-row-actions {
+  opacity: 0;
+  transition: opacity 80ms ease;
+}
+
+.mm-row:hover .mm-row-actions,
+.mm-row:focus-within .mm-row-actions,
+.mm-row[aria-selected='true'] .mm-row-actions {
+  opacity: 1;
+}
+
+/* The one loud button: Export */
+.mm-cta {
+  background: var(--mm-lime) !important;
+  color: var(--mm-ink) !important;
+  font-weight: 700;
+}
+
+.mm-cta:hover {
+  background: #eef34f !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile-button,
+  .tile-icon,
+  .mm-row .mm-row-actions {
+    transition: none;
+  }
 }

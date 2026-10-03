@@ -23,7 +23,7 @@ export function FileMenu() {
     <Menu shadow="md" width={230} position="bottom-start">
       <Menu.Target>
         <Tooltip label="File">
-          <ActionIcon variant="default" size="lg" aria-label="File menu">
+          <ActionIcon size="lg" aria-label="File menu">
             <IconFile size={18} />
           </ActionIcon>
         </Tooltip>

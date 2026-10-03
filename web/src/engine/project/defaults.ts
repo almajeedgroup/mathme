@@ -17,14 +17,14 @@ import type {
 import { PROJECT_APP_ID, PROJECT_VERSION } from './schema';
 
 export const PALETTE = [
-  '#4c6ef5',
-  '#f76707',
-  '#37b24d',
-  '#e64980',
-  '#fab005',
-  '#15aabf',
-  '#7950f2',
-  '#f03e3e',
+  '#915bff',
+  '#ff2d94',
+  '#3841c9',
+  '#f8b400',
+  '#14b8a6',
+  '#ff7a45',
+  '#9f3d6c',
+  '#5bc0ff',
 ];
 
 export function defaultTransform(): Transform {
@@ -49,8 +49,8 @@ export function defaultVariation(): VariationDef {
     wobble: 0,
     followPattern: true,
     colorMode: 'gradient',
-    colorFrom: '#4c6ef5',
-    colorTo: '#e64980',
+    colorFrom: '#915bff',
+    colorTo: '#ff2d94',
     jitter: 0,
   };
 }
@@ -111,7 +111,7 @@ export function emptyProject(name = 'My 3D artwork'): Project {
     name,
     author: '',
     units: 'cm',
-    background: '#f1f3f5',
+    background: '#f6f3ff',
     nodes: [],
     library: [],
     meshes: [],

@@ -1,4 +1,4 @@
-import { List, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Select, Stack, Text, TextInput } from '@mantine/core';
 
 import type { Units } from '../../engine/types';
 import { useProjectStore } from '../../state/projectStore';
@@ -9,7 +9,7 @@ export function ProjectTab() {
   const updateProject = useProjectStore((s) => s.updateProject);
   return (
     <Stack gap="sm">
-      <Text fw={700}>Your project</Text>
+      <Text className="mm-label">Your project</Text>
       <TextInput
         size="xs"
         label="Project name"
@@ -41,17 +41,9 @@ export function ProjectTab() {
         value={project.background}
         onChange={(c) => updateProject((p) => void (p.background = c))}
       />
-      <Text fw={600} size="sm" mt="sm">
-        Tips
+      <Text size="xs" c="dimmed" mt="md">
+        Drag to turn the view, right-drag to slide, scroll to zoom. The ? button at the top has more help.
       </Text>
-      <List size="xs" spacing={4}>
-        <List.Item>Click an object to select it. Shift + click selects more than one.</List.Item>
-        <List.Item>
-          Drag with the left mouse button to turn the camera, right button to slide, wheel to zoom.
-        </List.Item>
-        <List.Item>Type a recipe in the box at the top, e.g. “100 spheres → spiral → radius 20”.</List.Item>
-        <List.Item>Ctrl+Z undoes a mistake. Ctrl+Y redoes it.</List.Item>
-      </List>
     </Stack>
   );
 }
