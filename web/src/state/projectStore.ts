@@ -22,15 +22,29 @@ export interface ProjectStore {
   addMesh(mesh: Omit<StoredMesh, 'id'>): string;
 }
 
-/** Changes closer together than this (e.g. dragging a slider) become one undo step. */
+/** Edits closer together than this (e.g. dragging a slider) become one undo step. */
 const UNDO_GROUP_MS = 400;
+
+/**
+ * Discrete actions (add, delete, load, apply a recipe…) are always their own undo step.
+ * Only continuous edits (sliders, typing, dragging the gizmo) are grouped by time.
+ */
+let discreteDepth = 0;
+export function asUndoStep<T>(fn: () => T): T {
+  discreteDepth++;
+  try {
+    return fn();
+  } finally {
+    discreteDepth--;
+  }
+}
 
 export const useProjectStore = create<ProjectStore>()(
   temporal(
     immer((set, get) => ({
       project: starterProject(),
 
-      setProject: (project) => set({ project }),
+      setProject: (project) => asUndoStep(() => set({ project })),
 
       updateProject: (recipe) =>
         set((s) => {
@@ -38,9 +52,11 @@ export const useProjectStore = create<ProjectStore>()(
         }),
 
       addNode: (node) =>
-        set((s) => {
-          s.project.nodes.push(node);
-        }),
+        asUndoStep(() =>
+          set((s) => {
+            s.project.nodes.push(node);
+          }),
+        ),
 
       updateNode: (id, recipe) =>
         set((s) => {
@@ -49,14 +65,16 @@ export const useProjectStore = create<ProjectStore>()(
         }),
 
       removeNodes: (ids) =>
-        set((s) => {
-          const remove = new Set<string>();
-          for (const id of ids) {
-            remove.add(id);
-            for (const d of descendantIds(s.project.nodes, id)) remove.add(d);
-          }
-          s.project.nodes = s.project.nodes.filter((n) => !remove.has(n.id));
-        }),
+        asUndoStep(() =>
+          set((s) => {
+            const remove = new Set<string>();
+            for (const id of ids) {
+              remove.add(id);
+              for (const d of descendantIds(s.project.nodes, id)) remove.add(d);
+            }
+            s.project.nodes = s.project.nodes.filter((n) => !remove.has(n.id));
+          }),
+        ),
 
       duplicateNodes: (ids) => {
         const nodes = get().project.nodes;
@@ -75,9 +93,11 @@ export const useProjectStore = create<ProjectStore>()(
           created.push(...copies);
           newTops.push(top.id);
         }
-        set((s) => {
-          s.project.nodes.push(...created);
-        });
+        asUndoStep(() =>
+          set((s) => {
+            s.project.nodes.push(...created);
+          }),
+        );
         return newTops;
       },
 
@@ -95,19 +115,21 @@ export const useProjectStore = create<ProjectStore>()(
           (k) => members.reduce((sum, n) => sum + n.transform.position[k], 0) / members.length,
         );
         group.transform.position = [center[0], center[1], center[2]];
-        set((s) => {
-          const firstIndex = s.project.nodes.findIndex((n) => n.id === tops[0]);
-          s.project.nodes.splice(Math.max(0, firstIndex), 0, group);
-          for (const n of s.project.nodes) {
-            if (!tops.includes(n.id)) continue;
-            n.parentId = group.id;
-            n.transform.position = [
-              n.transform.position[0] - center[0],
-              n.transform.position[1] - center[1],
-              n.transform.position[2] - center[2],
-            ];
-          }
-        });
+        asUndoStep(() =>
+          set((s) => {
+            const firstIndex = s.project.nodes.findIndex((n) => n.id === tops[0]);
+            s.project.nodes.splice(Math.max(0, firstIndex), 0, group);
+            for (const n of s.project.nodes) {
+              if (!tops.includes(n.id)) continue;
+              n.parentId = group.id;
+              n.transform.position = [
+                n.transform.position[0] - center[0],
+                n.transform.position[1] - center[1],
+                n.transform.position[2] - center[2],
+              ];
+            }
+          }),
+        );
         return group.id;
       },
 
@@ -116,23 +138,27 @@ export const useProjectStore = create<ProjectStore>()(
         const group = nodes.find((n) => n.id === id);
         if (!group || group.kind !== 'group') return [];
         const childIds = nodes.filter((n) => n.parentId === id).map((n) => n.id);
-        set((s) => {
-          for (const n of s.project.nodes) {
-            if (n.parentId === id) {
-              n.transform = composeTransforms(group.transform, n.transform);
-              n.parentId = group.parentId;
+        asUndoStep(() =>
+          set((s) => {
+            for (const n of s.project.nodes) {
+              if (n.parentId === id) {
+                n.transform = composeTransforms(group.transform, n.transform);
+                n.parentId = group.parentId;
+              }
             }
-          }
-          s.project.nodes = s.project.nodes.filter((n) => n.id !== id);
-        });
+            s.project.nodes = s.project.nodes.filter((n) => n.id !== id);
+          }),
+        );
         return childIds;
       },
 
       addCustomShape: (shape) => {
         const id = uid('custom');
-        set((s) => {
-          s.project.library.push({ ...shape, id });
-        });
+        asUndoStep(() =>
+          set((s) => {
+            s.project.library.push({ ...shape, id });
+          }),
+        );
         return id;
       },
 
@@ -141,17 +167,21 @@ export const useProjectStore = create<ProjectStore>()(
           (n) => n.kind !== 'group' && n.source.kind === 'custom' && n.source.customId === id,
         );
         if (inUse) return false;
-        set((s) => {
-          s.project.library = s.project.library.filter((c) => c.id !== id);
-        });
+        asUndoStep(() =>
+          set((s) => {
+            s.project.library = s.project.library.filter((c) => c.id !== id);
+          }),
+        );
         return true;
       },
 
       addMesh: (mesh) => {
         const id = uid('mesh');
-        set((s) => {
-          s.project.meshes.push({ ...mesh, id });
-        });
+        asUndoStep(() =>
+          set((s) => {
+            s.project.meshes.push({ ...mesh, id });
+          }),
+        );
         return id;
       },
     })),
@@ -163,8 +193,10 @@ export const useProjectStore = create<ProjectStore>()(
         let last = 0;
         return (...args: Parameters<typeof handleSet>) => {
           const now = Date.now();
-          if (now - last > UNDO_GROUP_MS) (handleSet as (...a: unknown[]) => void)(...args);
-          last = now;
+          if (discreteDepth > 0 || now - last > UNDO_GROUP_MS)
+            (handleSet as (...a: unknown[]) => void)(...args);
+          // after a discrete action the next edit always starts a new step
+          last = discreteDepth > 0 ? 0 : now;
         };
       },
     },

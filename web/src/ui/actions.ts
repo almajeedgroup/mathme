@@ -1,5 +1,6 @@
 import { Box3, Matrix4 } from 'three';
 
+import { describeCommand, type ParsedCommand } from '../engine/command/parser';
 import { evaluateScene, TooManyObjectsError } from '../engine/evaluate';
 import { getPattern } from '../engine/patterns/registry';
 import {
@@ -13,8 +14,16 @@ import {
 import { matrixToTransform } from '../engine/project/tree';
 import { buildGeometry, defaultShape, getShape } from '../engine/shapes/registry';
 import { transformToMatrix } from '../engine/three/transforms';
-import type { CustomPart, ObjectNode, PatternNode, PatternType, ShapeType, SourceRef } from '../engine/types';
-import { useProjectStore } from '../state/projectStore';
+import type {
+  CustomPart,
+  ObjectNode,
+  PatternNode,
+  PatternType,
+  Project,
+  ShapeType,
+  SourceRef,
+} from '../engine/types';
+import { asUndoStep, useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { viewportBridge } from '../viewport/bridge';
 import { contentBounds } from '../viewport/bounds';
@@ -86,6 +95,10 @@ export function addCustomShape(customId: string) {
  * selected pattern, or start a new pattern of spheres.
  */
 export function applyPattern(type: PatternType) {
+  asUndoStep(() => applyPatternNow(type));
+}
+
+function applyPatternNow(type: PatternType) {
   const { selectedIds } = ui();
   const nodes = store().project.nodes;
   const selected = selectedIds.length === 1 ? nodes.find((n) => n.id === selectedIds[0]) : undefined;
@@ -155,9 +168,11 @@ export function ungroupSelection() {
 }
 
 export function toggleVisible(id: string) {
-  store().updateNode(id, (n) => {
-    n.visible = !n.visible;
-  });
+  asUndoStep(() =>
+    store().updateNode(id, (n) => {
+      n.visible = !n.visible;
+    }),
+  );
 }
 
 export const MAX_CUSTOM_PARTS = 500;
@@ -202,4 +217,72 @@ export function resetShapeSizes(nodeId: string) {
     if (n.kind === 'group' || n.source.kind !== 'shape') return;
     n.source.shape = defaultShape(n.source.shape.type);
   });
+}
+
+/**
+ * Make (or change) a pattern from a typed recipe.
+ * - A selected pattern is changed, unless the recipe names a different shape.
+ * - A selected object is turned into the pattern (unless the recipe names a shape).
+ * - Otherwise a new pattern is added.
+ */
+export function applyCommand(cmd: ParsedCommand): string {
+  return asUndoStep(() => applyCommandNow(cmd));
+}
+
+function applyCommandNow(cmd: ParsedCommand): string {
+  const { selectedIds } = ui();
+  const nodes = store().project.nodes;
+  const selected = selectedIds.length === 1 ? nodes.find((n) => n.id === selectedIds[0]) : undefined;
+  const patternType = cmd.pattern ?? 'spiral';
+  const def = getPattern(patternType);
+  const newSource = (): SourceRef => {
+    const src = shapeSource(cmd.shape ?? 'sphere');
+    if (src.kind === 'shape' && cmd.shapeParams) Object.assign(src.shape.params, cmd.shapeParams);
+    return src;
+  };
+
+  const patch = (n: PatternNode, freshPattern: boolean) => {
+    if (cmd.pattern && (freshPattern || n.pattern.type !== cmd.pattern)) {
+      n.pattern = { type: patternType, params: structuredClone(def.defaults) };
+      n.count = def.defaultCount;
+    }
+    Object.assign(n.pattern.params, cmd.patternParams);
+    if (cmd.count !== undefined) n.count = cmd.count;
+    Object.assign(n.variation, cmd.variation);
+    Object.assign(n.symmetry, cmd.symmetry);
+    if (cmd.materialColor) n.material.color = cmd.materialColor;
+    if (cmd.seed !== undefined) n.seed = cmd.seed;
+  };
+
+  if (selected?.kind === 'pattern' && !cmd.shape) {
+    store().updateNode(selected.id, (n) => {
+      if (n.kind === 'pattern') patch(n, false);
+    });
+    ui().requestFrame();
+    return describeCommand(cmd);
+  }
+
+  const source = selected?.kind === 'object' && !cmd.shape ? selected.source : newSource();
+  const shapeName = source.kind === 'shape' ? getShape(source.shape.type).label : 'my shapes';
+  const node = createPatternNode(source, patternType, `${def.label} of ${plural(shapeName.toLowerCase())}`);
+  patch(node, true);
+  if (selected?.kind === 'object' && !cmd.shape) {
+    node.id = selected.id;
+    node.material = selected.material;
+    node.parentId = selected.parentId;
+    store().updateNode(selected.id, (n) => void Object.assign(n, node));
+  } else {
+    store().addNode(node);
+  }
+  ui().select(node.id);
+  ui().setInspectorTab('pattern');
+  ui().requestFrame();
+  return describeCommand(cmd);
+}
+
+/** Replace the whole project (e.g. opening a file or an idea). Undo can bring the old one back. */
+export function loadProject(project: Project) {
+  store().setProject(project);
+  ui().select(null);
+  ui().requestFrame();
 }

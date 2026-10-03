@@ -12,6 +12,7 @@ import { useStore } from 'zustand';
 import { redo, undo, useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { CommandBar } from './CommandBar';
+import { FileMenu } from './FileMenu';
 
 export function TopBar() {
   const canUndo = useStore(useProjectStore.temporal, (s) => s.pastStates.length > 0);
@@ -34,6 +35,7 @@ export function TopBar() {
         <Text fw={800} size="lg" visibleFrom="md" style={{ whiteSpace: 'nowrap' }}>
           MathMe 3D Studio
         </Text>
+        <FileMenu />
       </Group>
       <CommandBar />
       <Group gap={6} wrap="nowrap">

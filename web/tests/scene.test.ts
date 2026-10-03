@@ -187,3 +187,28 @@ describe('project store', () => {
     expect(store.removeCustomShape(custom.id)).toBe(false);
   });
 });
+
+describe('undo steps', () => {
+  it('two quick discrete actions are two undo steps', () => {
+    const store = useProjectStore.getState();
+    store.setProject(emptyProject());
+    useProjectStore.temporal.getState().clear();
+    store.addNode(createObjectNode(shapeSource('box'), 'a'));
+    store.addNode(createObjectNode(shapeSource('box'), 'b'));
+    useProjectStore.temporal.getState().undo();
+    expect(useProjectStore.getState().project.nodes).toHaveLength(1);
+  });
+
+  it('an edit right after adding something is its own step', () => {
+    const store = useProjectStore.getState();
+    store.setProject(emptyProject());
+    useProjectStore.temporal.getState().clear();
+    const a = createObjectNode(shapeSource('box'), 'a');
+    store.addNode(a);
+    store.updateNode(a.id, (n) => void (n.name = 'renamed'));
+    useProjectStore.temporal.getState().undo();
+    const nodes = useProjectStore.getState().project.nodes;
+    expect(nodes).toHaveLength(1);
+    expect(nodes[0].name).toBe('a');
+  });
+});

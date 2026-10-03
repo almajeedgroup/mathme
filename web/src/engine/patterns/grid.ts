@@ -47,7 +47,7 @@ export const grid: PatternDefinition = {
     numberField('spacing', 'Spacing', 'Distance between neighbouring objects.', {
       ...lengthOpts,
       max: 20,
-      aliases: ['spacing', 'gap', 'radius'],
+      aliases: ['spacing', 'gap'],
     }),
   ],
   defaults: { columns: 10, rows: 10, spacing: 3 },

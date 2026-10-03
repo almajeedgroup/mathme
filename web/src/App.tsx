@@ -1,7 +1,11 @@
 import { AppShell, Divider, ScrollArea, Stack } from '@mantine/core';
 import { useEffect } from 'react';
 
+import { loadAutosave, startAutosave } from './state/persistence';
+import { clearHistory, useProjectStore } from './state/projectStore';
 import { useUiStore } from './state/uiStore';
+import { notifications } from './ui/notify';
+import { PresetsModal } from './ui/PresetsModal';
 import { Inspector } from './ui/inspector/Inspector';
 import { Outliner } from './ui/Outliner';
 import { PatternPicker } from './ui/PatternPicker';
@@ -17,7 +21,15 @@ export function App() {
   const asideOpen = useUiStore((s) => s.asideOpen);
   const requestFrame = useUiStore((s) => s.requestFrame);
   useKeyboardShortcuts();
-  useEffect(() => requestFrame(), [requestFrame]);
+  useEffect(() => {
+    const saved = loadAutosave();
+    if (saved) {
+      useProjectStore.getState().setProject(saved);
+      clearHistory();
+    }
+    requestFrame();
+    return startAutosave((message) => notifications.show({ color: 'orange', message }));
+  }, [requestFrame]);
 
   return (
     <AppShell
@@ -49,6 +61,7 @@ export function App() {
           <ViewportToolbar />
         </div>
       </AppShell.Main>
+      <PresetsModal />
       <Toasts />
     </AppShell>
   );

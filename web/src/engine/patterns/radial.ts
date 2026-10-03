@@ -59,7 +59,7 @@ export const radial: PatternDefinition = {
     numberField('ringGap', 'Gap between rings', 'Distance from one ring to the next.', {
       ...lengthOpts,
       max: 20,
-      aliases: ['spacing', 'gap', 'radius'],
+      aliases: ['spacing', 'gap'],
     }),
     numberField('heightStep', 'Height per ring', 'Lift each ring higher (or lower) than the one inside it.', {
       ...lengthOpts,
