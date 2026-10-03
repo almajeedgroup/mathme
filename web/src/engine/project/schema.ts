@@ -32,6 +32,7 @@ export const SHAPE_TYPES = [
   'torusKnot',
   'lathe',
   'extrude',
+  'tube',
   'text3d',
   'graphSurface',
   'parametric',

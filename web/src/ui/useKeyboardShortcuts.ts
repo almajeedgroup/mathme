@@ -16,6 +16,12 @@ export function useKeyboardShortcuts() {
       const mod = e.ctrlKey || e.metaKey;
       const key = e.key.toLowerCase();
       const ui = useUiStore.getState();
+      if (!mod && key === 'p') {
+        ui.setDraw({ tool: ui.draw.tool ? null : 'pencil' });
+        return;
+      }
+      // while drawing, Enter / Escape / Backspace belong to the pencil (see viewport/DrawLayer.tsx)
+      if (ui.draw.tool && !mod) return;
       if (mod && key === 'z' && !e.shiftKey) {
         e.preventDefault();
         undo();

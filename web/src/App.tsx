@@ -1,11 +1,13 @@
 import { AppShell } from '@mantine/core';
 import { useEffect } from 'react';
 
-import { ensureLinkedMeshes } from './services/modelAssets';
+import { detectClaudeSample } from './services/claudeSample';
 import { useServiceHealth } from './services/useServiceHealth';
-import { loadAutosave, startAutosave } from './state/persistence';
-import { clearHistory, useProjectStore } from './state/projectStore';
+import { migrateLegacyAutosave, startAutosave } from './state/persistence';
 import { useUiStore } from './state/uiStore';
+import { DrawToolbar } from './ui/DrawToolbar';
+import { HomePage } from './ui/HomePage';
+import { startNavigation } from './ui/navigation';
 import { notifications } from './ui/notify';
 import { CutPanel } from './ui/CutPanel';
 import { ExportModal } from './ui/ExportModal';
@@ -23,26 +25,65 @@ import { ViewportToolbar } from './ui/ViewportToolbar';
 import { Viewport } from './viewport/Viewport';
 
 export function App() {
+  const view = useUiStore((s) => s.view);
+  const navOpen = useUiStore((s) => s.navOpen);
+  const prefs = useUiStore((s) => s.prefs);
+  const wide = useWideScreen();
+  useServiceHealth();
+  useEffect(() => {
+    migrateLegacyAutosave();
+    void detectClaudeSample();
+    const stopNavigation = startNavigation();
+    const stopAutosave = startAutosave(
+      () => useUiStore.getState().currentProjectId,
+      (message) => notifications.show({ color: 'orange', message }),
+    );
+    return () => {
+      stopNavigation();
+      stopAutosave();
+    };
+  }, []);
+
+  const shared = (
+    <>
+      <PresetsModal />
+      <HelpModal />
+      <SettingsModal />
+      <Toasts />
+    </>
+  );
+
+  if (view === 'home') {
+    return (
+      <AppShell
+        layout="alt"
+        navbar={{
+          width: prefs.navCollapsed && wide ? 60 : 268,
+          breakpoint: 'sm',
+          collapsed: { mobile: !navOpen },
+        }}
+        padding={0}
+      >
+        <AppShell.Navbar>
+          <Sidebar />
+        </AppShell.Navbar>
+        <AppShell.Main>
+          <HomePage />
+        </AppShell.Main>
+        {shared}
+      </AppShell>
+    );
+  }
+  return <Studio shared={shared} />;
+}
+
+function Studio({ shared }: { shared: React.ReactNode }) {
   const navOpen = useUiStore((s) => s.navOpen);
   const asideOpen = useUiStore((s) => s.asideOpen);
   const prefs = useUiStore((s) => s.prefs);
   const wide = useWideScreen();
   const details = useDetailsPanel();
-  const requestFrame = useUiStore((s) => s.requestFrame);
   useKeyboardShortcuts();
-  useServiceHealth();
-  useEffect(() => {
-    const saved = loadAutosave();
-    if (saved) {
-      useProjectStore.getState().setProject(saved);
-      clearHistory();
-      ensureLinkedMeshes(saved).catch((e) =>
-        notifications.show({ color: 'red', message: `A linked 3D model could not be loaded: ${e.message}` }),
-      );
-    }
-    requestFrame();
-    return startAutosave((message) => notifications.show({ color: 'orange', message }));
-  }, [requestFrame]);
 
   return (
     <AppShell
@@ -75,15 +116,13 @@ export function App() {
             <Viewport />
           </ViewportErrorBoundary>
           <ViewportToolbar />
+          <DrawToolbar />
           <CutPanel />
         </div>
       </AppShell.Main>
-      <PresetsModal />
       <ExportModal />
-      <HelpModal />
-      <SettingsModal />
       <WelcomeTour />
-      <Toasts />
+      {shared}
     </AppShell>
   );
 }

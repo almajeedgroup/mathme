@@ -22,7 +22,7 @@ export function ParamFields({
   defaults: Params;
   units: Units;
   onChange(key: string, value: ParamValue): void;
-  pointPresets?: (mode: 'profile' | 'outline') => ProfilePreset[];
+  pointPresets?: (mode: 'profile' | 'outline' | 'path') => ProfilePreset[];
 }) {
   const merged = { ...defaults, ...params };
   return (
@@ -54,7 +54,7 @@ function ParamFieldInput({
   value: ParamValue | undefined;
   units: Units;
   onChange(v: ParamValue): void;
-  pointPresets?: (mode: 'profile' | 'outline') => ProfilePreset[];
+  pointPresets?: (mode: 'profile' | 'outline' | 'path') => ProfilePreset[];
 }) {
   switch (field.kind) {
     case 'number':

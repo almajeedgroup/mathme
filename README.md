@@ -45,6 +45,21 @@ The full design and milestones are in [docs/PLAN.md](docs/PLAN.md).
   - **Join / Cut / Overlap** (boolean operations).
   - Print-ready, joined STL/3MF/OBJ/PLY files.
 
+## Home page, chat box and pencil
+
+- **Home page.** After the landing page comes the project list, like ChatGPT or Claude.
+  - The sidebar lists recent projects; each project card shows a picture of it.
+  - Projects can be renamed, duplicated and deleted. They are saved in the browser.
+  - A chat box turns a description such as “300 cones on a sphere, rainbow” into a new project.
+- **Chat box.** Without extra setup, MathMe's own recipe reader handles recipes and simple sentences.
+  - For full chat, install the service's `ai` extra (`pip install -e .[ai]`) and set `ANTHROPIC_API_KEY`.
+  - With both, `POST /assist` asks a Claude model to write recipes. The browser checks every recipe before using it.
+- **Pencil.** In the studio, press **P** or the pencil button, then draw on the floor.
+  - A closed loop becomes a solid, with the height you choose.
+  - Choose **Tube** to draw like a 3D pen.
+  - **Lines** draws straight edges from corner to corner.
+  - Drawings become ordinary shapes, so their outlines can still be edited, measured and exported.
+
 ## Landing page
 
 `web/landing/` is the MathMe home page, styled with the colours of the MathMe presentation deck (palette in `web/landing/theme.json`). `npm run build` outputs it to `dist/landing/`, and the studio's Home button links to it. Set `VITE_HOME_URL` to point that button somewhere else.
@@ -139,6 +154,8 @@ CI (`.github/workflows/ci.yml`) runs all of the above on every push.
 | `VITE_HOME_URL` | web build | `./landing/` | Where the studio's Home button goes |
 | `VITE_BASE` | web build | `/` | Sub-path the app is served from, e.g. `/mathme/` for GitHub Pages |
 | `GEOMETRY_SERVICE_URL` | web dev/preview | `http://localhost:8000` | Where the `/api` proxy forwards to |
+| `ANTHROPIC_API_KEY` | service | (none) | Turns on the AI chat helper (`POST /assist`; needs `pip install -e .[ai]`) |
+| `ANTHROPIC_MODEL` | service | `claude-opus-5-5` | Which Claude model the chat helper uses |
 | `ALLOWED_ORIGINS` | service | `http://localhost:5173,http://localhost:4173` | Comma-separated web origins allowed to call the service (CORS) |
 | `MAX_UPLOAD_MB` | service | `50` | Largest upload |
 | `MAX_TRIANGLES` | service | `2000000` | Largest model |

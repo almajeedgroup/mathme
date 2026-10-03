@@ -46,8 +46,11 @@ export interface TextField extends FieldBase {
 
 export interface PointsField extends FieldBase {
   kind: 'points';
-  /** profile = half-outline spun around the axis (x = distance from axis); outline = closed 2D shape. */
-  mode: 'profile' | 'outline';
+  /**
+   * profile = half-outline spun around the axis (x = distance from axis); outline = closed 2D shape;
+   * path = an open line (for tubes).
+   */
+  mode: 'profile' | 'outline' | 'path';
 }
 
 export type ParamField = NumberField | SelectField | BooleanField | TextField | PointsField;

@@ -89,7 +89,9 @@ export function ShapeTab({ node }: { node: ObjectNode | PatternNode }) {
         params={shape.params}
         defaults={def.defaults}
         units={units}
-        pointPresets={(mode) => (mode === 'profile' ? LATHE_PRESETS : OUTLINE_PRESETS)}
+        pointPresets={(mode) =>
+          mode === 'profile' ? LATHE_PRESETS : mode === 'outline' ? OUTLINE_PRESETS : []
+        }
         onChange={(key, value) =>
           update((n) => {
             if (n.source.kind === 'shape') n.source.shape.params[key] = value;

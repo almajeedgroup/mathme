@@ -4,7 +4,7 @@ test.describe('first visit', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('shows the welcome tour once', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/#studio');
     const welcome = page.getByRole('dialog', { name: 'Welcome to MathMe 3D Studio' });
     await expect(welcome).toBeVisible();
     await expect(welcome.getByText('1. Add a shape')).toBeVisible();
@@ -19,7 +19,7 @@ test.describe('first visit', () => {
 });
 
 test('help explains maths words and keys', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'Help' }).click();
   const help = page.getByRole('dialog', { name: 'Help' });
   await help.getByRole('tab', { name: 'Maths words' }).click();
@@ -30,7 +30,7 @@ test('help explains maths words and keys', async ({ page }) => {
 
 test('works on a tablet (portrait)', async ({ page }) => {
   await page.setViewportSize({ width: 820, height: 1180 });
-  await page.goto('/');
+  await page.goto('/#studio');
   await expect(page.getByTestId('object-count')).toHaveText('100 objects');
   // the shape panel stays; the details panel folds away and opens from the top bar
   await expect(page.getByTestId('add-shape-box')).toBeVisible();

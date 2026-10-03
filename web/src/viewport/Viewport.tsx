@@ -7,6 +7,7 @@ import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { contentBounds, sliceBounds } from './bounds';
 import { CutPlaneHelper } from './cut';
+import { DrawLayer } from './DrawLayer';
 import { viewportBridge } from './bridge';
 import { SceneContent } from './SceneContent';
 
@@ -54,6 +55,7 @@ export function Viewport() {
       <SelectionGizmo />
       <SelectionOutline />
       <CutSheet />
+      <DrawLayer />
       <OrbitControls makeDefault enableDamping={false} />
       {showAxes && (
         <GizmoHelper alignment="bottom-right" margin={[72, 72]}>

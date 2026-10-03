@@ -10,7 +10,7 @@ test.beforeEach(async ({ page, request }) => {
     .then((r) => r.ok())
     .catch(() => false);
   test.skip(!ok, 'geometry service is not running');
-  await page.goto('/');
+  await page.goto('/#studio');
   await expect(page.getByTestId('service-badge').first())
     .toHaveText('service online', { timeout: 10_000 })
     .catch(() => {});

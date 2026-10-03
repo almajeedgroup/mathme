@@ -4,16 +4,27 @@ import { useState } from 'react';
 
 import { EXAMPLE_COMMANDS } from '../engine/command/examples';
 import { parseCommand } from '../engine/command/parser';
+import { useUiStore } from '../state/uiStore';
 import { applyCommand } from './actions';
+import { askMathMe } from './assistant';
 import { notifications } from './notify';
 
 export function CommandBar() {
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const run = (input = text) => {
+  const run = async (input = text) => {
     const result = parseCommand(input);
     if (!result.ok) {
+      // the recipe reader is stuck: let the AI model try, when the geometry service has one
+      if (useUiStore.getState().assistantOnline || useUiStore.getState().claudeChat) {
+        const answer = await askMathMe(input);
+        if (answer.ok) {
+          setError(null);
+          notifications.show({ color: 'violet', title: 'MathMe', message: answer.reply });
+          return;
+        }
+      }
       setError(result.error);
       return;
     }
@@ -44,7 +55,7 @@ export function CommandBar() {
               setError(null);
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') run();
+              if (e.key === 'Enter') void run();
               if (e.key === 'Escape') setError(null);
             }}
             leftSection={<IconSparkles size={16} />}
@@ -65,7 +76,7 @@ export function CommandBar() {
                       key={c}
                       onClick={() => {
                         setText(c);
-                        run(c);
+                        void run(c);
                       }}
                     >
                       <Text size="xs" ff="monospace">

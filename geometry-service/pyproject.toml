@@ -16,6 +16,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.6"]
+# the chat helper (POST /assist); also set ANTHROPIC_API_KEY
+ai = ["anthropic>=0.40"]
 # heart slice atlas (python -m app.anatomy.build)
 anatomy = [
   "scipy>=1.11",

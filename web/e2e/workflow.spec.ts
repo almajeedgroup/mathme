@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 test('the recipe from the brief makes 100 objects, and undo removes them', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'File menu' }).click();
   await page.getByRole('menuitem', { name: 'New empty scene' }).click();
   await expect(page.getByTestId('object-count')).toHaveText('0 objects');
@@ -25,7 +25,7 @@ test('the recipe from the brief makes 100 objects, and undo removes them', async
 });
 
 test('a recipe with a typo shows a friendly error', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   const input = page.getByTestId('command-input');
   await input.fill('100 blorps spiral');
   await input.press('Enter');
@@ -33,7 +33,7 @@ test('a recipe with a typo shows a friendly error', async ({ page }) => {
 });
 
 test('ideas, save a project file, and open it again', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'Ideas' }).click();
   await page.getByTestId('preset-dna').click();
   await expect(page.getByTestId('object-count')).toHaveText('120 objects');
@@ -61,7 +61,7 @@ test('ideas, save a project file, and open it again', async ({ page }) => {
 });
 
 test('work is autosaved and comes back after a reload', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'Ideas' }).click();
   await page.getByTestId('preset-snowflake').click();
   await expect(page.getByTestId('object-count')).toHaveText('37 objects');

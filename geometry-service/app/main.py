@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
-from . import __version__, geometry
+from . import __version__, assistant, geometry
 from .settings import settings
 
 app = FastAPI(
@@ -84,7 +84,22 @@ class AnalyzeResponse(BaseModel):
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "version": __version__}
+    return {"status": "ok", "version": __version__, "assistant": assistant.available()}
+
+
+@app.post("/assist", response_model=assistant.AssistResponse)
+async def assist(request: assistant.AssistRequest) -> assistant.AssistResponse:
+    """Turn a student's request into MathMe recipes with a Claude model (see app/assistant.py)."""
+    if not assistant.available():
+        raise HTTPException(503, "The chat helper needs an AI key on the geometry service.")
+    try:
+        return await asyncio.wait_for(run_in_threadpool(assistant.ask, request), timeout=settings.timeout_s)
+    except TimeoutError as err:
+        raise HTTPException(504, "The chat helper took too long to answer. Try again.") from err
+    except assistant.AssistantUnavailable as err:
+        raise HTTPException(503, str(err)) from err
+    except Exception as err:  # network or API problems: the web app falls back to its own reader
+        raise HTTPException(502, "The chat helper could not be reached. Try again in a moment.") from err
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)

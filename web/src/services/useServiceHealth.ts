@@ -10,8 +10,10 @@ export function useServiceHealth(intervalMs = 30_000) {
     let cancelled = false;
     const check = async () => {
       if (document.visibilityState === 'hidden') return;
-      const ok = await checkHealth();
-      if (!cancelled) setOnline(ok);
+      const health = await checkHealth();
+      if (cancelled) return;
+      setOnline(health.ok);
+      useUiStore.setState({ assistantOnline: health.assistant });
     };
     check();
     const timer = setInterval(check, intervalMs);

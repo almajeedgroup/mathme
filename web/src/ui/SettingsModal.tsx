@@ -19,12 +19,13 @@ import { type ReactNode, useState } from 'react';
 
 import type { Units } from '../engine/types';
 import { GEOMETRY_API_URL } from '../services/geometryApi';
-import { AUTOSAVE_KEY } from '../state/persistence';
+import { deleteProject, useProjectList } from '../state/persistence';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { BRAND } from '../theme';
 import { ColorPicker } from './inspector/LookTab';
 import { Logo } from './Logo';
+import { goHome } from './navigation';
 import { notifications } from './notify';
 
 const HOME_URL = (import.meta.env.VITE_HOME_URL as string | undefined) ?? './landing/';
@@ -182,7 +183,7 @@ function DataSettings() {
   const [confirming, setConfirming] = useState(false);
   return (
     <Stack gap={0}>
-      <Row label="Autosave" hint="Your work is saved in this browser as you go.">
+      <Row label="Autosave" hint="Every project is saved in this browser as you go.">
         <Badge variant="light" color="violet">
           On
         </Badge>
@@ -212,8 +213,8 @@ function DataSettings() {
         </Button>
       </Row>
       <Row
-        label="Clear saved work"
-        hint="Removes the autosaved project from this browser. Save a project file first if you want to keep it."
+        label="Delete all projects"
+        hint="Removes every project saved in this browser. Save project files first if you want to keep them."
       >
         {confirming ? (
           <Group gap={6} wrap="nowrap">
@@ -224,23 +225,21 @@ function DataSettings() {
               size="xs"
               color="red"
               onClick={() => {
-                try {
-                  localStorage.removeItem(AUTOSAVE_KEY);
-                } catch {
-                  /* nothing saved */
-                }
+                for (const m of useProjectList.getState().items) deleteProject(m.id);
                 setConfirming(false);
-                notifications.show({
-                  message: 'Cleared. The scene stays on screen until you reload or change it.',
-                });
+                setOpen('settingsOpen', false);
+                // nothing left to save: go back to the (now empty) project list
+                useUiStore.setState({ currentProjectId: null });
+                goHome();
+                notifications.show({ message: 'All projects were deleted from this browser.' });
               }}
             >
-              Clear
+              Delete all
             </Button>
           </Group>
         ) : (
           <Button size="xs" variant="default" color="red" onClick={() => setConfirming(true)}>
-            Clear…
+            Delete all…
           </Button>
         )}
       </Row>
@@ -289,6 +288,10 @@ export function SettingsModal() {
   const open = useUiStore((s) => s.settingsOpen);
   const setOpen = useUiStore((s) => s.setOpen);
   const [tab, setTab] = useState('project');
+  // the Project section is about the open project, so it only shows in the studio
+  const studio = useUiStore((s) => s.view === 'studio');
+  const sections = SECTIONS.filter((s) => studio || s.value !== 'project');
+  const active = sections.some((s) => s.value === tab) ? tab : sections[0].value;
   return (
     <Modal
       opened={open}
@@ -301,7 +304,7 @@ export function SettingsModal() {
       data-testid="settings"
     >
       <Tabs
-        value={tab}
+        value={active}
         onChange={(v) => v && setTab(v)}
         orientation="vertical"
         variant="pills"
@@ -309,13 +312,13 @@ export function SettingsModal() {
         keepMounted={false}
       >
         <Tabs.List>
-          {SECTIONS.map((s) => (
+          {sections.map((s) => (
             <Tabs.Tab key={s.value} value={s.value} leftSection={<s.icon size={16} />}>
               {s.label}
             </Tabs.Tab>
           ))}
         </Tabs.List>
-        {SECTIONS.map((s) => (
+        {sections.map((s) => (
           <Tabs.Panel key={s.value} value={s.value}>
             {s.render()}
           </Tabs.Panel>

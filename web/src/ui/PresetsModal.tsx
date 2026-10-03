@@ -4,11 +4,13 @@ import { PRESETS } from '../engine/project/presets';
 import { useUiStore } from '../state/uiStore';
 import { loadProject, openHeart } from './actions';
 import { openCutTool } from './CutPanel';
+import { startNewProject } from './navigation';
 import { notifications } from './notify';
 
 export function PresetsModal() {
   const open = useUiStore((s) => s.presetsOpen);
   const setOpen = useUiStore((s) => s.setOpen);
+  const home = useUiStore((s) => s.view === 'home');
   return (
     <Modal
       opened={open}
@@ -18,7 +20,9 @@ export function PresetsModal() {
       centered
     >
       <Text size="sm" c="dimmed" mb="md">
-        Each idea replaces your current scene. Changed your mind? Press Undo.
+        {home
+          ? 'Each idea starts a new project.'
+          : 'Each idea replaces your current scene. Changed your mind? Press Undo.'}
       </Text>
       <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing="sm">
         <UnstyledButton
@@ -26,7 +30,10 @@ export function PresetsModal() {
           onClick={async () => {
             setOpen('presetsOpen', false);
             try {
-              await openHeart();
+              if (useUiStore.getState().view === 'home') {
+                const { buildHeartProject } = await import('../services/modelAssets');
+                startNewProject(await buildHeartProject());
+              } else await openHeart();
               // wait for the heart to be drawn so the cut tool can measure it
               await new Promise((r) => setTimeout(r, 400));
               openCutTool();
@@ -54,7 +61,8 @@ export function PresetsModal() {
             key={p.id}
             data-testid={`preset-${p.id}`}
             onClick={() => {
-              loadProject(p.build());
+              if (useUiStore.getState().view === 'home') startNewProject(p.build());
+              else loadProject(p.build());
               setOpen('presetsOpen', false);
               notifications.show({ color: 'violet', message: `Opened “${p.title}”. Press Undo to go back.` });
             }}

@@ -11,6 +11,7 @@ import {
   normalizeLatheProfile,
   parametric,
   text3d,
+  tube,
 } from './custom';
 import { points } from '../fields';
 import {
@@ -42,6 +43,7 @@ export const SHAPES: Record<ShapeType, ShapeDefinition> = {
   torusKnot,
   lathe,
   extrude,
+  tube,
   text3d,
   graphSurface,
   parametric,

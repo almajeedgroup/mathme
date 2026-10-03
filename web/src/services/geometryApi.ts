@@ -51,13 +51,19 @@ async function call(path: string, init: RequestInit, timeoutMs: number): Promise
   return res;
 }
 
-export async function checkHealth(): Promise<boolean> {
+export interface Health {
+  ok: boolean;
+  /** The service can call an AI model for the chat box. */
+  assistant: boolean;
+}
+
+export async function checkHealth(): Promise<Health> {
   try {
     const res = await call('/health', { method: 'GET' }, 3000);
     const body = await res.json();
-    return body.status === 'ok';
+    return { ok: body.status === 'ok', assistant: body.assistant === true };
   } catch {
-    return false;
+    return { ok: false, assistant: false };
   }
 }
 
@@ -118,4 +124,28 @@ export async function sliceModel(
     120_000,
   );
   return { blob: await res.blob(), notes: res.headers.get('X-Notes') };
+}
+
+export interface AssistReply {
+  reply: string;
+  /** Recipes in MathMe's recipe language, e.g. "100 spheres → spiral → radius 20". */
+  commands: string[];
+  /** A ready-made idea to start from, if one fits. */
+  idea: string | null;
+  /** A name for a new project. */
+  name: string | null;
+}
+
+/** Ask the AI model behind the geometry service to turn a request into recipes. */
+export async function assist(message: string, scene: string, ideas: string[]): Promise<AssistReply> {
+  const res = await call(
+    '/assist',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, scene, ideas }),
+    },
+    45_000,
+  );
+  return (await res.json()) as AssistReply;
 }

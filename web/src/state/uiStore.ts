@@ -56,7 +56,24 @@ function savePrefs(prefs: Prefs) {
   }
 }
 
+/** The pencil: what it draws and what the drawing becomes. */
+export interface DrawState {
+  /** null = not drawing; pencil = freehand; lines = click corner to corner. */
+  tool: 'pencil' | 'lines' | null;
+  /** solid = fill the outline and give it thickness; tube = a 3D pen line. */
+  make: 'solid' | 'tube';
+  /** Thickness of a solid / width of a tube, in project units. */
+  thickness: number;
+  width: number;
+}
+
 interface UiState {
+  draw: DrawState;
+  setDraw(patch: Partial<DrawState>): void;
+  /** The project list (home) or the 3D studio. */
+  view: 'home' | 'studio';
+  /** The id of the open project in the project list. */
+  currentProjectId: string | null;
   prefs: Prefs;
   settingsOpen: boolean;
   /** Bumped to show the welcome tour again. */
@@ -73,6 +90,10 @@ interface UiState {
   navOpen: boolean;
   asideOpen: boolean;
   serviceOnline: boolean | null;
+  /** The geometry service can reach an AI model for the chat box. */
+  assistantOnline: boolean;
+  /** The claude.ai artifact viewer lets this page ask Claude (see services/claudeSample.ts). */
+  claudeChat: boolean;
   /** Three.js objects for each node (copy 0), so the move/rotate/scale gizmo can grab them. */
   nodeObjects: Record<string, Object3D>;
   /** Bumped to ask the viewport to fit everything in view. */
@@ -119,6 +140,10 @@ const NO_CUT: CutState = {
 };
 
 export const useUiStore = create<UiState>()((set) => ({
+  draw: { tool: null, make: 'solid', thickness: 1, width: 0.4 },
+  setDraw: (patch) => set((s) => ({ draw: { ...s.draw, ...patch } })),
+  view: 'home',
+  currentProjectId: null,
   prefs: loadPrefs(),
   settingsOpen: false,
   tourRequest: 0,
@@ -133,6 +158,8 @@ export const useUiStore = create<UiState>()((set) => ({
   navOpen: false,
   asideOpen: false,
   serviceOnline: null,
+  assistantOnline: false,
+  claudeChat: false,
   nodeObjects: {},
   frameRequest: 0,
   cutOpen: false,

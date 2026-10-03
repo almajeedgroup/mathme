@@ -19,7 +19,7 @@ function readGlb(buf: Buffer) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await expect(page.getByTestId('object-count')).toHaveText('100 objects');
   await page.getByTestId('open-export').click();
 });

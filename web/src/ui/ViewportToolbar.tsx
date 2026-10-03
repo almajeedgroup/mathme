@@ -3,6 +3,7 @@ import {
   IconArrowsMove,
   IconFocus2,
   IconMagnet,
+  IconPencil,
   IconResize,
   IconRotate,
   IconScissors,
@@ -22,6 +23,8 @@ export function ViewportToolbar() {
   const snap = useUiStore((s) => s.snap);
   const setSnap = useUiStore((s) => s.setSnap);
   const requestFrame = useUiStore((s) => s.requestFrame);
+  const drawing = useUiStore((s) => s.draw.tool !== null);
+  const setDraw = useUiStore((s) => s.setDraw);
   const project = useProjectStore((s) => s.project);
   const count = useMemo(() => countObjects(project), [project]);
 
@@ -65,6 +68,19 @@ export function ViewportToolbar() {
             },
           ]}
         />
+        <Tooltip label="Draw with the pencil (P)">
+          <ActionIcon
+            radius="xl"
+            variant={drawing ? 'filled' : 'subtle'}
+            color={drawing ? 'violet' : 'gray'}
+            onClick={() => setDraw({ tool: drawing ? null : 'pencil' })}
+            aria-label="Draw with the pencil"
+            aria-pressed={drawing}
+            data-testid="open-draw"
+          >
+            <IconPencil size={17} />
+          </ActionIcon>
+        </Tooltip>
         <Tooltip label={snap ? 'Snap to grid: on' : 'Snap to grid: off'}>
           <ActionIcon
             radius="xl"

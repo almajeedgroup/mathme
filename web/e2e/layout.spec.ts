@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('both sidebars hide and come back', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await expect(page.getByTestId('add-shape-box')).toBeVisible();
   await page.getByRole('button', { name: 'Hide sidebar' }).click();
   await expect(page.getByTestId('add-shape-box')).toBeHidden();
@@ -22,7 +22,7 @@ test('both sidebars hide and come back', async ({ page }) => {
 });
 
 test('sidebar sections fold', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByTestId('section-shapes').click();
   await expect(page.getByTestId('add-shape-box')).toBeHidden();
   await page.getByTestId('section-shapes').click();
@@ -30,7 +30,7 @@ test('sidebar sections fold', async ({ page }) => {
 });
 
 test('settings page changes the project and the 3D view', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByTestId('open-settings').click();
   const settings = page.getByRole('dialog', { name: 'Settings' });
   await settings.getByRole('textbox', { name: 'Made by' }).fill('Sulaimaan');

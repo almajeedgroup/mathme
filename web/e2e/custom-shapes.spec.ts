@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('group shapes, save as my shape, and make a pattern from it', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'Delete Spiral of spheres' }).click();
   await page.getByTestId('add-shape-cone').click();
   await page.getByTestId('add-shape-sphere').click();
@@ -21,7 +21,7 @@ test('group shapes, save as my shape, and make a pattern from it', async ({ page
 });
 
 test('spun shape profile editor and symmetry', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('tab', { name: 'Make' }).click();
   await page.getByTestId('add-shape-lathe').click();
   await expect(page.getByRole('application', { name: 'Side outline drawing board' })).toBeVisible();

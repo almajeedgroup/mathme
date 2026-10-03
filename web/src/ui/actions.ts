@@ -1,3 +1,4 @@
+import { floorDrawing, polygonArea } from '../engine/drawing';
 import { Box3, Matrix4 } from 'three';
 
 import { describeCommand, type ParsedCommand } from '../engine/command/parser';
@@ -21,7 +22,9 @@ import type {
   PatternType,
   Project,
   ShapeType,
+  ShapeDef,
   SourceRef,
+  Vec2,
 } from '../engine/types';
 import { asUndoStep, useProjectStore } from '../state/projectStore';
 import { notifications } from './notify';
@@ -336,4 +339,31 @@ export async function openHeart() {
   const { buildHeartProject } = await import('../services/modelAssets');
   const project = await buildHeartProject();
   loadProject(project);
+}
+
+/**
+ * Turn a pencil line drawn on the floor into a shape: a solid (the outline, pushed up) or a
+ * 3D pen tube that follows the line. Returns a message for the student.
+ */
+export function addDrawing(floor: Vec2[], make: 'solid' | 'tube', thickness: number, width: number): string {
+  const drawing = floorDrawing(floor, 0.06);
+  if (!drawing) return 'Draw a longer line.';
+  const { points, centre, loop } = drawing;
+  const solid = make === 'solid';
+  if (solid && (points.length < 3 || polygonArea(points) < 0.05)) {
+    return 'Draw a shape with some space inside it (a loop), or choose Tube.';
+  }
+  const radius = Math.max(0.02, width / 2);
+  const shape: ShapeDef = solid
+    ? { type: 'extrude', params: { outline: points, depth: thickness, bevel: false, bevelSize: 0.1 } }
+    : { type: 'tube', params: { path: points, radius, smooth: true, closed: loop } };
+  const node = createObjectNode({ kind: 'shape', shape }, solid ? 'Drawn shape' : 'Pen line', nextColor());
+  node.transform.position = [centre.x, solid ? thickness / 2 : radius, centre.z];
+  node.transform.rotation = [-90, 0, 0];
+  store().addNode(node);
+  ui().select(node.id);
+  ui().setInspectorTab('shape');
+  return solid
+    ? `Made a solid from your outline (${points.length} corners).`
+    : `Made a ${loop ? 'loop' : 'tube'} from your line.`;
 }

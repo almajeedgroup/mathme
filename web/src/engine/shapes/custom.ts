@@ -1,7 +1,14 @@
 import {
   BufferAttribute,
   BufferGeometry,
+  CatmullRomCurve3,
+  type Curve,
+  CurvePath,
   ExtrudeGeometry,
+  LineCurve3,
+  SphereGeometry,
+  TubeGeometry,
+  Vector3,
   LatheGeometry,
   PlaneGeometry,
   Shape,
@@ -10,7 +17,7 @@ import {
 import { FontLoader, type Font } from 'three/addons/loaders/FontLoader.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeGeometries, toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
 import fontJson from '../../assets/fonts/droid_sans_bold.ascii.typeface.json';
 import { decodeFloat32, decodeUint32 } from '../binary';
@@ -179,6 +186,118 @@ export const extrude: ShapeDefinition = {
         formula: 'S = 2 × outline area + perimeter × thickness',
         working: `S = 2 × ${fmt(area)} + ${fmt(perimeter)} × ${fmt(d)}`,
         value: 2 * area + perimeter * d,
+        power: 2,
+      },
+    ];
+  },
+};
+
+// ---------------------------------------------------------------- tube (3D pen line)
+
+function tubeCurve(pts: Vec2[], smooth: boolean, closed: boolean): Curve<Vector3> {
+  const v = pts.map(([x, y]) => new Vector3(x, y, 0));
+  if (smooth && v.length > 2) return new CatmullRomCurve3(v, closed, 'centripetal');
+  const path = new CurvePath<Vector3>();
+  const ends = closed ? [...v, v[0]] : v;
+  for (let i = 0; i + 1 < ends.length; i++) path.add(new LineCurve3(ends[i], ends[i + 1]));
+  return path;
+}
+
+/** Length of the line the tube follows. */
+export function tubeLength(params: Params): number {
+  const pts = points(params, 'path');
+  if (pts.length < 2) return 0;
+  return tubeCurve(pts, bool(params, 'smooth'), bool(params, 'closed')).getLength();
+}
+
+export const tube: ShapeDefinition = {
+  type: 'tube',
+  label: '3D pen line',
+  description: 'A round tube that follows a line, like drawing in the air with a 3D pen.',
+  icon: '🖊️',
+  category: 'custom',
+  fields: [
+    {
+      kind: 'points',
+      key: 'path',
+      label: 'Line',
+      help: 'The points the tube passes through, from start to end.',
+      mode: 'path',
+    },
+    lengthField('radius', 'Tube radius', 'Half the thickness of the tube.', {
+      min: 0.02,
+      max: 5,
+      step: 0.05,
+      aliases: ['radius', 'width'],
+    }),
+    { kind: 'boolean', key: 'smooth', label: 'Smooth curve', help: 'Bend smoothly through the points.' },
+    { kind: 'boolean', key: 'closed', label: 'Join the ends', help: 'Make a loop, like a ring.' },
+  ],
+  defaults: {
+    path: [
+      [-3, 0],
+      [-1.5, 1.5],
+      [0, 0],
+      [1.5, -1.5],
+      [3, 0],
+    ],
+    radius: 0.25,
+    smooth: true,
+    closed: false,
+  },
+  build: (p) => {
+    const pts = points(p, 'path');
+    if (pts.length < 2) return new BufferGeometry();
+    const r = num(p, 'radius', 0.25);
+    const closed = bool(p, 'closed') && pts.length > 2;
+    const curve = tubeCurve(pts, bool(p, 'smooth'), closed);
+    const segments = Math.min(1200, Math.max(24, Math.round((curve.getLength() / r) * 3)));
+    const body = new TubeGeometry(curve, segments, r, 16, closed);
+    if (closed) {
+      body.center();
+      return body;
+    }
+    // round caps so the tube is a closed solid (good for 3D printing and for its volume)
+    const caps = [curve.getPoint(0), curve.getPoint(1)].map((c) => {
+      const cap = new SphereGeometry(r, 16, 12);
+      cap.translate(c.x, c.y, c.z);
+      return cap;
+    });
+    const g = mergeGeometries([body, ...caps]) ?? body;
+    g.center();
+    return g;
+  },
+  formulas: (p) => {
+    const r = num(p, 'radius', 0.25);
+    const L = tubeLength(p);
+    if (!L) return [];
+    const open = !(bool(p, 'closed') && points(p, 'path').length > 2);
+    return [
+      {
+        quantity: 'Length of the line',
+        formula: 'L = the sum of the lengths of all the little pieces',
+        working: `L ≈ ${fmt(L)}`,
+        value: L,
+        power: 1,
+      },
+      {
+        quantity: 'Volume',
+        formula: open
+          ? 'V = π × r² × L + 4/3 × π × r³   (a cylinder plus two half-ball ends)'
+          : 'V = π × r² × L',
+        working: open
+          ? `V = π × ${fmt(r)}² × ${fmt(L)} + 4/3 × π × ${fmt(r)}³`
+          : `V = π × ${fmt(r)}² × ${fmt(L)}`,
+        value: PI * r * r * L + (open ? (4 / 3) * PI * r ** 3 : 0),
+        power: 3,
+      },
+      {
+        quantity: 'Surface area',
+        formula: open ? 'S = 2 × π × r × L + 4 × π × r²' : 'S = 2 × π × r × L',
+        working: open
+          ? `S = 2 × π × ${fmt(r)} × ${fmt(L)} + 4 × π × ${fmt(r)}²`
+          : `S = 2 × π × ${fmt(r)} × ${fmt(L)}`,
+        value: 2 * PI * r * L + (open ? 4 * PI * r * r : 0),
         power: 2,
       },
     ];

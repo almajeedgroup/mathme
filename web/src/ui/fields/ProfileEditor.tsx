@@ -15,7 +15,7 @@ interface ViewBox {
 const SIZE = 260;
 const SNAP = 0.1;
 
-function computeView(points: Vec2[], mode: 'profile' | 'outline'): ViewBox {
+function computeView(points: Vec2[], mode: 'profile' | 'outline' | 'path'): ViewBox {
   const xs = points.map((p) => p[0]);
   const ys = points.map((p) => p[1]);
   const minX = mode === 'profile' ? -0.5 : Math.min(-1, ...xs) - 1;
@@ -47,7 +47,7 @@ export function ProfileEditor({
   onChange,
 }: {
   label: string;
-  mode: 'profile' | 'outline';
+  mode: 'profile' | 'outline' | 'path';
   points: Vec2[];
   presets: ProfilePreset[];
   onChange(points: Vec2[]): void;
@@ -143,20 +143,22 @@ export function ProfileEditor({
         <Text size="sm" fw={500}>
           {label}
         </Text>
-        <Menu shadow="md" position="bottom-end">
-          <Menu.Target>
-            <Button size="compact-xs" variant="light" rightSection={<IconChevronDown size={12} />}>
-              Ready-made
-            </Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            {presets.map((p) => (
-              <Menu.Item key={p.id} onClick={() => onChange(structuredClone(p.points))}>
-                {p.label}
-              </Menu.Item>
-            ))}
-          </Menu.Dropdown>
-        </Menu>
+        {presets.length > 0 && (
+          <Menu shadow="md" position="bottom-end">
+            <Menu.Target>
+              <Button size="compact-xs" variant="light" rightSection={<IconChevronDown size={12} />}>
+                Ready-made
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              {presets.map((p) => (
+                <Menu.Item key={p.id} onClick={() => onChange(structuredClone(p.points))}>
+                  {p.label}
+                </Menu.Item>
+              ))}
+            </Menu.Dropdown>
+          </Menu>
+        )}
       </Group>
       <svg
         ref={svgRef}
@@ -208,14 +210,14 @@ export function ProfileEditor({
         {mode === 'outline' ? (
           <polygon
             points={path}
-            fill="#748ffc"
+            fill="#b08eff"
             fillOpacity={0.25}
-            stroke="#4c6ef5"
+            stroke="#915bff"
             strokeWidth={2}
             pointerEvents="none"
           />
         ) : (
-          <polyline points={path} fill="none" stroke="#4c6ef5" strokeWidth={2} pointerEvents="none" />
+          <polyline points={path} fill="none" stroke="#915bff" strokeWidth={2} pointerEvents="none" />
         )}
         {screenPts.map(([x, y], i) => (
           <circle
@@ -223,7 +225,7 @@ export function ProfileEditor({
             cx={x}
             cy={y}
             r={selected === i ? 7 : 5.5}
-            fill={selected === i ? '#f76707' : '#4c6ef5'}
+            fill={selected === i ? '#ff2d94' : '#915bff'}
             stroke="white"
             strokeWidth={1.5}
             style={{ cursor: 'grab' }}

@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 test('open the real heart and pick standard cutting views', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'Ideas' }).click();
   await page.getByTestId('preset-heart').click();
   await expect(page.getByTestId('object-count')).toHaveText('51 objects', { timeout: 30_000 });
@@ -19,7 +19,10 @@ test('open the real heart and pick standard cutting views', async ({ page }) => 
   await expect(page.getByTestId('cut-panel')).toContainText('n = (-0.534, 0.424, -0.732)');
   // the heart is linked, not copied, so the autosave stays small
   await page.waitForTimeout(1000);
-  const saved = await page.evaluate(() => localStorage.getItem('mathme.autosave.v1') ?? '');
+  const saved = await page.evaluate(() => {
+    const id = localStorage.getItem('mathme.lastProject');
+    return localStorage.getItem(`mathme.project.${id}`) ?? '';
+  });
   expect(saved.length).toBeLessThan(200_000);
   expect(saved).toContain('models/heart.glb');
   // and it comes back after a reload
@@ -28,7 +31,7 @@ test('open the real heart and pick standard cutting views', async ({ page }) => 
 });
 
 test('opening another idea switches the heart cut off', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'Ideas' }).click();
   await page.getByTestId('preset-heart').click();
   await expect(page.getByTestId('cut-panel')).toBeVisible({ timeout: 30_000 });
@@ -55,7 +58,7 @@ test('import an STL model as a shape', async ({ page }) => {
   const file = join(tmpdir(), 'cube10mm.stl');
   writeFileSync(file, stl);
 
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByRole('button', { name: 'File menu' }).click();
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('menuitem', { name: /Import 3D model/ }).click();
@@ -77,7 +80,7 @@ test('export a cut through the geometry service', async ({ page, request }) => {
     .then((r) => r.ok())
     .catch(() => false);
   test.skip(!ok, 'geometry service is not running');
-  await page.goto('/');
+  await page.goto('/#studio');
   await page.getByTestId('open-cut').click();
   await expect(page.getByTestId('export-cut')).toBeEnabled({ timeout: 10_000 });
   const download = page.waitForEvent('download', { timeout: 60_000 });
