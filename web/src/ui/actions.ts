@@ -1,0 +1,203 @@
+import { Matrix4 } from 'three';
+
+import { evaluateScene, TooManyObjectsError } from '../engine/evaluate';
+import { getPattern } from '../engine/patterns/registry';
+import {
+  createObjectNode,
+  createPatternNode,
+  defaultMaterial,
+  defaultVariation,
+  PALETTE,
+  shapeSource,
+} from '../engine/project/defaults';
+import { matrixToTransform } from '../engine/project/tree';
+import { buildGeometry, defaultShape, getShape } from '../engine/shapes/registry';
+import { transformToMatrix } from '../engine/three/transforms';
+import type { CustomPart, ObjectNode, PatternNode, PatternType, ShapeType, SourceRef } from '../engine/types';
+import { useProjectStore } from '../state/projectStore';
+import { useUiStore } from '../state/uiStore';
+import { viewportBridge } from '../viewport/bridge';
+import { contentBounds } from '../viewport/bounds';
+
+const store = () => useProjectStore.getState();
+
+/** "Cuboid" → "Cuboids" (good enough for pattern names). */
+function plural(name: string): string {
+  return /[a-z]$/i.test(name) && !/s$/i.test(name) ? `${name}s` : name;
+}
+const ui = () => useUiStore.getState();
+
+/** Height to lift a shape so it sits on the floor instead of half under it. */
+function floorLift(source: SourceRef): number {
+  const { meshes, library } = store().project;
+  const parts =
+    source.kind === 'shape'
+      ? [{ shape: source.shape, matrix: new Matrix4() }]
+      : (library.find((c) => c.id === source.customId)?.parts ?? []).map((p) => ({
+          shape: p.shape,
+          matrix: transformToMatrix(p.transform),
+        }));
+  let minY = Infinity;
+  for (const part of parts) {
+    const g = buildGeometry(part.shape, { meshes });
+    if (g.boundingBox) minY = Math.min(minY, g.boundingBox.clone().applyMatrix4(part.matrix).min.y);
+    g.dispose();
+  }
+  return Number.isFinite(minY) ? Number((-minY).toFixed(3)) : 0;
+}
+
+function nextColor(): string {
+  const used = store().project.nodes.length;
+  return PALETTE[used % PALETTE.length];
+}
+
+/** Put new objects next to what is already there, so they don't hide inside it. */
+function freeSpotX(): number {
+  const content = viewportBridge.content;
+  if (!content || store().project.nodes.length === 0) return 0;
+  const box = contentBounds(content);
+  if (box.isEmpty() || box.min.x > 2 || box.max.x < -2) return 0;
+  return Math.ceil(box.max.x + 3);
+}
+
+function placeNew(node: ObjectNode) {
+  const x = freeSpotX();
+  node.transform.position = [x, floorLift(node.source), 0];
+  store().addNode(node);
+  ui().select(node.id);
+  if (x !== 0) ui().requestFrame();
+}
+
+export function addShape(type: ShapeType) {
+  placeNew(createObjectNode(shapeSource(type), getShape(type).label, nextColor()));
+  ui().setInspectorTab('shape');
+}
+
+export function addCustomShape(customId: string) {
+  const custom = store().project.library.find((c) => c.id === customId);
+  if (!custom) return;
+  placeNew(createObjectNode({ kind: 'custom', customId }, custom.name));
+}
+
+/**
+ * Turn the selected object into a pattern of copies of itself, change the pattern of the
+ * selected pattern, or start a new pattern of spheres.
+ */
+export function applyPattern(type: PatternType) {
+  const { selectedIds } = ui();
+  const nodes = store().project.nodes;
+  const selected = selectedIds.length === 1 ? nodes.find((n) => n.id === selectedIds[0]) : undefined;
+  const def = getPattern(type);
+
+  if (selected?.kind === 'pattern') {
+    store().updateNode(selected.id, (n) => {
+      if (n.kind !== 'pattern') return;
+      n.pattern = { type, params: structuredClone(def.defaults) };
+      n.count = def.defaultCount;
+      n.name = n.name.replace(/^\S+ of /, `${def.label} of `);
+    });
+    ui().setInspectorTab('pattern');
+    ui().requestFrame();
+    return;
+  }
+
+  if (selected?.kind === 'object') {
+    const pattern: PatternNode = {
+      ...createPatternNode(selected.source, type, `${def.label} of ${plural(selected.name)}`),
+      id: selected.id,
+      parentId: selected.parentId,
+      symmetry: selected.symmetry,
+      material: selected.material,
+      transform: { ...selected.transform, position: [0, 0, 0] },
+      variation: { ...defaultVariation(), colorMode: 'single' },
+    };
+    store().updateNode(selected.id, (n) => {
+      Object.assign(n, pattern);
+    });
+    ui().select(selected.id);
+    ui().setInspectorTab('pattern');
+    ui().requestFrame();
+    return;
+  }
+
+  const node = createPatternNode(shapeSource('sphere'), type, `${def.label} of spheres`);
+  store().addNode(node);
+  ui().select(node.id);
+  ui().setInspectorTab('pattern');
+  ui().requestFrame();
+}
+
+export function deleteSelection() {
+  const ids = ui().selectedIds;
+  if (!ids.length) return;
+  store().removeNodes(ids);
+  ui().select(null);
+}
+
+export function duplicateSelection() {
+  const ids = ui().selectedIds;
+  if (!ids.length) return;
+  ui().setSelection(store().duplicateNodes(ids));
+}
+
+export function groupSelection(): boolean {
+  const id = store().groupNodes(ui().selectedIds);
+  if (id) ui().select(id);
+  return Boolean(id);
+}
+
+export function ungroupSelection() {
+  const [id] = ui().selectedIds;
+  if (!id) return;
+  ui().setSelection(store().ungroup(id));
+}
+
+export function toggleVisible(id: string) {
+  store().updateNode(id, (n) => {
+    n.visible = !n.visible;
+  });
+}
+
+export const MAX_CUSTOM_PARTS = 500;
+
+/**
+ * Save a node (usually a group) as a reusable custom shape. Everything inside is flattened
+ * into simple parts, measured from the node's own center.
+ */
+export function saveAsCustomShape(nodeId: string, name: string): { ok: true } | { ok: false; error: string } {
+  const project = store().project;
+  const node = project.nodes.find((n) => n.id === nodeId);
+  if (!node) return { ok: false, error: 'Nothing selected.' };
+  // Parts are stored relative to the node itself, so undo its own placement first.
+  const inverse = transformToMatrix(node.transform).invert();
+  const parentless = {
+    ...project,
+    nodes: project.nodes.map((n) => (n.id === nodeId ? { ...n, parentId: null } : n)),
+  };
+  let items;
+  try {
+    items = evaluateScene(parentless, { rootIds: [nodeId], rootMatrix: inverse, maxItems: MAX_CUSTOM_PARTS });
+  } catch (e) {
+    if (e instanceof TooManyObjectsError)
+      return {
+        ok: false,
+        error: `A custom shape can have at most ${MAX_CUSTOM_PARTS} parts. Use fewer objects.`,
+      };
+    throw e;
+  }
+  if (!items.length) return { ok: false, error: 'There is nothing to save inside this.' };
+  const parts: CustomPart[] = items.map((it) => ({
+    shape: structuredClone(it.shape),
+    transform: matrixToTransform(it.matrix),
+    material: { ...defaultMaterial(), ...it.material },
+  }));
+  store().addCustomShape({ name, parts });
+  return { ok: true };
+}
+
+export function resetShapeSizes(nodeId: string) {
+  store().updateNode(nodeId, (n) => {
+    if (n.kind === 'group' || n.source.kind !== 'shape') return;
+    n.source.shape = defaultShape(n.source.shape.type);
+  });
+}
