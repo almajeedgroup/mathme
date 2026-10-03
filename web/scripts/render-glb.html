@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/web/node_modules/three/build/three.module.js",
+          "three/addons/": "/web/node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+      renderer.toneMapping = THREE.NoToneMapping;
+      renderer.setPixelRatio(1);
+      document.body.appendChild(renderer.domElement);
+      const loader = new GLTFLoader();
+      const cache = new Map();
+
+      // job: { glb, size, dir:[x,y,z] (camera direction from the model), up:[x,y,z], half: null|0|1, box }
+      window.renderJob = async (job) => {
+        let gltf = cache.get(job.glb);
+        if (!gltf) {
+          gltf = await loader.loadAsync(job.glb);
+          cache.set(job.glb, gltf);
+        }
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#ffffff');
+        const root = gltf.scene.clone(true);
+        if (job.half !== null && job.half !== undefined) {
+          root.children.forEach((c, i) => (c.visible = i === job.half));
+        }
+        scene.add(root);
+        root.updateMatrixWorld(true);
+        // frame on job.box ([[min],[max]] in model units) when given, otherwise on everything visible
+        const box = new THREE.Box3();
+        if (job.box) box.set(new THREE.Vector3(...job.box[0]), new THREE.Vector3(...job.box[1]));
+        else
+          root.traverse((o) => {
+            if (o.isMesh && o.visible && o.parent.visible) box.expandByObject(o);
+          });
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
+        const dir = new THREE.Vector3(...job.dir).normalize();
+        const cam = new THREE.PerspectiveCamera(30, 1, sphere.radius / 50, sphere.radius * 50);
+        const dist = (sphere.radius / Math.sin(THREE.MathUtils.degToRad(15))) * 0.95;
+        cam.position.copy(sphere.center).addScaledVector(dir, dist);
+        cam.up.set(...job.up);
+        cam.lookAt(sphere.center);
+        scene.add(new THREE.HemisphereLight('#ffffff', '#6b7080', 0.9));
+        const key = new THREE.DirectionalLight('#ffffff', 1.7);
+        key.position.copy(cam.position).add(new THREE.Vector3(...job.up).multiplyScalar(dist * 0.6));
+        scene.add(key);
+        scene.add(new THREE.AmbientLight('#ffffff', 0.15));
+        renderer.setSize(job.size, job.size, false);
+        renderer.render(scene, cam);
+        return renderer.domElement.toDataURL('image/png');
+      };
+      window.ready = true;
+    </script>
+  </body>
+</html>
