@@ -1,4 +1,4 @@
-import { ActionIcon, Burger, Button, Group, Tooltip } from '@mantine/core';
+import { ActionIcon, Burger, Button, Group, SegmentedControl, Tooltip } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
   IconArrowBackUp,
@@ -41,6 +41,7 @@ export function TopBar() {
   const setOpen = useUiStore((s) => s.setOpen);
   const navOpen = useUiStore((s) => s.navOpen);
   const details = useDetailsPanel();
+  const mode = useUiStore((s) => s.studioMode);
 
   return (
     <Group h="100%" px="sm" gap="sm" wrap="nowrap" justify="space-between">
@@ -61,8 +62,24 @@ export function TopBar() {
           </ActionIcon>
         </Tooltip>
         <FileMenu />
+        <SegmentedControl
+          size="xs"
+          radius="xl"
+          ml={4}
+          value={mode}
+          onChange={(v) => {
+            useUiStore.setState({ studioMode: v as '3d' | '2d' });
+            useUiStore.getState().setDraw({ tool: null });
+          }}
+          data={[
+            { value: '3d', label: '3D' },
+            { value: '2d', label: '2D' },
+          ]}
+          aria-label="3D view or 2D sketch"
+          data-testid="mode-switch"
+        />
       </Group>
-      <CommandBar />
+      {mode === '3d' ? <CommandBar /> : <div style={{ flex: 1 }} />}
       <Group gap={4} wrap="nowrap">
         <Tooltip label="Undo (Ctrl+Z)">
           <ActionIcon size="lg" onClick={undo} disabled={!canUndo} aria-label="Undo">
@@ -77,12 +94,23 @@ export function TopBar() {
         <Button
           className="mm-cta"
           ml={4}
+          visibleFrom="sm"
           leftSection={<IconDownload size={16} />}
           onClick={() => setOpen('exportOpen', true)}
           data-testid="open-export"
         >
           Export
         </Button>
+        <ActionIcon
+          className="mm-cta"
+          size="lg"
+          radius="xl"
+          hiddenFrom="sm"
+          onClick={() => setOpen('exportOpen', true)}
+          aria-label="Export"
+        >
+          <IconDownload size={17} />
+        </ActionIcon>
         {!details.shown && (
           <Tooltip label="Show details panel">
             <ActionIcon size="lg" onClick={() => details.setShown(true)} aria-label="Show details panel">

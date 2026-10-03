@@ -72,6 +72,8 @@ interface UiState {
   setDraw(patch: Partial<DrawState>): void;
   /** The project list (home) or the 3D studio. */
   view: 'home' | 'studio';
+  /** Inside the studio: the 3D view or the 2D sketch board. */
+  studioMode: '3d' | '2d';
   /** The id of the open project in the project list. */
   currentProjectId: string | null;
   prefs: Prefs;
@@ -143,6 +145,7 @@ export const useUiStore = create<UiState>()((set) => ({
   draw: { tool: null, make: 'solid', thickness: 1, width: 0.4 },
   setDraw: (patch) => set((s) => ({ draw: { ...s.draw, ...patch } })),
   view: 'home',
+  studioMode: '3d',
   currentProjectId: null,
   prefs: loadPrefs(),
   settingsOpen: false,

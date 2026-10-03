@@ -16,6 +16,8 @@ export function useKeyboardShortcuts() {
       const mod = e.ctrlKey || e.metaKey;
       const key = e.key.toLowerCase();
       const ui = useUiStore.getState();
+      // the 2D board has its own keys (ui/sketch/SketchToolbar.tsx); undo and redo still work there
+      if (ui.studioMode === '2d' && !(mod && ['z', 'y'].includes(key))) return;
       if (!mod && key === 'p') {
         ui.setDraw({ tool: ui.draw.tool ? null : 'pencil' });
         return;

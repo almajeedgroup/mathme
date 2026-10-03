@@ -407,3 +407,212 @@ body {
   filter: none;
   opacity: 1;
 }
+
+/* 2D sketch board */
+.sk-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--mm-sk-bg);
+  user-select: none;
+}
+
+:root {
+  --mm-sk-bg: #fbfaff;
+  --mm-sk-grid: #ece6fb;
+  --mm-sk-grid-major: #d9cdfa;
+  --mm-sk-axis: #b49aff;
+  --mm-sk-ink: #5a2db3;
+  --mm-sk-dim: #6b5d86;
+}
+
+[data-mantine-color-scheme='dark'] {
+  --mm-sk-bg: #141020;
+  --mm-sk-grid: #221c33;
+  --mm-sk-grid-major: #30284a;
+  --mm-sk-axis: #6c4fc0;
+  --mm-sk-ink: #cbb6ff;
+  --mm-sk-dim: #b3a9cb;
+}
+
+.sk-board {
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.sk-board.sk-tool-select {
+  cursor: default;
+}
+
+.sk-board.sk-tool-pan,
+.sk-board.sk-panning {
+  cursor: grab;
+}
+
+.sk-grid {
+  stroke: var(--mm-sk-grid);
+  stroke-width: 1;
+}
+
+.sk-grid-major {
+  stroke: var(--mm-sk-grid-major);
+  stroke-width: 1;
+}
+
+.sk-axis {
+  stroke: var(--mm-sk-axis);
+  stroke-width: 1.2;
+  stroke-dasharray: 6 4;
+}
+
+.sk-line,
+.sk-shape {
+  stroke: var(--mm-sk-ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.sk-shape.sk-fill-sel {
+  fill: rgb(145 91 255 / 0.16);
+}
+
+.sk-fill {
+  fill: rgb(145 91 255 / 0.06);
+  stroke: none;
+}
+
+.sk-fill-sel {
+  fill: rgb(145 91 255 / 0.18);
+}
+
+.sk-sel {
+  stroke: #ff2d94 !important;
+}
+
+.sk-bad {
+  stroke: #e03131 !important;
+  stroke-dasharray: 6 4;
+}
+
+.sk-point {
+  fill: var(--mantine-color-body);
+  stroke: var(--mm-sk-ink);
+  stroke-width: 2;
+}
+
+.sk-point.sk-sel {
+  fill: #ff2d94;
+}
+
+.sk-fixed {
+  fill: var(--mm-sk-ink);
+}
+
+.sk-dim {
+  font:
+    600 11px 'DM Sans',
+    system-ui,
+    sans-serif;
+  fill: var(--mm-sk-dim);
+  paint-order: stroke;
+  stroke: var(--mm-sk-bg);
+  stroke-width: 3px;
+}
+
+.sk-dim-line {
+  stroke: var(--mm-sk-dim);
+  stroke-dasharray: 3 3;
+}
+
+.sk-mark {
+  font:
+    800 11px 'DM Sans',
+    system-ui,
+    sans-serif;
+  fill: #ff2d94;
+}
+
+.sk-bad-text {
+  fill: #e03131;
+}
+
+.sk-preview {
+  stroke: #ff2d94;
+  stroke-width: 1.6;
+  stroke-dasharray: 6 4;
+  fill: none;
+}
+
+.sk-guide {
+  stroke: #9ad400;
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.sk-snap {
+  fill: none;
+  stroke: #9ad400;
+  stroke-width: 2.4;
+}
+
+.sk-snap-grid {
+  stroke-width: 1.2;
+  opacity: 0.7;
+}
+
+.sk-box {
+  fill: rgb(145 91 255 / 0.08);
+  stroke: #915bff;
+  stroke-dasharray: 4 3;
+}
+
+.sk-rail {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  border-radius: 16px !important;
+  z-index: 5;
+}
+
+.sk-status {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  pointer-events: none;
+}
+
+.sk-hint {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 160px);
+  text-align: center;
+  background: color-mix(in srgb, var(--mantine-color-body) 85%, transparent);
+  border-radius: 999px;
+  padding: 3px 12px;
+  pointer-events: none;
+}
+
+.sk-radius-box {
+  position: absolute;
+  left: 50%;
+  top: 44px;
+  transform: translateX(-50%);
+  z-index: 6;
+}
+
+.sk-formula {
+  padding: 8px 10px;
+  border: 1px solid var(--mm-line);
+  border-radius: 12px;
+}
+
+.sk-make3d {
+  padding-top: 6px;
+  border-top: 1px solid var(--mm-line);
+}

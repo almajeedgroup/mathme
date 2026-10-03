@@ -18,6 +18,9 @@ import { PresetsModal } from './ui/PresetsModal';
 import { Inspector } from './ui/inspector/Inspector';
 import { SettingsModal } from './ui/SettingsModal';
 import { Sidebar, useWideScreen } from './ui/Sidebar';
+import { SketchCanvas } from './ui/sketch/SketchCanvas';
+import { SketchInspector } from './ui/sketch/SketchInspector';
+import { SketchToolbar } from './ui/sketch/SketchToolbar';
 import { Toasts } from './ui/Toasts';
 import { TopBar, useDetailsPanel } from './ui/TopBar';
 import { useKeyboardShortcuts } from './ui/useKeyboardShortcuts';
@@ -83,6 +86,7 @@ function Studio({ shared }: { shared: React.ReactNode }) {
   const prefs = useUiStore((s) => s.prefs);
   const wide = useWideScreen();
   const details = useDetailsPanel();
+  const mode = useUiStore((s) => s.studioMode);
   useKeyboardShortcuts();
 
   return (
@@ -108,16 +112,29 @@ function Studio({ shared }: { shared: React.ReactNode }) {
         <Sidebar />
       </AppShell.Navbar>
       <AppShell.Aside>
-        <Inspector onHide={() => details.setShown(false)} />
+        {mode === '2d' ? (
+          <SketchInspector onHide={() => details.setShown(false)} />
+        ) : (
+          <Inspector onHide={() => details.setShown(false)} />
+        )}
       </AppShell.Aside>
       <AppShell.Main h="100dvh">
         <div style={{ position: 'relative', height: 'calc(100dvh - 56px)' }}>
-          <ViewportErrorBoundary>
-            <Viewport />
-          </ViewportErrorBoundary>
-          <ViewportToolbar />
-          <DrawToolbar />
-          <CutPanel />
+          {mode === '2d' ? (
+            <>
+              <SketchCanvas />
+              <SketchToolbar />
+            </>
+          ) : (
+            <>
+              <ViewportErrorBoundary>
+                <Viewport />
+              </ViewportErrorBoundary>
+              <ViewportToolbar />
+              <DrawToolbar />
+              <CutPanel />
+            </>
+          )}
         </div>
       </AppShell.Main>
       <ExportModal />

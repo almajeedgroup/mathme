@@ -26,7 +26,7 @@ const STEPS = [
     label: 'Shapes',
     icon: '🧊',
     title: '1. Add a shape',
-    text: 'Pick a shape on the left (a cuboid, a sphere, a cone…) or draw your own with the pencil (press P). Then change its width, height and depth on the right, using simple words and numbers.',
+    text: 'Pick a shape on the left (a cuboid, a sphere, a cone…) or draw your own with the pencil (press P). For flat geometry, switch to 2D at the top. Then change its width, height and depth on the right, using simple words and numbers.',
   },
   {
     label: 'Patterns',

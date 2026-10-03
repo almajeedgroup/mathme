@@ -14,13 +14,21 @@ import type {
   projectSchema,
   sceneNodeSchema,
   shapeDefSchema,
+  sketchSchema,
   sourceSchema,
   storedMeshSchema,
   symmetrySchema,
   transformSchema,
   variationSchema,
 } from './project/schema';
-import type { COLOR_MODES, PATTERN_TYPES, SHAPE_TYPES, SIZE_MODES, UNITS } from './project/schema';
+import type {
+  COLOR_MODES,
+  PATTERN_TYPES,
+  SHAPE_TYPES,
+  SIZE_MODES,
+  SKETCH_CONSTRAINTS,
+  UNITS,
+} from './project/schema';
 
 export type Vec2 = [number, number];
 export type Vec3 = [number, number, number];
@@ -49,6 +57,12 @@ export type CustomShape = z.infer<typeof customShapeSchema>;
 export type StoredMesh = z.infer<typeof storedMeshSchema>;
 export type CutPreset = z.infer<typeof cutPresetSchema>;
 export type Project = z.infer<typeof projectSchema>;
+export type Sketch = z.infer<typeof sketchSchema>;
+export type SketchPoint = Sketch['points'][number];
+export type SketchLine = Sketch['lines'][number];
+export type SketchCircle = Sketch['circles'][number];
+export type SketchConstraint = Sketch['constraints'][number];
+export type SketchConstraintType = (typeof SKETCH_CONSTRAINTS)[number];
 
 /** Nodes that draw geometry (as opposed to groups). */
 export type DrawableNode = ObjectNode | PatternNode;

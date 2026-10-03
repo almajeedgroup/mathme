@@ -11,6 +11,7 @@ import {
 import { clearHistory, useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { notifications } from './notify';
+import { useSketchUi } from './sketch/sketchStore';
 
 const STUDIO_HASH = '#studio';
 
@@ -31,6 +32,9 @@ function showProject(project: Project) {
   ui.select(null);
   ui.resetCut();
   ui.requestFrame();
+  useSketchUi
+    .getState()
+    .set({ selection: [], shape: null, chainFrom: null, chainStart: null, circleCentre: null, unmet: [] });
   ensureLinkedMeshes(project).catch((e: Error) =>
     notifications.show({ color: 'red', message: `A linked 3D model could not be loaded: ${e.message}` }),
   );

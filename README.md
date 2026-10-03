@@ -60,6 +60,21 @@ The full design and milestones are in [docs/PLAN.md](docs/PLAN.md).
   - **Lines** draws straight edges from corner to corner.
   - Drawings become ordinary shapes, so their outlines can still be edited, measured and exported.
 
+## 2D sketch board
+
+Every project has a **2D** tab next to **3D** (top bar), a geometry board for flat drawings.
+
+- **Tools:**
+  - **Line (L):** joins node points.
+  - **Circle (C):** click a centre, then click or type a radius.
+  - **Point (O)**, **Select (V)** and **Pan (H)**.
+- **Snapping:** to points, midpoints, circles, line-up guides and the grid.
+- **Rules (constraints):** horizontal, vertical, parallel, perpendicular, fixed length, fixed radius and pinned points. A small solver keeps them true while you drag, and rules that fight each other turn red.
+- **Edit:** mirror (in a selected line or the up-down axis), rotate, copy and delete. Undo works here too.
+- **Measurements:** every length, angle, radius and area comes with its formula worked out (Pythagoras, πr², the shoelace formula).
+- **Into 3D:** a closed shape or a circle can be pushed up into a solid, and lines can be spun around the up-down axis.
+- **Export:** SVG (real size), PNG, PDF (with a scale bar and the measurements) and DXF (for CAD programs and CNC machines).
+
 ## Landing page
 
 `web/landing/` is the MathMe home page, styled with the colours of the MathMe presentation deck (palette in `web/landing/theme.json`). `npm run build` outputs it to `dist/landing/`, and the studio's Home button links to it. Set `VITE_HOME_URL` to point that button somewhere else.

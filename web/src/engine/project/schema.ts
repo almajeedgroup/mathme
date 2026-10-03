@@ -180,6 +180,32 @@ export const cutPresetSchema = z.object({
   normal: vec3Schema,
 });
 
+/** The 2D sketch: node points joined by lines, circles around a centre point, and rules (constraints). */
+export const SKETCH_CONSTRAINTS = [
+  'horizontal',
+  'vertical',
+  'parallel',
+  'perpendicular',
+  'length',
+  'radius',
+  'fixed',
+] as const;
+
+export const sketchSchema = z.object({
+  points: z.array(z.object({ id: z.string(), x: z.number(), y: z.number(), fixed: z.boolean() })),
+  lines: z.array(z.object({ id: z.string(), a: z.string(), b: z.string() })),
+  circles: z.array(z.object({ id: z.string(), c: z.string(), r: z.number().positive() })),
+  constraints: z.array(
+    z.object({
+      id: z.string(),
+      type: z.enum(SKETCH_CONSTRAINTS),
+      /** The lines, circles or points the rule is about. */
+      refs: z.array(z.string()).min(1).max(2),
+      value: z.number().optional(),
+    }),
+  ),
+});
+
 export const UNITS = ['mm', 'cm', 'm'] as const;
 
 export const projectSchema = z.object({
@@ -193,4 +219,5 @@ export const projectSchema = z.object({
   library: z.array(customShapeSchema),
   meshes: z.array(storedMeshSchema),
   cutPresets: z.array(cutPresetSchema).optional(),
+  sketch: sketchSchema.optional(),
 });

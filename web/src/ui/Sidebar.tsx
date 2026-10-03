@@ -7,6 +7,7 @@ import {
   IconHelp,
   IconLayoutGrid,
   IconPencil,
+  IconVectorTriangle,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
   IconListTree,
@@ -33,8 +34,9 @@ export function useWideScreen() {
 
 const newProject = () => startNewProject();
 
-/** Start the pencil (and open the studio's 3D view if needed). */
+/** Start the pencil (in the 3D view). */
 export function startDrawing() {
+  useUiStore.setState({ studioMode: '3d' });
   useUiStore.getState().setDraw({ tool: 'pencil' });
 }
 
@@ -105,6 +107,7 @@ function SidebarFull({ wide }: { wide: boolean }) {
   const setOpen = useUiStore((s) => s.setOpen);
   const studio = useUiStore((s) => s.view === 'studio');
   const drawing = useUiStore((s) => s.draw.tool !== null);
+  const sketching = useUiStore((s) => s.studioMode === '2d');
   return (
     <Stack gap={0} h="100%" className="mm-sidebar">
       <Group justify="space-between" wrap="nowrap" px={12} pt={10} pb={6}>
@@ -152,16 +155,29 @@ function SidebarFull({ wide }: { wide: boolean }) {
             testId="sidebar-draw"
           />
         )}
+        {studio && (
+          <NavRow
+            icon={<IconVectorTriangle size={18} />}
+            label="Sketch in 2D"
+            onClick={() => useUiStore.setState({ studioMode: '2d' })}
+            active={sketching}
+            testId="sidebar-sketch"
+          />
+        )}
       </Stack>
       <ScrollArea flex={1} type="auto" scrollbarSize={6}>
         {studio ? (
           <Stack gap={4} px={8} pb="md">
-            <Section id="shapes" title="Add a shape">
-              <ShapeLibrary />
-            </Section>
-            <Section id="patterns" title="Make a pattern">
-              <PatternPicker />
-            </Section>
+            {!sketching && (
+              <>
+                <Section id="shapes" title="Add a shape">
+                  <ShapeLibrary />
+                </Section>
+                <Section id="patterns" title="Make a pattern">
+                  <PatternPicker />
+                </Section>
+              </>
+            )}
             <Section id="scene" title="In your scene">
               <Outliner />
             </Section>
