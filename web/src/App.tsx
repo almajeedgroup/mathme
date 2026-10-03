@@ -5,6 +5,7 @@ import { loadAutosave, startAutosave } from './state/persistence';
 import { clearHistory, useProjectStore } from './state/projectStore';
 import { useUiStore } from './state/uiStore';
 import { notifications } from './ui/notify';
+import { ExportModal } from './ui/ExportModal';
 import { PresetsModal } from './ui/PresetsModal';
 import { Inspector } from './ui/inspector/Inspector';
 import { Outliner } from './ui/Outliner';
@@ -62,6 +63,7 @@ export function App() {
         </div>
       </AppShell.Main>
       <PresetsModal />
+      <ExportModal />
       <Toasts />
     </AppShell>
   );

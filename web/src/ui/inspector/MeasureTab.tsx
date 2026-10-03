@@ -1,11 +1,9 @@
 import { Alert, Code, Divider, Paper, Stack, Text } from '@mantine/core';
 import { useMemo } from 'react';
 
-import { layoutPattern } from '../../engine/layout';
 import { fmt } from '../../engine/math';
-import { measureShape, type ShapeMeasurement } from '../../engine/measureShape';
-import { symmetryCopyCount } from '../../engine/three/transforms';
-import type { ObjectNode, PatternNode, Project, SourceRef, Units } from '../../engine/types';
+import { measureNode, type NodeTotals } from '../../engine/measureNode';
+import type { ObjectNode, PatternNode, Units } from '../../engine/types';
 import { useProjectStore } from '../../state/projectStore';
 import { useUnits } from './common';
 import { WholeModelMeasure } from '../service/WholeModelMeasure';
@@ -17,36 +15,14 @@ export function formatAmount(value: number, power: 1 | 2 | 3, units: Units): str
   return `${n} ${units}${sup(power)}`;
 }
 
-function measureSource(source: SourceRef, project: Project): ShapeMeasurement | null {
-  const ctx = { meshes: project.meshes };
-  if (source.kind === 'shape') return measureShape(source.shape, ctx);
-  const custom = project.library.find((c) => c.id === source.customId);
-  if (!custom) return null;
-  let volume = 0;
-  let area = 0;
-  let triangles = 0;
-  let open = false;
-  for (const part of custom.parts) {
-    const m = measureShape(part.shape, ctx);
-    const [sx, sy, sz] = part.transform.scale;
-    volume += (m.volume ?? 0) * Math.abs(sx * sy * sz);
-    area += m.area * Math.cbrt(Math.abs(sx * sy * sz)) ** 2;
-    triangles += m.triangles;
-    open ||= m.open;
-  }
-  return { method: 'mesh', lines: [], volume: open ? null : volume, area, triangles, open };
-}
-
 export function MeasureTab({ node }: { node: ObjectNode | PatternNode }) {
   const project = useProjectStore((s) => s.project);
   const units = useUnits();
-  const m = useMemo(() => measureSource(node.source, project), [node.source, project]);
-  const layout = useMemo(() => (node.kind === 'pattern' ? layoutPattern(node) : null), [node]);
-  if (!m) return <Text size="sm">Nothing to measure.</Text>;
-
+  const totals = useMemo(() => measureNode(node, project), [node, project]);
+  if (!totals) return <Text size="sm">Nothing to measure.</Text>;
+  const m = totals.one;
   const [sx, sy, sz] = node.transform.scale;
-  const stretch = Math.abs(sx * sy * sz);
-  const copies = symmetryCopyCount(node.symmetry);
+  const stretch = totals.stretch;
 
   return (
     <Stack gap="sm">
@@ -87,10 +63,10 @@ export function MeasureTab({ node }: { node: ObjectNode | PatternNode }) {
           {fmt(stretch)} = {formatAmount(m.volume * stretch, 3, units)}.
         </Text>
       )}
-      {layout && (
+      {node.kind === 'pattern' && (
         <>
           <Divider />
-          <PatternTotals m={m} sizes={layout.sizes} copies={copies} stretch={stretch} units={units} />
+          <PatternTotals totals={totals} units={units} />
         </>
       )}
       <Divider />
@@ -99,47 +75,27 @@ export function MeasureTab({ node }: { node: ObjectNode | PatternNode }) {
   );
 }
 
-function PatternTotals({
-  m,
-  sizes,
-  copies,
-  stretch,
-  units,
-}: {
-  m: ShapeMeasurement;
-  sizes: Float32Array;
-  copies: number;
-  stretch: number;
-  units: Units;
-}) {
-  let cubes = 0;
-  let squares = 0;
-  for (const s of sizes) {
-    cubes += s ** 3;
-    squares += s ** 2;
-  }
-  const n = sizes.length * copies;
+function PatternTotals({ totals, units }: { totals: NodeTotals; units: Units }) {
+  const { one: m, sumCubes, sumSquares, copies, stretch, count } = totals;
   return (
     <Stack gap={4}>
       <Text size="sm" fw={600}>
-        All {n.toLocaleString()} objects
+        All {count.toLocaleString()} objects
       </Text>
       <Text size="xs" c="dimmed">
         When an object is k times bigger, its area is k² times bigger and its volume is k³ times bigger. So we
-        add up size³ for every object (Σ size³ = {fmt(cubes)}).
+        add up size³ for every object (Σ size³ = {fmt(sumCubes)}).
       </Text>
-      {m.volume !== null && (
+      {totals.totalVolume !== null && m.volume !== null && (
         <Text size="sm">
-          Total volume = {fmt(m.volume)} × {fmt(cubes)}
+          Total volume = {fmt(m.volume)} × {fmt(sumCubes)}
           {copies > 1 ? ` × ${copies} copies` : ''}
-          {stretch !== 1 ? ` × ${fmt(stretch)} stretch` : ''} ={' '}
-          {formatAmount(m.volume * cubes * copies * stretch, 3, units)}
+          {stretch !== 1 ? ` × ${fmt(stretch)} stretch` : ''} = {formatAmount(totals.totalVolume, 3, units)}
         </Text>
       )}
       <Text size="sm">
-        Total surface area = {fmt(m.area)} × {fmt(squares)}
-        {copies > 1 ? ` × ${copies}` : ''} ≈{' '}
-        {formatAmount(m.area * squares * copies * Math.cbrt(stretch) ** 2, 2, units)}
+        Total surface area = {fmt(m.area)} × {fmt(sumSquares)}
+        {copies > 1 ? ` × ${copies}` : ''} ≈ {formatAmount(totals.totalArea, 2, units)}
       </Text>
       <Text size="xs" c="dimmed">
         If objects overlap, the overlapping parts are counted twice.
