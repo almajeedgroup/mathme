@@ -53,9 +53,21 @@ interface UiState {
   registerObject(id: string, obj: Object3D | null): void;
   requestFrame(): void;
   setCut(patch: Partial<CutState>): void;
+  /** Switch the cut off and close its panel (a cut belongs to the model it was made for). */
+  resetCut(): void;
   setCutOpen(open: boolean): void;
   lookAlong(dir: [number, number, number], plane?: { n: [number, number, number]; d: number }): void;
 }
+
+const NO_CUT: CutState = {
+  mode: 'off',
+  tilt: 0,
+  turn: 0,
+  shift: 0,
+  centre: [0, 0, 0],
+  size: 20,
+  presetId: null,
+};
 
 export const useUiStore = create<UiState>()((set) => ({
   selectedIds: [],
@@ -73,7 +85,7 @@ export const useUiStore = create<UiState>()((set) => ({
   frameRequest: 0,
   cutOpen: false,
   lookRequest: null,
-  cut: { mode: 'off', tilt: 0, turn: 0, shift: 0, centre: [0, 0, 0], size: 20, presetId: null },
+  cut: NO_CUT,
 
   select: (id, opts = {}) =>
     set((s) => {
@@ -108,6 +120,7 @@ export const useUiStore = create<UiState>()((set) => ({
   requestFrame: () => set((s) => ({ frameRequest: s.frameRequest + 1 })),
   setCut: (patch) => set((s) => ({ cut: { ...s.cut, ...patch } })),
   setCutOpen: (cutOpen) => set({ cutOpen }),
+  resetCut: () => set({ cut: NO_CUT, cutOpen: false }),
   lookAlong: (dir, plane) =>
     set((s) => ({ lookRequest: { dir, plane, nonce: (s.lookRequest?.nonce ?? 0) + 1 } })),
 }));

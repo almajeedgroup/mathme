@@ -27,6 +27,17 @@ test('open the real heart and pick standard cutting views', async ({ page }) => 
   await expect(page.getByTestId('object-count')).toHaveText('51 objects');
 });
 
+test('opening another idea switches the heart cut off', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Ideas' }).click();
+  await page.getByTestId('preset-heart').click();
+  await expect(page.getByTestId('cut-panel')).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('button', { name: 'Ideas' }).click();
+  await page.getByTestId('preset-wave-field').click();
+  await expect(page.getByTestId('object-count')).toHaveText('625 objects');
+  await expect(page.getByTestId('cut-panel')).toBeHidden();
+});
+
 test('import an STL model as a shape', async ({ page }) => {
   // a 10 mm cube as ASCII STL
   const f = (a: number[], b: number[], c: number[]) =>

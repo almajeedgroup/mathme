@@ -285,6 +285,8 @@ function applyCommandNow(cmd: ParsedCommand): string {
 export function loadProject(project: Project) {
   store().setProject(project);
   ui().select(null);
+  // an old cut would slice the new project in the wrong place
+  ui().resetCut();
   ui().requestFrame();
 }
 
