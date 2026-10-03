@@ -7,6 +7,9 @@ import { clearHistory, useProjectStore } from './state/projectStore';
 import { useUiStore } from './state/uiStore';
 import { notifications } from './ui/notify';
 import { ExportModal } from './ui/ExportModal';
+import { HelpModal } from './ui/HelpModal';
+import { WelcomeTour } from './ui/WelcomeTour';
+import { ViewportErrorBoundary } from './viewport/ViewportErrorBoundary';
 import { PresetsModal } from './ui/PresetsModal';
 import { Inspector } from './ui/inspector/Inspector';
 import { Outliner } from './ui/Outliner';
@@ -60,12 +63,16 @@ export function App() {
       </AppShell.Aside>
       <AppShell.Main h="100dvh">
         <div style={{ position: 'relative', height: 'calc(100dvh - 60px)' }}>
-          <Viewport />
+          <ViewportErrorBoundary>
+            <Viewport />
+          </ViewportErrorBoundary>
           <ViewportToolbar />
         </div>
       </AppShell.Main>
       <PresetsModal />
       <ExportModal />
+      <HelpModal />
+      <WelcomeTour />
       <Toasts />
     </AppShell>
   );

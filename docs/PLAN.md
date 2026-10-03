@@ -1,5 +1,22 @@
 # Plan: Build "Generative 3D Art & Object Studio" as a web app
 
+## Implementation status
+
+All milestones M0–M7 are implemented on branch `claude/charming-meitner-31cpmi`. See the README for how to run, test and deploy.
+
+| # | Milestone | Status | Notes |
+|---|---|---|---|
+| M0 | Scaffold | Done | The spec PDF now lives in `docs/` |
+| M1 | Basic shapes | Done | Selection is shown as an outline box, so gradient colours stay visible |
+| M2 | Generation engine | Done | The Learn panel is a tab in the inspector; clicking an object picks the worked example |
+| M3 | Custom shapes | Done | Groups are centred on their contents, so saved "my shapes" turn around their middle |
+| M4 | Editing workflow | Done | Discrete actions are always their own undo step; slider drags are merged |
+| M5 | Client exports | Done | Export code is loaded only when it is used |
+| M6 | Python service | Done | Also reports the number of separate pieces and keeps open sheets in print files (with a note) |
+| M7 | Polish | Done | Welcome tour, help and glossary, WebGL error message, tablet layout, 20k-object check |
+
+Not verified in the build environment: building the Docker image (no Docker daemon was available). Installing the package with `pip install .`, which is what the Dockerfile runs, was verified.
+
 ## Context
 
 The repo (`almajeedgroup/mathme`) contains only a one-page spec, `Generative 3D Art & Object Studio (1).pdf`. It describes a browser-based 3D creation tool for beginners. Users build objects from primitives (cube, sphere, cylinder, cone, torus, plane, custom shapes). They then use a **math generation engine** (spiral, grid, circle, wave, radial, sphere, symmetry, random) to place hundreds or thousands of copies automatically. Example from the spec: `100 objects → Spiral → Radius 20 → Rotation 30° → Scale 0.5–2`. Users can preview the result in 3D, edit it, and export it as **GLB**.

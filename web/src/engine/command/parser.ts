@@ -465,7 +465,9 @@ export function describeCommand(c: ParsedCommand): string {
   parts.push(`${c.count ?? (c.pattern ? getPattern(c.pattern).defaultCount : '')} ${shape}`.trim());
   if (c.pattern) parts.push(`in a ${getPattern(c.pattern).label.toLowerCase()}`);
   for (const [k, v] of Object.entries(c.patternParams)) parts.push(`${k} ${v}`);
-  if (c.variation.sizeFrom !== undefined) parts.push(`size ${c.variation.sizeFrom}–${c.variation.sizeTo}`);
+  const { sizeFrom, sizeTo } = c.variation;
+  if (sizeFrom !== undefined)
+    parts.push(sizeFrom === sizeTo ? `size ${sizeFrom}` : `size ${sizeFrom}–${sizeTo}`);
   if (c.variation.colorMode) parts.push(`${c.variation.colorMode} colours`);
   return parts.join(', ');
 }

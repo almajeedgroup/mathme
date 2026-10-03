@@ -69,7 +69,7 @@ export function ShapeLibrary() {
       </Text>
       <Tabs defaultValue="basic" variant="pills" radius="md">
         <Tabs.List grow mb={6}>
-          <Tabs.Tab value="basic" size="xs" px={6}>
+          <Tabs.Tab value="basic" px={6}>
             Basic
           </Tabs.Tab>
           <Tabs.Tab value="solid" px={6}>

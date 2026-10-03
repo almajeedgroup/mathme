@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { encodeFloat32, encodeUint32 } from '../../engine/binary';
 import { createObjectNode } from '../../engine/project/defaults';
 import type { SceneNode } from '../../engine/types';
-import { glbToTriangles, serviceGlb } from '../../export/serviceModel';
 import { booleanModels, type BooleanOperation } from '../../services/geometryApi';
 import { asUndoStep, useProjectStore } from '../../state/projectStore';
 import { useUiStore } from '../../state/uiStore';
@@ -34,6 +33,7 @@ export function BooleanTools({ nodes }: { nodes: SceneNode[] }) {
     setBusy(op);
     setError(null);
     try {
+      const { glbToTriangles, serviceGlb } = await import('../../export/serviceModel');
       const project = useProjectStore.getState().project;
       const [glbA, glbB] = await Promise.all([serviceGlb(project, [a.id]), serviceGlb(project, [b.id])]);
       const tri = await glbToTriangles(await booleanModels(glbA, glbB, op));

@@ -28,7 +28,9 @@ export const UNIT_TO_MM: Record<Units, number> = { mm: 1, cm: 10, m: 1000 };
 /** The most triangles we will put in an STL/OBJ/print file (about 100 MB of STL). */
 export const MAX_EXPORT_TRIANGLES = 2_000_000;
 
-export class ExportTooBigError extends Error {}
+export class ExportTooBigError extends Error {
+  name = 'ExportTooBigError';
+}
 
 export interface BuiltScene {
   scene: Scene;

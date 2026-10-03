@@ -2,7 +2,6 @@ import { Alert, Button, Group, List, Stack, Table, Text } from '@mantine/core';
 import { useState } from 'react';
 
 import { fmt } from '../../engine/math';
-import { serviceGlb } from '../../export/serviceModel';
 import { analyzeModel, type AnalyzeResult } from '../../services/geometryApi';
 import { useProjectStore } from '../../state/projectStore';
 import { formatAmount } from '../inspector/MeasureTab';
@@ -20,6 +19,7 @@ export function WholeModelMeasure() {
     setBusy(true);
     setError(null);
     try {
+      const { serviceGlb } = await import('../../export/serviceModel');
       setResult(await analyzeModel(await serviceGlb(useProjectStore.getState().project)));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));

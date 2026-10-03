@@ -2,8 +2,6 @@ import { Button, Group, SegmentedControl, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 
 import { downloadBlob, slugify } from '../../export/download';
-import { UNIT_TO_MM } from '../../export/sceneBuilder';
-import { serviceGlb } from '../../export/serviceModel';
 import { printReadyExport, type PrintFormat } from '../../services/geometryApi';
 import { useProjectStore } from '../../state/projectStore';
 import { notifications } from '../notify';
@@ -18,6 +16,8 @@ export function PrintReadyExport() {
   const run = async () => {
     setBusy(true);
     try {
+      const { serviceGlb } = await import('../../export/serviceModel');
+      const { UNIT_TO_MM } = await import('../../export/sceneBuilder');
       const project = useProjectStore.getState().project;
       const name = slugify(project.name);
       const { blob, notes } = await printReadyExport(await serviceGlb(project), {

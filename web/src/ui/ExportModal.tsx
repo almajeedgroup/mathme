@@ -24,11 +24,8 @@ import { useMemo, useState } from 'react';
 
 import { countObjects } from '../engine/evaluate';
 import { downloadBlob, slugify } from '../export/download';
-import { renderPng } from '../export/image';
-import { exportGlb, exportObj, exportStl } from '../export/models';
-import { exportPdf } from '../export/pdf';
 import { saveProjectFile } from '../export/projectFile';
-import { ExportTooBigError, type ModelMode } from '../export/sceneBuilder';
+import type { ModelMode } from '../export/sceneBuilder';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { notifications } from './notify';
@@ -101,10 +98,11 @@ export function ExportModal() {
         message: `Saved ${filename} (${(blob.size / 1024).toFixed(0)} KB).`,
       });
     } catch (e) {
+      // ExportTooBigError already explains what to do; anything else gets a generic message
       const message =
-        e instanceof ExportTooBigError
+        e instanceof Error && e.name === 'ExportTooBigError'
           ? e.message
-          : `Sorry, that export failed: ${e instanceof Error ? e.message : e}`;
+          : `Sorry, that export failed: ${e instanceof Error ? e.message : String(e)}`;
       notifications.show({ color: 'red', title: 'Export failed', message });
     } finally {
       setBusy(null);
@@ -145,7 +143,13 @@ export function ExportModal() {
               />
               <Button
                 loading={busy === 'glb'}
-                onClick={() => run('glb', () => exportGlb(project, mode), `${base}.glb`)}
+                onClick={() =>
+                  run(
+                    'glb',
+                    async () => (await import('../export/models')).exportGlb(project, mode),
+                    `${base}.glb`,
+                  )
+                }
                 data-testid="export-glb"
               >
                 Download .glb
@@ -160,7 +164,9 @@ export function ExportModal() {
               <Button
                 variant="light"
                 loading={busy === 'stl'}
-                onClick={() => run('stl', () => exportStl(project), `${base}.stl`)}
+                onClick={() =>
+                  run('stl', async () => (await import('../export/models')).exportStl(project), `${base}.stl`)
+                }
                 data-testid="export-stl"
               >
                 Download .stl
@@ -193,7 +199,16 @@ export function ExportModal() {
                 variant="light"
                 loading={busy === 'png'}
                 onClick={() =>
-                  run('png', () => renderPng(project, ...PNG_SIZES[pngSize], transparent), `${base}.png`)
+                  run(
+                    'png',
+                    async () =>
+                      (await import('../export/image')).renderPng(
+                        project,
+                        ...PNG_SIZES[pngSize],
+                        transparent,
+                      ),
+                    `${base}.png`,
+                  )
                 }
                 data-testid="export-png"
               >
@@ -218,7 +233,9 @@ export function ExportModal() {
               <Button
                 variant="light"
                 loading={busy === 'pdf'}
-                onClick={() => run('pdf', () => exportPdf(project), `${base}.pdf`)}
+                onClick={() =>
+                  run('pdf', async () => (await import('../export/pdf')).exportPdf(project), `${base}.pdf`)
+                }
                 data-testid="export-pdf"
               >
                 Download .pdf
@@ -233,7 +250,9 @@ export function ExportModal() {
               <Button
                 variant="default"
                 loading={busy === 'obj'}
-                onClick={() => run('obj', () => exportObj(project), `${base}.obj`)}
+                onClick={() =>
+                  run('obj', async () => (await import('../export/models')).exportObj(project), `${base}.obj`)
+                }
                 data-testid="export-obj"
               >
                 Download .obj

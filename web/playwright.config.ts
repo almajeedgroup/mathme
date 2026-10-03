@@ -10,6 +10,13 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: `http://localhost:${PORT}`,
+    // skip the first-visit welcome tour (it has its own test)
+    storageState: {
+      cookies: [],
+      origins: [
+        { origin: `http://localhost:${PORT}`, localStorage: [{ name: 'mathme.tour.done', value: '1' }] },
+      ],
+    },
     trace: 'retain-on-failure',
     acceptDownloads: true,
   },
