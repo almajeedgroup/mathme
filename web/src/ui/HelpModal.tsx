@@ -121,6 +121,19 @@ export function HelpModal() {
                 </List>
               </Accordion.Panel>
             </Accordion.Item>
+            <Accordion.Item value="cut">
+              <Accordion.Control>Cut through a model (and the real heart)</Accordion.Control>
+              <Accordion.Panel>
+                <Text size="sm">
+                  Ideas → “Human heart (real anatomy)” opens a scan-based heart with 51 named parts. Press the
+                  scissors in the 3D view to cut: choose a standard view (four-chamber, short axis…) or drag
+                  Tilt, Turn and Slide. “Keep side A/B” chooses which half stays, and “Look at the cut face”
+                  turns the camera to face the cut. With the geometry service running, “Export this cut” saves
+                  both halves (GLB and STL) with closed cut faces. You can also cut your own models: File →
+                  Import 3D model.
+                </Text>
+              </Accordion.Panel>
+            </Accordion.Item>
             <Accordion.Item value="print">
               <Accordion.Control>3D printing</Accordion.Control>
               <Accordion.Panel>

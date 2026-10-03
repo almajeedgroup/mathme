@@ -1,11 +1,13 @@
 import { AppShell, Divider, ScrollArea, Stack } from '@mantine/core';
 import { useEffect } from 'react';
 
+import { ensureLinkedMeshes } from './services/modelAssets';
 import { useServiceHealth } from './services/useServiceHealth';
 import { loadAutosave, startAutosave } from './state/persistence';
 import { clearHistory, useProjectStore } from './state/projectStore';
 import { useUiStore } from './state/uiStore';
 import { notifications } from './ui/notify';
+import { CutPanel } from './ui/CutPanel';
 import { ExportModal } from './ui/ExportModal';
 import { HelpModal } from './ui/HelpModal';
 import { WelcomeTour } from './ui/WelcomeTour';
@@ -32,6 +34,9 @@ export function App() {
     if (saved) {
       useProjectStore.getState().setProject(saved);
       clearHistory();
+      ensureLinkedMeshes(saved).catch((e) =>
+        notifications.show({ color: 'red', message: `A linked 3D model could not be loaded: ${e.message}` }),
+      );
     }
     requestFrame();
     return startAutosave((message) => notifications.show({ color: 'orange', message }));
@@ -67,6 +72,7 @@ export function App() {
             <Viewport />
           </ViewportErrorBoundary>
           <ViewportToolbar />
+          <CutPanel />
         </div>
       </AppShell.Main>
       <PresetsModal />

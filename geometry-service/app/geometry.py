@@ -197,3 +197,65 @@ def export_mesh(mesh: trimesh.Trimesh, file_format: str) -> bytes:
 
 def to_glb(mesh: trimesh.Trimesh) -> bytes:
     return bytes(trimesh.Scene(mesh).export(file_type="glb"))
+
+
+def slice_parts(
+    parts: list[trimesh.Trimesh], point: list[float], normal: list[float]
+) -> tuple[list[trimesh.Trimesh], list[trimesh.Trimesh], int]:
+    """Cut every part with a plane. Closed parts get a closed cut face; open sheets are just trimmed.
+
+    Returns (parts on the side the normal points to, parts on the other side, number of open parts).
+    """
+    import manifold3d as m3d
+
+    n = np.asarray(normal, dtype=float)
+    length = np.linalg.norm(n)
+    if not np.isfinite(length) or length < 1e-9:
+        raise GeometryError("The cutting direction (normal) can't be zero.")
+    n = n / length
+    p = np.asarray(point, dtype=float)
+    pos: list[trimesh.Trimesh] = []
+    neg: list[trimesh.Trimesh] = []
+    open_count = 0
+    for part in parts:
+        side = (part.vertices - p) @ n
+        if side.min() >= 0:
+            pos.append(part)
+            continue
+        if side.max() <= 0:
+            neg.append(part)
+            continue
+        solid = None
+        if part.is_watertight:
+            solid = m3d.Manifold(
+                m3d.Mesh(
+                    vert_properties=np.asarray(part.vertices, np.float32),
+                    tri_verts=np.asarray(part.faces, np.uint32),
+                )
+            )
+            if solid.status() != m3d.Error.NoError:
+                solid = None
+        if solid is not None:
+            for half, out in zip(solid.split_by_plane(n.tolist(), float(n @ p)), (pos, neg), strict=True):
+                if half.num_tri():
+                    m = half.to_mesh()
+                    out.append(trimesh.Trimesh(np.asarray(m.vert_properties)[:, :3], np.asarray(m.tri_verts)))
+        else:
+            open_count += 1
+            for sign, out in ((1, pos), (-1, neg)):
+                piece = trimesh.intersections.slice_mesh_plane(part, sign * n, p, cap=False)
+                if len(piece.faces):
+                    out.append(piece)
+    if not pos or not neg:
+        raise GeometryError("The cutting plane misses the model, so there is nothing to cut.")
+    return pos, neg, open_count
+
+
+def halves_glb(pos: list[trimesh.Trimesh], neg: list[trimesh.Trimesh]) -> bytes:
+    """One GLB with the two halves as separate named groups (in the model's own units)."""
+    scene = trimesh.Scene()
+    for label, half in (("side A (normal side)", pos), ("side B", neg)):
+        scene.graph.update(frame_to=label, frame_from=scene.graph.base_frame)
+        for i, m in enumerate(half):
+            scene.add_geometry(m, node_name=f"{label} part {i + 1}", parent_node_name=label)
+    return bytes(scene.export(file_type="glb"))

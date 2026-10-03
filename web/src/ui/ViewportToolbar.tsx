@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Group, Paper, SegmentedControl, Switch, Tooltip } from '@mantine/core';
-import { IconArrowsMove, IconFocus2, IconResize, IconRotate } from '@tabler/icons-react';
+import { IconArrowsMove, IconFocus2, IconResize, IconRotate, IconScissors } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
 import { countObjects } from '../engine/evaluate';
@@ -7,6 +7,7 @@ import { WARN_OBJECTS } from '../engine/layout';
 import { fmtCount } from '../engine/math';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore, type TransformMode } from '../state/uiStore';
+import { openCutTool } from './CutPanel';
 
 export function ViewportToolbar() {
   const mode = useUiStore((s) => s.transformMode);
@@ -63,6 +64,16 @@ export function ViewportToolbar() {
         <Tooltip label="Fit everything in view (F)">
           <ActionIcon variant="subtle" onClick={requestFrame} aria-label="Fit everything in view">
             <IconFocus2 size={18} />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label="Cut through the model">
+          <ActionIcon
+            variant="subtle"
+            onClick={openCutTool}
+            aria-label="Cut through the model"
+            data-testid="open-cut"
+          >
+            <IconScissors size={18} />
           </ActionIcon>
         </Tooltip>
       </Paper>

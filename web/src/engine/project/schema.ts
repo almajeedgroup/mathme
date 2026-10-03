@@ -151,12 +151,32 @@ export const customShapeSchema = z.object({
   parts: z.array(customPartSchema).min(1),
 });
 
-/** A triangle mesh produced by a boolean operation, stored as base64 typed arrays. */
+/**
+ * A triangle mesh (from Combine/Cut or an imported model), stored as base64 typed arrays.
+ * Big library models (like the heart) leave positions/indices empty and point at a file instead.
+ */
 export const storedMeshSchema = z.object({
   id: z.string(),
   name: z.string(),
   positions: z.string(),
   indices: z.string(),
+  src: z
+    .object({
+      url: z.string(),
+      node: z.string(),
+      /** model units → project units, then moved by offset */
+      scale: z.number(),
+      offset: vec3Schema,
+    })
+    .optional(),
+});
+
+/** A saved cutting plane (e.g. the standard heart views). */
+export const cutPresetSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  point: vec3Schema,
+  normal: vec3Schema,
 });
 
 export const UNITS = ['mm', 'cm', 'm'] as const;
@@ -171,4 +191,5 @@ export const projectSchema = z.object({
   nodes: z.array(sceneNodeSchema),
   library: z.array(customShapeSchema),
   meshes: z.array(storedMeshSchema),
+  cutPresets: z.array(cutPresetSchema).optional(),
 });

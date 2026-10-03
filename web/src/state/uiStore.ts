@@ -3,6 +3,20 @@ import { create } from 'zustand';
 
 export type TransformMode = 'translate' | 'rotate' | 'scale';
 
+/** off = no cut; a = keep the half the plane's normal points to; b = keep the other half. */
+export type CutMode = 'off' | 'a' | 'b';
+
+export interface CutState {
+  mode: CutMode;
+  tilt: number;
+  turn: number;
+  shift: number;
+  centre: [number, number, number];
+  /** size of the model, for the sliders and the plane sheet */
+  size: number;
+  presetId: string | null;
+}
+
 interface UiState {
   selectedIds: string[];
   /** The object inside a pattern that was clicked (used by the Learn panel). */
@@ -20,6 +34,14 @@ interface UiState {
   nodeObjects: Record<string, Object3D>;
   /** Bumped to ask the viewport to fit everything in view. */
   frameRequest: number;
+  cutOpen: boolean;
+  cut: CutState;
+  /** Ask the camera to look along a direction (e.g. straight at the cut face). */
+  lookRequest: {
+    dir: [number, number, number];
+    nonce: number;
+    plane?: { n: [number, number, number]; d: number };
+  } | null;
 
   select(id: string | null, opts?: { additive?: boolean; instance?: number }): void;
   setSelection(ids: string[]): void;
@@ -30,6 +52,9 @@ interface UiState {
   setServiceOnline(online: boolean): void;
   registerObject(id: string, obj: Object3D | null): void;
   requestFrame(): void;
+  setCut(patch: Partial<CutState>): void;
+  setCutOpen(open: boolean): void;
+  lookAlong(dir: [number, number, number], plane?: { n: [number, number, number]; d: number }): void;
 }
 
 export const useUiStore = create<UiState>()((set) => ({
@@ -46,6 +71,9 @@ export const useUiStore = create<UiState>()((set) => ({
   serviceOnline: null,
   nodeObjects: {},
   frameRequest: 0,
+  cutOpen: false,
+  lookRequest: null,
+  cut: { mode: 'off', tilt: 0, turn: 0, shift: 0, centre: [0, 0, 0], size: 20, presetId: null },
 
   select: (id, opts = {}) =>
     set((s) => {
@@ -78,4 +106,8 @@ export const useUiStore = create<UiState>()((set) => ({
       return { nodeObjects: { ...s.nodeObjects, [id]: obj } };
     }),
   requestFrame: () => set((s) => ({ frameRequest: s.frameRequest + 1 })),
+  setCut: (patch) => set((s) => ({ cut: { ...s.cut, ...patch } })),
+  setCutOpen: (cutOpen) => set({ cutOpen }),
+  lookAlong: (dir, plane) =>
+    set((s) => ({ lookRequest: { dir, plane, nonce: (s.lookRequest?.nonce ?? 0) + 1 } })),
 }));

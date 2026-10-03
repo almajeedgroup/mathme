@@ -24,6 +24,7 @@ import type {
   SourceRef,
 } from '../engine/types';
 import { asUndoStep, useProjectStore } from '../state/projectStore';
+import { notifications } from './notify';
 import { useUiStore } from '../state/uiStore';
 import { viewportBridge } from '../viewport/bridge';
 import { contentBounds } from '../viewport/bounds';
@@ -285,4 +286,52 @@ export function loadProject(project: Project) {
   store().setProject(project);
   ui().select(null);
   ui().requestFrame();
+}
+
+/** Read a GLB/STL/OBJ file and add it to the scene as a group of shapes. */
+export async function importModel(file: File) {
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  if (ext !== 'glb' && ext !== 'stl' && ext !== 'obj') {
+    notifications.show({ color: 'red', message: 'Please choose a .glb, .stl or .obj file.' });
+    return;
+  }
+  if (file.size > 60 * 1024 * 1024) {
+    notifications.show({ color: 'red', message: 'That file is bigger than 60 MB. Try a simpler model.' });
+    return;
+  }
+  try {
+    const { parseModel, modelToNodes } = await import('../services/modelAssets');
+    const name = file.name.replace(/\.[^.]+$/, '');
+    const parts = await parseModel(await file.arrayBuffer(), ext, name);
+    if (!parts.length) throw new Error('No triangles were found in the file.');
+    const { group, nodes, meshes } = modelToNodes(parts, name, ext, store().project.units);
+    asUndoStep(() =>
+      store().updateProject((p) => {
+        p.meshes.push(...meshes);
+        p.nodes.push(group, ...nodes);
+      }),
+    );
+    ui().select(group.id);
+    ui().requestFrame();
+    const kb = meshes.reduce((s, m) => s + m.positions.length + m.indices.length, 0) / 1024;
+    notifications.show({
+      color: kb > 3000 ? 'orange' : 'green',
+      message:
+        `Imported ${parts.length} part${parts.length === 1 ? '' : 's'} from ${file.name}.` +
+        (kb > 3000 ? ' It is large, so autosave may not fit it: use File → Save project file.' : ''),
+    });
+  } catch (e) {
+    notifications.show({
+      color: 'red',
+      title: 'Import failed',
+      message: e instanceof Error ? e.message : String(e),
+    });
+  }
+}
+
+/** Open the real human heart (Human Reference Atlas) with its standard cutting planes. */
+export async function openHeart() {
+  const { buildHeartProject } = await import('../services/modelAssets');
+  const project = await buildHeartProject();
+  loadProject(project);
 }

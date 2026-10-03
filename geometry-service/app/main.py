@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import io
+import math
 import re
+import zipfile
 from dataclasses import asdict
 from typing import Annotated, Literal
 
+import trimesh
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
@@ -112,6 +116,65 @@ async def boolean(
 
     glb = await run_limited(work)
     return Response(glb, media_type="model/gltf-binary")
+
+
+def _vec3(text: str, what: str) -> list[float]:
+    try:
+        values = [float(v) for v in text.split(",")]
+    except ValueError as exc:
+        raise HTTPException(422, f"{what} must be three numbers like 0,1,0.") from exc
+    if len(values) != 3 or not all(map(math.isfinite, values)):
+        raise HTTPException(422, f"{what} must be three numbers like 0,1,0.")
+    return values
+
+
+@app.post("/slice")
+async def slice_model(
+    file: Annotated[UploadFile, File(description="GLB model in world coordinates")],
+    point: Annotated[str, Form(description="A point on the cutting plane: x,y,z")],
+    normal: Annotated[str, Form(description="Direction at right angles to the plane: x,y,z")],
+    scale: Annotated[
+        float, Form(gt=0, le=10000, description="Scale for the STL files (e.g. 10 for cm to mm)")
+    ] = 1.0,
+    name: Annotated[str, Form(max_length=200)] = "cut",
+):
+    """Cut a model into two halves with closed cut faces.
+
+    Returns a zip with both halves as one GLB, and one STL per half.
+    """
+    data = await read_upload(file)
+    p = _vec3(point, "point")
+    n = _vec3(normal, "normal")
+
+    def work() -> tuple[bytes, int]:
+        parts = geometry.load_parts(data, settings)
+        pos, neg, open_count = geometry.slice_parts(parts, p, n)
+        buf = io.BytesIO()
+        safe = _safe_name(name)
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr(f"{safe}-both-halves.glb", geometry.halves_glb(pos, neg))
+            for label, half in (("side-A", pos), ("side-B", neg)):
+                mesh = trimesh.util.concatenate(half)
+                mesh.apply_scale(scale)
+                z.writestr(f"{safe}-{label}.stl", geometry.export_mesh(mesh, "stl"))
+            z.writestr(
+                "README.txt",
+                f"Cut through point ({', '.join(map(str, p))}) with normal ({', '.join(map(str, n))}).\n"
+                "Side A is the half the normal points to. GLB is in the model's own units; "
+                f"STL files are scaled by {scale}.\n"
+                + (
+                    f"{open_count} open part(s) were trimmed without a closed cut face.\n"
+                    if open_count
+                    else ""
+                ),
+            )
+        return buf.getvalue(), open_count
+
+    content, open_count = await run_limited(work)
+    headers = {"Content-Disposition": f'attachment; filename="{_safe_name(name)}.zip"'}
+    if open_count:
+        headers["X-Notes"] = f"{open_count} open part(s) were trimmed without a closed cut face."
+    return Response(content, media_type="application/zip", headers=headers)
 
 
 def _safe_name(name: str) -> str:

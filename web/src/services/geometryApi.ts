@@ -95,3 +95,27 @@ export async function printReadyExport(
   );
   return { blob: await res.blob(), notes: res.headers.get('X-Notes') };
 }
+
+/** Cut a model with a plane: a zip with both halves (GLB) and one STL per half. */
+export async function sliceModel(
+  glb: Blob,
+  opts: { point: number[]; normal: number[]; scale: number; name: string },
+): Promise<{ blob: Blob; notes: string | null }> {
+  const res = await call(
+    '/slice',
+    {
+      method: 'POST',
+      body: form(
+        { file: glb },
+        {
+          point: opts.point.map((v) => v.toFixed(5)).join(','),
+          normal: opts.normal.map((v) => v.toFixed(6)).join(','),
+          scale: String(opts.scale),
+          name: opts.name,
+        },
+      ),
+    },
+    120_000,
+  );
+  return { blob: await res.blob(), notes: res.headers.get('X-Notes') };
+}

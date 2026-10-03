@@ -14,6 +14,7 @@ import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
 import fontJson from '../../assets/fonts/droid_sans_bold.ascii.typeface.json';
 import { decodeFloat32, decodeUint32 } from '../binary';
+import { getMeshData } from '../meshAssets';
 import { compileFormula, evalConstant } from '../expr';
 import { bool, num, points, str, type TextField } from '../fields';
 import { fmt } from '../math';
@@ -377,8 +378,13 @@ export const mesh: ShapeDefinition = {
     const stored = ctx.meshes.find((m) => m.id === str(p, 'meshId'));
     const g = new BufferGeometry();
     if (!stored) return g;
-    g.setAttribute('position', new BufferAttribute(decodeFloat32(stored.positions), 3));
-    g.setIndex(new BufferAttribute(decodeUint32(stored.indices), 1));
+    // library meshes are loaded from a file at run time; inline ones are stored in the project
+    const data = stored.positions
+      ? { positions: decodeFloat32(stored.positions), indices: decodeUint32(stored.indices) }
+      : getMeshData(stored.id);
+    if (!data) return g;
+    g.setAttribute('position', new BufferAttribute(data.positions, 3));
+    g.setIndex(new BufferAttribute(data.indices, 1));
     // sharp edges stay sharp, curved parts stay smooth
     return toCreasedNormals(g, Math.PI / 6);
   },

@@ -1,11 +1,12 @@
 import { GizmoHelper, GizmoViewport, Grid, OrbitControls, TransformControls } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-import { type Box3, type Group, PerspectiveCamera, Sphere, type Vector3 } from 'three';
+import { type Box3, type Group, PerspectiveCamera, Sphere, Vector3 } from 'three';
 import { DEG, radToDeg } from '../engine/math';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
-import { contentBounds } from './bounds';
+import { contentBounds, sliceBounds } from './bounds';
+import { CutPlaneHelper } from './cut';
 import { viewportBridge } from './bridge';
 import { SceneContent } from './SceneContent';
 
@@ -21,6 +22,9 @@ export function Viewport() {
       frameloop="demand"
       dpr={[1, 2]}
       gl={{ preserveDrawingBuffer: true, antialias: true }}
+      onCreated={({ gl }) => {
+        gl.localClippingEnabled = true; // for the cut tool
+      }}
       onPointerMissed={(e) => {
         if (e.button === 0) select(null);
       }}
@@ -45,6 +49,7 @@ export function Viewport() {
       />
       <SelectionGizmo />
       <SelectionOutline />
+      <CutSheet />
       <OrbitControls makeDefault enableDamping={false} />
       <GizmoHelper alignment="bottom-right" margin={[72, 72]}>
         <GizmoViewport axisColors={['#fa5252', '#40c057', '#4c6ef5']} labelColor="white" />
@@ -53,6 +58,11 @@ export function Viewport() {
       <Bridge contentRef={contentRef} />
     </Canvas>
   );
+}
+
+function CutSheet() {
+  const size = useUiStore((s) => s.cut.size);
+  return <CutPlaneHelper size={size * 1.4} />;
 }
 
 function Lights() {
@@ -130,6 +140,7 @@ function SelectionOutline() {
 
 function CameraFramer({ contentRef }: { contentRef: React.RefObject<Group | null> }) {
   const frameRequest = useUiStore((s) => s.frameRequest);
+  const lookRequest = useUiStore((s) => s.lookRequest);
   const camera = useThree((s) => s.camera);
   const controls = useThree((s) => s.controls) as unknown as { target: Vector3; update(): void } | null;
   const invalidate = useThree((s) => s.invalidate);
@@ -139,14 +150,27 @@ function CameraFramer({ contentRef }: { contentRef: React.RefObject<Group | null
     if (!content || !controls || !(camera instanceof PerspectiveCamera)) return;
     // wait a frame so newly added objects have their instance matrices
     const handle = requestAnimationFrame(() => {
-      const box = contentBounds(content);
+      let box = contentBounds(content);
+      // looking at a cut: frame on the cut face rather than the whole model
+      const plane = lookRequest?.plane;
+      if (plane && !box.isEmpty()) {
+        const slab = Math.max(0.05, box.max.distanceTo(box.min) * 0.01);
+        const cutBox = sliceBounds(content, new Vector3(...plane.n), plane.d, slab);
+        if (!cutBox.isEmpty()) box = cutBox.expandByScalar(slab * 2);
+      }
       if (box.isEmpty()) return;
       const sphere = box.getBoundingSphere(new Sphere());
       const radius = Math.max(sphere.radius, 1);
       const dist = (radius / Math.sin((camera.fov * DEG) / 2)) * 1.05;
-      const dir = camera.position.clone().sub(controls.target);
+      // look along a requested direction, or keep the current viewing direction
+      const dir = lookRequest
+        ? new Vector3(...lookRequest.dir).negate()
+        : camera.position.clone().sub(controls.target);
       if (dir.lengthSq() < 1e-9) dir.set(1, 0.8, 1);
       dir.normalize();
+      // keep "up" sensible when looking straight up or down
+      camera.up.set(0, 1, 0);
+      if (Math.abs(dir.y) > 0.98) camera.up.set(0, 0, -Math.sign(dir.y));
       camera.position.copy(sphere.center).addScaledVector(dir, dist);
       camera.near = Math.max(0.01, dist / 200);
       camera.far = dist * 50;
@@ -156,7 +180,7 @@ function CameraFramer({ contentRef }: { contentRef: React.RefObject<Group | null
       invalidate();
     });
     return () => cancelAnimationFrame(handle);
-  }, [frameRequest, camera, controls, contentRef, invalidate]);
+  }, [frameRequest, lookRequest, camera, controls, contentRef, invalidate]);
   return null;
 }
 
@@ -169,6 +193,9 @@ function Bridge({ contentRef }: { contentRef: React.RefObject<Group | null> }) {
     viewportBridge.camera = camera;
     viewportBridge.content = contentRef.current;
     viewportBridge.invalidate = invalidate;
+    // handy for browser tests and debugging
+    if (import.meta.env.DEV)
+      (window as unknown as { __mathme: typeof viewportBridge }).__mathme = viewportBridge;
   }, [gl, camera, contentRef, invalidate]);
   return null;
 }

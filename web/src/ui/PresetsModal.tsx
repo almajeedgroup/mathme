@@ -2,7 +2,8 @@ import { Card, Modal, SimpleGrid, Text, UnstyledButton } from '@mantine/core';
 
 import { PRESETS } from '../engine/project/presets';
 import { useUiStore } from '../state/uiStore';
-import { loadProject } from './actions';
+import { loadProject, openHeart } from './actions';
+import { openCutTool } from './CutPanel';
 import { notifications } from './notify';
 
 export function PresetsModal() {
@@ -20,6 +21,34 @@ export function PresetsModal() {
         Each idea replaces your current scene. Changed your mind? Press Undo.
       </Text>
       <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }} spacing="sm">
+        <UnstyledButton
+          data-testid="preset-heart"
+          onClick={async () => {
+            setOpen('presetsOpen', false);
+            try {
+              await openHeart();
+              // wait for the heart to be drawn so the cut tool can measure it
+              await new Promise((r) => setTimeout(r, 400));
+              openCutTool();
+              notifications.show({
+                color: 'indigo',
+                message:
+                  'Opened the real human heart. Pick a standard view in the cut panel, or drag the sliders.',
+              });
+            } catch (e) {
+              notifications.show({ color: 'red', message: e instanceof Error ? e.message : String(e) });
+            }
+          }}
+        >
+          <Card withBorder padding="sm" radius="md" h="100%" className="tile-button">
+            <Text size="xl">🫀</Text>
+            <Text fw={600}>Human heart (real anatomy)</Text>
+            <Text size="xs" c="dimmed">
+              A scan-based heart from the Human Reference Atlas with 51 named parts. Cut it at any angle or
+              pick the four-chamber, short-axis and other standard views.
+            </Text>
+          </Card>
+        </UnstyledButton>
         {PRESETS.map((p) => (
           <UnstyledButton
             key={p.id}

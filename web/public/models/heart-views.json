@@ -1,0 +1,325 @@
+{
+ "units": "mm",
+ "core_centre_mm": [
+  18.732,
+  476.086,
+  37.578
+ ],
+ "views": [
+  {
+   "id": "axial_1",
+   "name": "Axial 1 of 5 (inferior to superior, at 440.9 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    440.9412,
+    37.5783
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "id": "axial_2",
+   "name": "Axial 2 of 5 (inferior to superior, at 458.5 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    458.5137,
+    37.5783
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "id": "axial_3",
+   "name": "Axial 3 of 5 (inferior to superior, at 476.1 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "id": "axial_4",
+   "name": "Axial 4 of 5 (inferior to superior, at 493.7 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    493.6588,
+    37.5783
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "id": "axial_5",
+   "name": "Axial 5 of 5 (inferior to superior, at 511.2 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    511.2314,
+    37.5783
+   ],
+   "normal": [
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  {
+   "id": "coronal_1",
+   "name": "Coronal 1 of 5 (posterior to anterior, at 2.5 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    2.5065
+   ],
+   "normal": [
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "id": "coronal_2",
+   "name": "Coronal 2 of 5 (posterior to anterior, at 20.0 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    20.0424
+   ],
+   "normal": [
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "id": "coronal_3",
+   "name": "Coronal 3 of 5 (posterior to anterior, at 37.6 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "id": "coronal_4",
+   "name": "Coronal 4 of 5 (posterior to anterior, at 55.1 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    55.1141
+   ],
+   "normal": [
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "id": "coronal_5",
+   "name": "Coronal 5 of 5 (posterior to anterior, at 72.7 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    72.65
+   ],
+   "normal": [
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "id": "sagittal_1",
+   "name": "Sagittal 1 of 5 (right to left, at -22.7 mm)",
+   "group": "anatomical",
+   "point": [
+    -22.7187,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": "sagittal_2",
+   "name": "Sagittal 2 of 5 (right to left, at -2.0 mm)",
+   "group": "anatomical",
+   "point": [
+    -1.9935,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": "sagittal_3",
+   "name": "Sagittal 3 of 5 (right to left, at 18.7 mm)",
+   "group": "anatomical",
+   "point": [
+    18.7317,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": "sagittal_4",
+   "name": "Sagittal 4 of 5 (right to left, at 39.5 mm)",
+   "group": "anatomical",
+   "point": [
+    39.4569,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": "sagittal_5",
+   "name": "Sagittal 5 of 5 (right to left, at 60.2 mm)",
+   "group": "anatomical",
+   "point": [
+    60.1821,
+    476.0863,
+    37.5783
+   ],
+   "normal": [
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": "four_chamber",
+   "name": "Four-chamber view",
+   "group": "cardiac",
+   "point": [
+    72.9679,
+    435.6553,
+    83.1349
+   ],
+   "normal": [
+    0.0542,
+    0.8808,
+    0.4704
+   ]
+  },
+  {
+   "id": "two_chamber",
+   "name": "Two-chamber view",
+   "group": "cardiac",
+   "point": [
+    72.9679,
+    435.6553,
+    83.1349
+   ],
+   "normal": [
+    0.844,
+    0.2113,
+    -0.4929
+   ]
+  },
+  {
+   "id": "three_chamber",
+   "name": "Three-chamber (LVOT) view",
+   "group": "cardiac",
+   "point": [
+    72.9679,
+    435.6553,
+    83.1349
+   ],
+   "normal": [
+    0.7585,
+    0.6226,
+    -0.1925
+   ]
+  },
+  {
+   "id": "sax_basal",
+   "name": "Short axis, basal (75% from apex)",
+   "group": "cardiac",
+   "point": [
+    36.0566,
+    464.9707,
+    32.503
+   ],
+   "normal": [
+    -0.5336,
+    0.4238,
+    -0.7319
+   ]
+  },
+  {
+   "id": "sax_mid",
+   "name": "Short axis, mid-ventricle (50% from apex)",
+   "group": "cardiac",
+   "point": [
+    48.3603,
+    455.1989,
+    49.3803
+   ],
+   "normal": [
+    -0.5336,
+    0.4238,
+    -0.7319
+   ]
+  },
+  {
+   "id": "sax_apical",
+   "name": "Short axis, apical (25% from apex)",
+   "group": "cardiac",
+   "point": [
+    60.6641,
+    445.4271,
+    66.2576
+   ],
+   "normal": [
+    -0.5336,
+    0.4238,
+    -0.7319
+   ]
+  }
+ ]
+}

@@ -94,3 +94,35 @@ def test_export_keeps_sheets_and_says_so(client):
 
 def test_export_rejects_bad_scale(client):
     assert export(client, glb(box()), scale="0").status_code == 422
+
+
+def slice_(client, data: bytes, point="0,0,0", normal="1,0,0", **form):
+    return client.post(
+        "/slice", files={"file": ("m.glb", io.BytesIO(data))}, data={"point": point, "normal": normal, **form}
+    )
+
+
+def test_slice_makes_two_closed_halves(client):
+    import zipfile
+
+    r = slice_(client, glb(box((2, 2, 2))), point="0.5,0,0", normal="1,0,0", scale="10", name="cube cut")
+    assert r.status_code == 200, r.text
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    names = set(z.namelist())
+    assert {"cube-cut-both-halves.glb", "cube-cut-side-A.stl", "cube-cut-side-B.stl", "README.txt"} <= names
+    a = trimesh.load(io.BytesIO(z.read("cube-cut-side-A.stl")), file_type="stl")
+    b = trimesh.load(io.BytesIO(z.read("cube-cut-side-B.stl")), file_type="stl")
+    assert a.is_watertight and b.is_watertight
+    assert a.volume == pytest.approx(0.5 * 2 * 2 * 1000)  # 0.5 × 2 × 2, scaled ×10 in each direction
+    assert b.volume == pytest.approx(1.5 * 2 * 2 * 1000)
+
+
+def test_slice_that_misses(client):
+    r = slice_(client, glb(box((1, 1, 1))), point="5,0,0")
+    assert r.status_code == 422
+    assert "misses" in r.json()["detail"]
+
+
+def test_slice_bad_numbers(client):
+    assert slice_(client, glb(box()), normal="0,0,0").status_code == 422
+    assert slice_(client, glb(box()), point="a,b,c").status_code == 422

@@ -3,6 +3,7 @@ import type { z } from 'zod';
 import type {
   customPartSchema,
   customShapeSchema,
+  cutPresetSchema,
   groupNodeSchema,
   materialSchema,
   objectNodeSchema,
@@ -46,6 +47,7 @@ export type SceneNode = z.infer<typeof sceneNodeSchema>;
 export type CustomPart = z.infer<typeof customPartSchema>;
 export type CustomShape = z.infer<typeof customShapeSchema>;
 export type StoredMesh = z.infer<typeof storedMeshSchema>;
+export type CutPreset = z.infer<typeof cutPresetSchema>;
 export type Project = z.infer<typeof projectSchema>;
 
 /** Nodes that draw geometry (as opposed to groups). */

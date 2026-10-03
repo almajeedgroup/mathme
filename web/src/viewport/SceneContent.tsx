@@ -20,6 +20,7 @@ import type {
 } from '../engine/types';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
+import { useClipPlanes } from './cut';
 import { useShapeGeometry } from './useShapeGeometry';
 
 interface SceneData {
@@ -152,9 +153,12 @@ function NodeMaterial({
   open: boolean;
   instanceColors?: boolean;
 }) {
+  const clip = useClipPlanes();
   return (
     <meshStandardMaterial
       key={`${material.flatShading}-${open}`}
+      clippingPlanes={clip}
+      clipShadows
       color={instanceColors ? '#ffffff' : material.color}
       metalness={material.metalness}
       roughness={material.roughness}
@@ -163,7 +167,8 @@ function NodeMaterial({
       depthWrite={material.opacity >= 1}
       wireframe={material.wireframe}
       flatShading={material.flatShading}
-      side={open ? DoubleSide : FrontSide}
+      // when cutting, show the inside walls too
+      side={open || clip.length ? DoubleSide : FrontSide}
     />
   );
 }

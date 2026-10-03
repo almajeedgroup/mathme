@@ -1,12 +1,19 @@
 import { ActionIcon, FileButton, Menu, Tooltip } from '@mantine/core';
-import { IconFile, IconFileImport, IconDeviceFloppy, IconFilePlus, IconBulb } from '@tabler/icons-react';
+import {
+  IconBulb,
+  IconCube,
+  IconDeviceFloppy,
+  IconFile,
+  IconFileImport,
+  IconFilePlus,
+} from '@tabler/icons-react';
 import { useRef } from 'react';
 
 import { emptyProject } from '../engine/project/defaults';
 import { readProjectFile, saveProjectFile } from '../export/projectFile';
 import { useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
-import { loadProject } from './actions';
+import { importModel, loadProject } from './actions';
 import { notifications } from './notify';
 
 export function FileMenu() {
@@ -53,6 +60,13 @@ export function FileMenu() {
           {(props) => (
             <Menu.Item leftSection={<IconFileImport size={16} />} {...props} closeMenuOnClick={false}>
               Open project file…
+            </Menu.Item>
+          )}
+        </FileButton>
+        <FileButton accept=".glb,.stl,.obj" onChange={(file) => file && importModel(file)}>
+          {(props) => (
+            <Menu.Item leftSection={<IconCube size={16} />} {...props} closeMenuOnClick={false}>
+              Import 3D model (GLB, STL, OBJ)…
             </Menu.Item>
           )}
         </FileButton>

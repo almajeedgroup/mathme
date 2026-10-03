@@ -45,6 +45,31 @@ The full design and milestones are in [docs/PLAN.md](docs/PLAN.md).
   - **Join / Cut / Overlap** (boolean operations).
   - Print-ready, joined STL/3MF/OBJ/PLY files.
 
+## Human heart slice atlas (for teaching cardiovascular anatomy)
+
+MathMe includes a **real, scan-derived human heart**: the Human Reference Atlas male reference heart, with 51 named structures (chambers, valves, septum, papillary muscles, aorta and branches, pulmonary vessels, venae cavae, coronary arteries and veins). It is licensed CC BY 4.0, with attribution in `geometry-service/data/heart/ATTRIBUTION.md`.
+
+- **In the app:** open Ideas → "Human heart (real anatomy)" and press the scissors in the 3D view.
+  - Pick a standard view (four-, two- or three-chamber, or short axis at the base, mid or apex), an axial, coronal or sagittal plane, or set any angle.
+  - "Export this cut" saves both halves with closed cut faces (needs the geometry service).
+  - File → Import 3D model lets you cut your own GLB/STL/OBJ models the same way.
+- **The atlas build** cuts the heart along 21 planes:
+
+  ```bash
+  cd geometry-service
+  pip install -e .[anatomy]
+  python -m app.anatomy.build --out dist/heart
+  ```
+
+  It writes:
+  - the whole heart (GLB, OBJ, STL)
+  - for every plane, one GLB with both halves as named groups, and a printable STL per half
+  - labelled cross-section pictures with a 10 mm scale bar
+  - `planes.json` with the plane equations, landmarks and cut areas
+  - a ~50-page **PDF atlas** with renders, the maths, structure tables and teaching notes
+
+The atlas is for **education only**. It shows one reference heart and is not a patient record or surgery report. Its teaching notes should be reviewed by a qualified cardiothoracic surgeon before use in a course.
+
 ## Repository layout
 
 | Path | What it is |

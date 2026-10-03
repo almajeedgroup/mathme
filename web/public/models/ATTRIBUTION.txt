@@ -1,0 +1,3 @@
+heart.glb: 3D reference heart from the Human Reference Atlas (HRA), HuBMAP consortium,
+male reference heart VH_M_Heart v1.1, licensed CC BY 4.0. Converted to millimetres,
+holes closed and lightly simplified (surface within 0.15 mm) by MathMe 3D Studio.
