@@ -64,6 +64,26 @@ function partsFromObject(root: Object3D, fileName: string): ModelPart[] {
 
 export type ModelFormat = 'glb' | 'gltf' | 'stl' | 'obj';
 
+/**
+ * Download a binary model. Some static hosts refuse .glb files, so a base64 text copy next to it
+ * (`<url>.b64.txt`) is used when the .glb itself can't be fetched.
+ */
+export async function fetchBinary(url: string): Promise<ArrayBuffer> {
+  try {
+    const res = await fetch(url);
+    if (res.ok && !(res.headers.get('content-type') ?? '').includes('text/html'))
+      return await res.arrayBuffer();
+  } catch {
+    /* try the text copy */
+  }
+  const res = await fetch(`${url}.b64.txt`);
+  if (!res.ok) throw new Error(`Could not load ${url} (${res.status}).`);
+  const binary = atob((await res.text()).trim());
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
 export async function parseModel(
   buffer: ArrayBuffer,
   format: ModelFormat,
@@ -148,9 +168,7 @@ export async function ensureLinkedMeshes(project: Project): Promise<void> {
   const byUrl = new Map<string, StoredMesh[]>();
   for (const m of missing) byUrl.set(m.src!.url, [...(byUrl.get(m.src!.url) ?? []), m]);
   for (const [url, list] of byUrl) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Could not load ${url} (${res.status}).`);
-    const parts = await parseModel(await res.arrayBuffer(), 'glb', url);
+    const parts = await parseModel(await fetchBinary(url), 'glb', url);
     for (const m of list) {
       const part = parts.find((p) => p.name === m.src!.node);
       if (part)
@@ -174,10 +192,10 @@ interface HeartViews {
 
 /** A new project with the real HRA heart (linked, not copied) and its standard cutting planes. */
 export async function buildHeartProject(): Promise<Project> {
-  const [glbRes, viewsRes] = await Promise.all([fetch(HEART_URL), fetch(HEART_VIEWS_URL)]);
-  if (!glbRes.ok || !viewsRes.ok) throw new Error('The heart model could not be downloaded.');
+  const [glb, viewsRes] = await Promise.all([fetchBinary(HEART_URL), fetch(HEART_VIEWS_URL)]);
+  if (!viewsRes.ok) throw new Error('The heart model could not be downloaded.');
   const views = (await viewsRes.json()) as HeartViews;
-  const parts = await parseModel(await glbRes.arrayBuffer(), 'glb', 'heart');
+  const parts = await parseModel(glb, 'glb', 'heart');
   const scale = 100; // the file is in metres; the project is in centimetres
   const c = views.core_centre_mm.map((v) => v / 10) as Vec3; // centre of the heart in cm
   const offset: Vec3 = [-c[0], -c[1] + 7, -c[2]];
