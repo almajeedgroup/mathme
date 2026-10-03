@@ -1,4 +1,4 @@
-import { Matrix4 } from 'three';
+import { Box3, Matrix4 } from 'three';
 
 import { evaluateScene, TooManyObjectsError } from '../engine/evaluate';
 import { getPattern } from '../engine/patterns/registry';
@@ -27,8 +27,8 @@ function plural(name: string): string {
 }
 const ui = () => useUiStore.getState();
 
-/** Height to lift a shape so it sits on the floor instead of half under it. */
-function floorLift(source: SourceRef): number {
+/** The size of a new object, so it can sit on the floor and beside other things. */
+function sourceBounds(source: SourceRef): Box3 {
   const { meshes, library } = store().project;
   const parts =
     source.kind === 'shape'
@@ -37,13 +37,13 @@ function floorLift(source: SourceRef): number {
           shape: p.shape,
           matrix: transformToMatrix(p.transform),
         }));
-  let minY = Infinity;
+  const box = new Box3();
   for (const part of parts) {
     const g = buildGeometry(part.shape, { meshes });
-    if (g.boundingBox) minY = Math.min(minY, g.boundingBox.clone().applyMatrix4(part.matrix).min.y);
+    if (g.boundingBox) box.union(g.boundingBox.clone().applyMatrix4(part.matrix));
     g.dispose();
   }
-  return Number.isFinite(minY) ? Number((-minY).toFixed(3)) : 0;
+  return box;
 }
 
 function nextColor(): string {
@@ -52,17 +52,19 @@ function nextColor(): string {
 }
 
 /** Put new objects next to what is already there, so they don't hide inside it. */
-function freeSpotX(): number {
+function freeSpotX(own: Box3): number {
   const content = viewportBridge.content;
   if (!content || store().project.nodes.length === 0) return 0;
   const box = contentBounds(content);
-  if (box.isEmpty() || box.min.x > 2 || box.max.x < -2) return 0;
-  return Math.ceil(box.max.x + 3);
+  if (box.isEmpty() || box.min.x > own.max.x + 1 || box.max.x < own.min.x - 1) return 0;
+  return Math.ceil(box.max.x + 2 - own.min.x);
 }
 
 function placeNew(node: ObjectNode) {
-  const x = freeSpotX();
-  node.transform.position = [x, floorLift(node.source), 0];
+  const own = sourceBounds(node.source);
+  const x = own.isEmpty() ? 0 : freeSpotX(own);
+  const lift = own.isEmpty() ? 0 : Number((-own.min.y).toFixed(3));
+  node.transform.position = [x, lift, 0];
   store().addNode(node);
   ui().select(node.id);
   if (x !== 0) ui().requestFrame();

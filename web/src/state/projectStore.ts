@@ -89,10 +89,24 @@ export const useProjectStore = create<ProjectStore>()(
         if (!tops.every((id) => nodes.find((n) => n.id === id)?.parentId === parentId)) return null;
         const group = createGroupNode(name);
         group.parentId = parentId;
+        // Put the group's origin in the middle of its contents (so it turns around its center).
+        const members = nodes.filter((n) => tops.includes(n.id));
+        const center = [0, 1, 2].map(
+          (k) => members.reduce((sum, n) => sum + n.transform.position[k], 0) / members.length,
+        );
+        group.transform.position = [center[0], center[1], center[2]];
         set((s) => {
           const firstIndex = s.project.nodes.findIndex((n) => n.id === tops[0]);
           s.project.nodes.splice(Math.max(0, firstIndex), 0, group);
-          for (const n of s.project.nodes) if (tops.includes(n.id)) n.parentId = group.id;
+          for (const n of s.project.nodes) {
+            if (!tops.includes(n.id)) continue;
+            n.parentId = group.id;
+            n.transform.position = [
+              n.transform.position[0] - center[0],
+              n.transform.position[1] - center[1],
+              n.transform.position[2] - center[2],
+            ];
+          }
         });
         return group.id;
       },
