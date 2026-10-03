@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 
 // The Python geometry service runs on :8000 in development; the app calls it via /api.
@@ -20,6 +21,13 @@ export default defineConfig({
   preview: { proxy },
   build: {
     chunkSizeWarningLimit: 2500,
+    rollupOptions: {
+      // The studio app and its landing page.
+      input: {
+        main: resolve(import.meta.dirname, 'index.html'),
+        landing: resolve(import.meta.dirname, 'landing/index.html'),
+      },
+    },
   },
   test: {
     include: ['tests/**/*.test.ts'],

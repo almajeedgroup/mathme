@@ -1,0 +1,20 @@
+{
+  "source": "MathMe deck on presenti.ai, colours sampled from a screenshot of the title slide and thumbnails",
+  "fonts": {
+    "display": "Urbanist 800-900 (closest Google Fonts match to the deck's title face)",
+    "body": "DM Sans 400-700"
+  },
+  "colors": {
+    "violet": "#915BFF",
+    "lime": "#F8FD6E",
+    "pink": "#FF2D94",
+    "blue": "#3841C9",
+    "blueDeep": "#303CA8",
+    "blush": "#FEB4D6",
+    "midPink": "#E088B0",
+    "berry": "#9F3D6C",
+    "plum": "#3E001B",
+    "white": "#FFFFFF",
+    "mist": "#F8F8F8"
+  }
+}

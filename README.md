@@ -45,6 +45,10 @@ The full design and milestones are in [docs/PLAN.md](docs/PLAN.md).
   - **Join / Cut / Overlap** (boolean operations).
   - Print-ready, joined STL/3MF/OBJ/PLY files.
 
+## Landing page
+
+`web/landing/` is the MathMe home page, styled with the colours of the MathMe presentation deck (palette in `web/landing/theme.json`). `npm run build` outputs it to `dist/landing/`, and the studio's Home button links to it. Set `VITE_HOME_URL` to point that button somewhere else.
+
 ## Human heart slice atlas (for teaching cardiovascular anatomy)
 
 MathMe includes a **real, scan-derived human heart**: the Human Reference Atlas male reference heart, with 51 named structures (chambers, valves, septum, papillary muscles, aorta and branches, pulmonary vessels, venae cavae, coronary arteries and veins). It is licensed CC BY 4.0, with attribution in `geometry-service/data/heart/ATTRIBUTION.md`.
@@ -132,6 +136,7 @@ CI (`.github/workflows/ci.yml`) runs all of the above on every push.
 | Variable | Where | Default | Meaning |
 | --- | --- | --- | --- |
 | `VITE_GEOMETRY_API_URL` | web build | `/api` | URL of the geometry service in production, e.g. `https://geometry.example.org` |
+| `VITE_HOME_URL` | web build | `./landing/` | Where the studio's Home button goes |
 | `VITE_BASE` | web build | `/` | Sub-path the app is served from, e.g. `/mathme/` for GitHub Pages |
 | `GEOMETRY_SERVICE_URL` | web dev/preview | `http://localhost:8000` | Where the `/api` proxy forwards to |
 | `ALLOWED_ORIGINS` | service | `http://localhost:5173,http://localhost:4173` | Comma-separated web origins allowed to call the service (CORS) |

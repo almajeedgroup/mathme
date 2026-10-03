@@ -5,6 +5,7 @@ import {
   IconBulb,
   IconDownload,
   IconHelp,
+  IconHome,
   IconAdjustments,
 } from '@tabler/icons-react';
 import { useStore } from 'zustand';
@@ -13,6 +14,9 @@ import { redo, undo, useProjectStore } from '../state/projectStore';
 import { useUiStore } from '../state/uiStore';
 import { CommandBar } from './CommandBar';
 import { FileMenu } from './FileMenu';
+
+// The landing page ships next to the app (landing/index.html); hosts can point elsewhere.
+const HOME_URL = (import.meta.env.VITE_HOME_URL as string | undefined) ?? './landing/';
 
 export function TopBar() {
   const canUndo = useStore(useProjectStore.temporal, (s) => s.pastStates.length > 0);
@@ -35,6 +39,11 @@ export function TopBar() {
         <Text fw={800} size="lg" visibleFrom="md" style={{ whiteSpace: 'nowrap' }}>
           MathMe 3D Studio
         </Text>
+        <Tooltip label="MathMe home page">
+          <ActionIcon component="a" href={HOME_URL} variant="subtle" size="lg" aria-label="Home page">
+            <IconHome size={18} />
+          </ActionIcon>
+        </Tooltip>
         <FileMenu />
       </Group>
       <CommandBar />

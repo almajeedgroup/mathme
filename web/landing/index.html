@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MathMe 3D Studio</title>
+    <meta
+      name="description"
+      content="Build 3D art and objects with math. Pick a shape, choose a pattern, see the formulas, and export GLB, STL, OBJ, PNG or PDF."
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Urbanist:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="./landing.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <a class="brand" href="#top" aria-label="MathMe home">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <path
+            d="M20 3 35 11.5v17L20 37 5 28.5v-17z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M5 11.5 20 20l15-8.5M20 20v17"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M12.5 7.3 27.5 15.8M27.5 7.3 12.5 15.8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            opacity=".7"
+          />
+        </svg>
+        <span>MATHME</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#patterns">Patterns</a>
+        <a href="#maths">The maths</a>
+        <a href="#heart">Heart atlas</a>
+        <a href="#export">Export</a>
+      </nav>
+      <a class="btn btn-lime nav-cta" href="../" data-studio-link>Open the studio</a>
+    </header>
+
+    <main id="top">
+      <!-- 1. Hero: the deck's title slide -->
+      <section class="hero">
+        <svg
+          class="hero-architecture"
+          viewBox="0 0 1200 420"
+          preserveAspectRatio="xMidYMax slice"
+          aria-hidden="true"
+        >
+          <path d="M0 210 520 120 640 150v270H0z" fill="#feb4d6" />
+          <path d="M520 120 640 150v270H520z" fill="#e88ab8" />
+          <path d="M640 150l330 50v220H640z" fill="#c45a8e" />
+          <path d="M970 200 1200 175v245H970z" fill="#a8457a" />
+          <path d="M0 330 760 300l440 25v95H0z" fill="#9f3d6c" />
+          <path d="M150 230a26 26 0 0 1 52 0v70h-52z" fill="#7d1f4c" />
+          <path d="M330 205a38 38 0 0 1 76 0v110h-76z" fill="#5a0f33" />
+          <path d="M780 260a34 34 0 0 1 68 0v80h-68z" fill="#6e1a43" />
+          <path d="M1040 245a30 30 0 0 1 60 0v90h-60z" fill="#3e001b" opacity=".75" />
+          <path d="M430 330h120v18H430zm22-18h98v18h-98zm22-18h76v18h-76z" fill="#d86fa3" />
+        </svg>
+        <svg class="hero-ribbon" viewBox="0 0 900 900" aria-hidden="true">
+          <path
+            d="M610 -60C760 140 860 330 800 520C750 690 600 720 540 600C470 450 420 380 300 410C160 445 120 640 60 960"
+            fill="none"
+            stroke="#f8fd6e"
+            stroke-width="120"
+            stroke-linecap="round"
+          />
+        </svg>
+        <div class="hero-inner">
+          <p class="eyebrow">For students, teachers and makers</p>
+          <h1>Generative 3D Art<br />&amp; Object Studio</h1>
+          <p class="hero-lead">
+            Describe a pattern in plain words and let the maths place every object. Pick shapes by their
+            width, height and radius, see the formulas behind them, and export real 3D files.
+          </p>
+          <div class="recipe" role="note" aria-label="Example recipe">
+            <span class="recipe-label">Type a recipe</span>
+            <code>100 objects → Spiral → Radius 20 → Rotation 30° → Scale 0.5–2</code>
+          </div>
+          <div class="hero-actions">
+            <a class="btn btn-lime" href="../" data-studio-link>Start creating</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
+          </div>
+          <p class="byline">by AL-Majeed Group</p>
+        </div>
+      </section>
+
+      <!-- 2. Contents-style steps -->
+      <section class="contents" id="how">
+        <div class="contents-art" aria-hidden="true">
+          <img src="./img/studio.webp" alt="" width="1440" height="860" loading="lazy" />
+          <span class="contents-tag">How it works</span>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="num">01</span>
+            <div>
+              <h3>Add a shape</h3>
+              <p>
+                Cuboid, sphere, cone, torus, prism, Platonic solids, 3D text, or your own spun and extruded
+                outlines.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="num">02</span>
+            <div>
+              <h3>Let maths copy it</h3>
+              <p>
+                Spirals, grids, circles, waves, rings, spheres and random scatter place hundreds of copies in
+                a click.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="num">03</span>
+            <div>
+              <h3>See the formulas</h3>
+              <p>
+                Every pattern explains itself, like θ = i × 30° and x = r cos θ, worked out for the object you
+                click.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="num">04</span>
+            <div>
+              <h3>Export and share</h3>
+              <p>
+                GLB for apps and games, STL for 3D printers, OBJ, a 4K picture, or a PDF project sheet for
+                class.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- 3. The challenge: pink vs blue -->
+      <section class="versus">
+        <h2 class="section-title">The challenge of traditional 3D</h2>
+        <div class="vs-grid">
+          <article class="vs-card vs-pink">
+            <span class="pill">Traditional software</span>
+            <h3>One object at a time</h3>
+            <p>
+              Placing 200 spheres in a spiral means creating, moving, rotating and resizing each one by hand.
+              Beginners spend hours learning tools before they make anything.
+            </p>
+          </article>
+          <div class="vs-badge" aria-hidden="true">Vs</div>
+          <article class="vs-card vs-blue">
+            <span class="pill">MathMe</span>
+            <h3>One rule, every object</h3>
+            <p>
+              Write the rule once (how many, which pattern, which sizes) and the studio calculates every
+              position, rotation and scale for you. Change a number and the whole artwork updates.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- 4. Patterns gallery -->
+      <section class="patterns" id="patterns">
+        <div class="patterns-head">
+          <span class="num-chip">02</span>
+          <h2>Seven patterns, endless art</h2>
+          <p>Each one is a few lines of maths you can read in the Learn tab.</p>
+        </div>
+        <div class="gallery">
+          <figure>
+            <img
+              src="./img/dna.webp"
+              alt="A DNA double helix made of red and blue spheres joined by rungs"
+              width="800"
+              height="800"
+              loading="lazy"
+            />
+            <figcaption><b>Helix</b> Two spirals half a turn apart</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="./img/wave-field.webp"
+              alt="625 rainbow cubes rising and falling in ripples"
+              width="800"
+              height="800"
+              loading="lazy"
+            />
+            <figcaption><b>Wave</b> y = A × sin(distance)</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="./img/spiky-ball.webp"
+              alt="150 cones spread evenly over a purple sphere"
+              width="800"
+              height="800"
+              loading="lazy"
+            />
+            <figcaption><b>Sphere</b> The Fibonacci sphere</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="./img/snowflake.webp"
+              alt="An icy blue snowflake with six-fold symmetry"
+              width="800"
+              height="800"
+              loading="lazy"
+            />
+            <figcaption><b>Symmetry</b> Six copies, 60° apart</figcaption>
+          </figure>
+        </div>
+        <ul class="pattern-list" aria-label="All patterns">
+          <li>Spiral</li>
+          <li>Grid</li>
+          <li>Circle</li>
+          <li>Wave</li>
+          <li>Radial rings</li>
+          <li>Sphere</li>
+          <li>Random scatter</li>
+        </ul>
+      </section>
+
+      <!-- 5. The maths -->
+      <section class="maths" id="maths">
+        <div class="maths-copy">
+          <span class="num-chip num-chip-lime">03</span>
+          <h2>The maths is the tool</h2>
+          <p>
+            MathMe never hides the numbers. Click any object and the Learn tab shows the formula that placed
+            it, with your values filled in. Measure shows volume and surface area with full working, and how
+            scaling by k changes area by k² and volume by k³.
+          </p>
+          <div class="formula" aria-label="Worked example for object number 10">
+            <span>θ = 10 × 30° = 300°</span>
+            <span>r = 20 × 10 ÷ 99 = 2.02</span>
+            <span>x = 2.02 × cos 300° = 1.01</span>
+            <span>z = 2.02 × sin 300° = −1.75</span>
+          </div>
+        </div>
+        <img
+          class="maths-shot"
+          src="./img/learn.webp"
+          alt="The Learn panel explaining the spiral formula with a worked example"
+          width="350"
+          height="640"
+          loading="lazy"
+        />
+      </section>
+
+      <!-- 6. Heart atlas -->
+      <section class="heart" id="heart">
+        <div class="heart-media">
+          <img
+            src="./img/heart-cut.webp"
+            alt="A real human heart model cut along the four-chamber plane"
+            width="800"
+            height="800"
+            loading="lazy"
+          />
+          <img
+            src="./img/heart-sax.webp"
+            alt="Labelled short-axis cross-section of the heart with a 10 mm scale bar"
+            width="1440"
+            height="1440"
+            loading="lazy"
+          />
+        </div>
+        <div class="heart-copy">
+          <span class="num-chip">04</span>
+          <h2>A real heart, sliced at any angle</h2>
+          <p>
+            Open a scan-based human heart from the Human Reference Atlas, with 51 named structures, and cut it
+            like a surgeon’s textbook: four-chamber, three-chamber (LVOT), two-chamber and short-axis views,
+            or any tilt you choose.
+          </p>
+          <ul class="facts">
+            <li><b>21</b> standard cutting planes</li>
+            <li><b>51</b> named structures</li>
+            <li><b>51-page</b> PDF slice atlas</li>
+          </ul>
+          <p class="note">
+            For education only. One reference heart, not a patient record. Anatomy: Human Reference Atlas,
+            HuBMAP consortium (CC BY 4.0).
+          </p>
+        </div>
+      </section>
+
+      <!-- 7. Export -->
+      <section class="export" id="export">
+        <h2 class="section-title">Take it anywhere</h2>
+        <div class="formats">
+          <div class="format"><b>GLB</b><span>Blender, Unity, Unreal, the web. Saved in metres.</span></div>
+          <div class="format">
+            <b>STL</b><span>3D printing, in millimetres. Print-ready joined solids.</span>
+          </div>
+          <div class="format"><b>OBJ</b><span>Opens in almost every 3D program.</span></div>
+          <div class="format"><b>PNG</b><span>HD, 4K or square, with a see-through background.</span></div>
+          <div class="format"><b>PDF</b><span>A project sheet with views, settings and the maths.</span></div>
+        </div>
+      </section>
+
+      <!-- 8. Call to action -->
+      <section class="cta">
+        <svg class="cta-ribbon" viewBox="0 0 600 300" aria-hidden="true">
+          <path
+            d="M-40 260C80 260 120 60 260 60S420 240 640 120"
+            fill="none"
+            stroke="#915bff"
+            stroke-width="56"
+            stroke-linecap="round"
+          />
+        </svg>
+        <div class="cta-inner">
+          <h2>Make your first artwork in a minute</h2>
+          <p>Free, in your browser, nothing to install. Your work saves itself as you go.</p>
+          <a class="btn btn-violet" href="../" data-studio-link>Open MathMe 3D Studio</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span class="brand brand-small">MATHME</span>
+      <span>Generative 3D Art &amp; Object Studio · by AL-Majeed Group</span>
+    </footer>
+  </body>
+</html>
