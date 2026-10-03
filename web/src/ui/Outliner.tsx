@@ -24,9 +24,8 @@ export function Outliner() {
   }, [nodes]);
   return (
     <Stack gap={4}>
-      <Text className="mm-label">In your scene</Text>
       {nodes.length === 0 ? (
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" px={10}>
           Nothing yet. Add a shape above or try a ready-made idea.
         </Text>
       ) : (

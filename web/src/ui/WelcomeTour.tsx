@@ -1,5 +1,7 @@
 import { Button, Group, Modal, Stepper, Text, Title } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import { useUiStore } from '../state/uiStore';
 
 const TOUR_KEY = 'mathme.tour.done';
 
@@ -44,6 +46,12 @@ const STEPS = [
 export function WelcomeTour() {
   const [open, setOpen] = useState(() => !tourDone());
   const [step, setStep] = useState(0);
+  const tourRequest = useUiStore((s) => s.tourRequest);
+  useEffect(() => {
+    if (tourRequest === 0) return;
+    setStep(0);
+    setOpen(true);
+  }, [tourRequest]);
   const close = () => {
     markTourDone();
     setOpen(false);

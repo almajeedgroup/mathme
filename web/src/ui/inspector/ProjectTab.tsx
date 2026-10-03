@@ -9,7 +9,6 @@ export function ProjectTab() {
   const updateProject = useProjectStore((s) => s.updateProject);
   return (
     <Stack gap="sm">
-      <Text className="mm-label">Your project</Text>
       <TextInput
         size="xs"
         label="Project name"
@@ -42,7 +41,7 @@ export function ProjectTab() {
         onChange={(c) => updateProject((p) => void (p.background = c))}
       />
       <Text size="xs" c="dimmed" mt="md">
-        Drag to turn the view, right-drag to slide, scroll to zoom. The ? button at the top has more help.
+        Drag to turn the view, right-drag to slide, scroll to zoom. Help is at the bottom of the sidebar.
       </Text>
     </Stack>
   );

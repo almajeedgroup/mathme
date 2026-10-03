@@ -1,4 +1,4 @@
-import { AppShell, ScrollArea, Stack } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { useEffect } from 'react';
 
 import { ensureLinkedMeshes } from './services/modelAssets';
@@ -14,11 +14,10 @@ import { WelcomeTour } from './ui/WelcomeTour';
 import { ViewportErrorBoundary } from './viewport/ViewportErrorBoundary';
 import { PresetsModal } from './ui/PresetsModal';
 import { Inspector } from './ui/inspector/Inspector';
-import { Outliner } from './ui/Outliner';
-import { PatternPicker } from './ui/PatternPicker';
-import { ShapeLibrary } from './ui/ShapeLibrary';
+import { SettingsModal } from './ui/SettingsModal';
+import { Sidebar, useWideScreen } from './ui/Sidebar';
 import { Toasts } from './ui/Toasts';
-import { TopBar } from './ui/TopBar';
+import { TopBar, useDetailsPanel } from './ui/TopBar';
 import { useKeyboardShortcuts } from './ui/useKeyboardShortcuts';
 import { ViewportToolbar } from './ui/ViewportToolbar';
 import { Viewport } from './viewport/Viewport';
@@ -26,6 +25,9 @@ import { Viewport } from './viewport/Viewport';
 export function App() {
   const navOpen = useUiStore((s) => s.navOpen);
   const asideOpen = useUiStore((s) => s.asideOpen);
+  const prefs = useUiStore((s) => s.prefs);
+  const wide = useWideScreen();
+  const details = useDetailsPanel();
   const requestFrame = useUiStore((s) => s.requestFrame);
   useKeyboardShortcuts();
   useServiceHealth();
@@ -44,25 +46,28 @@ export function App() {
 
   return (
     <AppShell
+      layout="alt"
       header={{ height: 56 }}
-      navbar={{ width: 264, breakpoint: 'sm', collapsed: { mobile: !navOpen } }}
-      aside={{ width: 320, breakpoint: 'md', collapsed: { mobile: !asideOpen } }}
+      navbar={{
+        width: prefs.navCollapsed && wide ? 60 : 268,
+        breakpoint: 'sm',
+        collapsed: { mobile: !navOpen },
+      }}
+      aside={{
+        width: 320,
+        breakpoint: 'md',
+        collapsed: { mobile: !asideOpen, desktop: prefs.asideHidden },
+      }}
       padding={0}
     >
       <AppShell.Header>
         <TopBar />
       </AppShell.Header>
       <AppShell.Navbar>
-        <ScrollArea h="100%" type="auto" offsetScrollbars>
-          <Stack p="sm" gap="lg">
-            <ShapeLibrary />
-            <PatternPicker />
-            <Outliner />
-          </Stack>
-        </ScrollArea>
+        <Sidebar />
       </AppShell.Navbar>
       <AppShell.Aside>
-        <Inspector />
+        <Inspector onHide={() => details.setShown(false)} />
       </AppShell.Aside>
       <AppShell.Main h="100dvh">
         <div style={{ position: 'relative', height: 'calc(100dvh - 56px)' }}>
@@ -76,6 +81,7 @@ export function App() {
       <PresetsModal />
       <ExportModal />
       <HelpModal />
+      <SettingsModal />
       <WelcomeTour />
       <Toasts />
     </AppShell>

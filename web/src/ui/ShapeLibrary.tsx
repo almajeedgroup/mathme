@@ -1,4 +1,4 @@
-import { ActionIcon, SimpleGrid, Stack, Tabs, Text, Tooltip, UnstyledButton } from '@mantine/core';
+import { ActionIcon, Stack, Tabs, Text } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { notifications } from './notify';
 
@@ -6,7 +6,9 @@ import { SHAPE_LIST } from '../engine/shapes/registry';
 import type { ShapeCategory } from '../engine/shapes/types';
 import { useProjectStore } from '../state/projectStore';
 import { addCustomShape, addShape } from './actions';
+import { NavRow } from './NavRow';
 
+/** A sidebar row that adds something: a grey icon (coloured on hover) and a name. */
 export function TileButton({
   icon,
   label,
@@ -21,24 +23,20 @@ export function TileButton({
   testId?: string;
 }) {
   return (
-    <Tooltip label={description ?? label} multiline w={220} withArrow openDelay={400} disabled={!description}>
-      <UnstyledButton onClick={onClick} data-testid={testId} aria-label={`Add ${label}`}>
-        <div className="tile-button">
-          <div className="tile-icon" aria-hidden>
-            {icon}
-          </div>
-          <Text size="xs" lh={1.2} mt={2}>
-            {label}
-          </Text>
-        </div>
-      </UnstyledButton>
-    </Tooltip>
+    <NavRow
+      icon={<span className="tile-icon">{icon}</span>}
+      label={label}
+      tooltip={description}
+      onClick={onClick}
+      testId={testId}
+      ariaLabel={`Add ${label}`}
+    />
   );
 }
 
 function ShapeGrid({ category }: { category: ShapeCategory }) {
   return (
-    <SimpleGrid cols={3} spacing={2}>
+    <Stack gap={1}>
       {SHAPE_LIST.filter((s) => s.category === category && !s.hidden).map((s) => (
         <TileButton
           key={s.type}
@@ -49,7 +47,7 @@ function ShapeGrid({ category }: { category: ShapeCategory }) {
           testId={`add-shape-${s.type}`}
         />
       ))}
-    </SimpleGrid>
+    </Stack>
   );
 }
 
@@ -58,9 +56,8 @@ export function ShapeLibrary() {
   const removeCustomShape = useProjectStore((s) => s.removeCustomShape);
   return (
     <Stack gap={6}>
-      <Text className="mm-label">Add a shape</Text>
       <Tabs defaultValue="basic" variant="pills" radius="xl">
-        <Tabs.List grow mb={4}>
+        <Tabs.List grow mb={4} px={4}>
           <Tabs.Tab value="basic" px={6} py={4} fz="xs">
             Basic
           </Tabs.Tab>
@@ -89,7 +86,7 @@ export function ShapeLibrary() {
               Your own shapes appear here. Select a few objects, press Group, then “Save as my shape”.
             </Text>
           ) : (
-            <SimpleGrid cols={3} spacing={2}>
+            <Stack gap={1}>
               {library.map((c) => (
                 <div key={c.id} style={{ position: 'relative' }}>
                   <TileButton
@@ -102,7 +99,7 @@ export function ShapeLibrary() {
                     size="xs"
                     variant="subtle"
                     color="red"
-                    style={{ position: 'absolute', top: 2, right: 2 }}
+                    style={{ position: 'absolute', top: 6, right: 6 }}
                     aria-label={`Delete ${c.name}`}
                     onClick={() => {
                       if (!removeCustomShape(c.id))
@@ -116,7 +113,7 @@ export function ShapeLibrary() {
                   </ActionIcon>
                 </div>
               ))}
-            </SimpleGrid>
+            </Stack>
           )}
         </Tabs.Panel>
       </Tabs>

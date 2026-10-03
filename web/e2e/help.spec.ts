@@ -32,8 +32,8 @@ test('works on a tablet (portrait)', async ({ page }) => {
   await page.setViewportSize({ width: 820, height: 1180 });
   await page.goto('/');
   await expect(page.getByTestId('object-count')).toHaveText('100 objects');
-  // the shape panel stays; the settings panel folds away and opens from the top bar
+  // the shape panel stays; the details panel folds away and opens from the top bar
   await expect(page.getByTestId('add-shape-box')).toBeVisible();
-  await page.getByRole('button', { name: 'Settings panel' }).click();
+  await page.getByRole('button', { name: 'Show details panel' }).click();
   await expect(page.getByTestId('inspector')).toBeVisible();
 });

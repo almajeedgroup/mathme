@@ -13,6 +13,8 @@ import { SceneContent } from './SceneContent';
 export function Viewport() {
   const background = useProjectStore((s) => s.project.background);
   const select = useUiStore((s) => s.select);
+  const showGrid = useUiStore((s) => s.prefs.showGrid);
+  const showAxes = useUiStore((s) => s.prefs.showAxes);
   const contentRef = useRef<Group>(null);
 
   return (
@@ -34,26 +36,30 @@ export function Viewport() {
       <group name="content" ref={contentRef}>
         <SceneContent />
       </group>
-      <Grid
-        args={[400, 400]}
-        cellSize={1}
-        cellThickness={0.5}
-        cellColor="#d6cbf5"
-        sectionSize={10}
-        sectionThickness={0.9}
-        sectionColor="#b49aff"
-        fadeDistance={260}
-        fadeStrength={1.5}
-        infiniteGrid
-        raycast={() => null}
-      />
+      {showGrid && (
+        <Grid
+          args={[400, 400]}
+          cellSize={1}
+          cellThickness={0.5}
+          cellColor="#d6cbf5"
+          sectionSize={10}
+          sectionThickness={0.9}
+          sectionColor="#b49aff"
+          fadeDistance={260}
+          fadeStrength={1.5}
+          infiniteGrid
+          raycast={() => null}
+        />
+      )}
       <SelectionGizmo />
       <SelectionOutline />
       <CutSheet />
       <OrbitControls makeDefault enableDamping={false} />
-      <GizmoHelper alignment="bottom-right" margin={[72, 72]}>
-        <GizmoViewport axisColors={['#ff2d94', '#2fb380', '#3841c9']} labelColor="white" />
-      </GizmoHelper>
+      {showAxes && (
+        <GizmoHelper alignment="bottom-right" margin={[72, 72]}>
+          <GizmoViewport axisColors={['#ff2d94', '#2fb380', '#3841c9']} labelColor="white" />
+        </GizmoHelper>
+      )}
       <CameraFramer contentRef={contentRef} />
       <Bridge contentRef={contentRef} />
     </Canvas>

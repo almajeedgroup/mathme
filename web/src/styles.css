@@ -19,12 +19,16 @@ body {
   --mm-line: #ece6fb;
   --mm-soft: #f6f3ff;
   --mm-label: #7a6e94;
+  --mm-side: #fbfaff;
+  --mm-hover: #f0ebff;
 }
 
 [data-mantine-color-scheme='dark'] {
   --mm-line: #2c2640;
   --mm-soft: #1f1a2e;
   --mm-label: #a99cc6;
+  --mm-side: #171322;
+  --mm-hover: #262038;
 }
 
 /* Quiet panel edges */
@@ -51,40 +55,151 @@ body {
   white-space: nowrap;
 }
 
-/* Shape and pattern tiles: no box until you point at one */
-.tile-button {
-  padding: 8px 4px 6px;
-  border-radius: 14px;
-  text-align: center;
-  height: 100%;
-  transition:
-    transform 80ms ease,
-    background-color 80ms ease;
+/* Sidebar, in the style of ChatGPT and Claude */
+.mm-sidebar {
+  background: var(--mm-side);
+}
+
+.mm-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 34px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  color: var(--mantine-color-text);
+  transition: background-color 80ms ease;
+}
+
+.mm-nav-row:hover {
+  background: var(--mm-hover);
+}
+
+.mm-nav-row[data-active] {
+  background: var(--mantine-primary-color-light);
+}
+
+.mm-nav-icon {
+  display: inline-flex;
+  width: 20px;
+  justify-content: center;
+  color: var(--mm-label);
 }
 
 .tile-icon {
-  font-size: 20px;
-  line-height: 1.2;
+  font-size: 15px;
+  line-height: 1;
   filter: grayscale(1);
-  opacity: 0.7;
+  opacity: 0.75;
   transition:
     filter 80ms ease,
     opacity 80ms ease;
 }
 
-.tile-button:hover,
-:focus-visible > .tile-button {
-  background-color: var(--mm-soft);
-}
-
-.tile-button:hover .tile-icon,
-:focus-visible > .tile-button .tile-icon {
+.mm-nav-row:hover .tile-icon,
+.mm-nav-row:focus-visible .tile-icon {
   filter: none;
   opacity: 1;
 }
 
-.tile-button:active {
-  transform: scale(0.96);
+.mm-section-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 10px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mm-label);
+}
+
+.mm-section-head:hover {
+  color: var(--mantine-color-text);
+}
+
+.mm-chevron {
+  transition: transform 120ms ease;
+}
+
+.mm-chevron[data-open] {
+  transform: rotate(90deg);
+}
+
+.mm-section-body {
+  padding-top: 2px;
+}
+
+.mm-sidebar-foot {
+  border-top: 1px solid var(--mm-line);
+}
+
+/* Folded sidebar: the logo turns into the open button on hover, like Claude */
+.mm-rail-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  color: var(--mm-violet);
+}
+
+.mm-rail-logo:hover {
+  background: var(--mm-hover);
+  color: var(--mantine-color-text);
+}
+
+.mm-rail-logo-open {
+  display: none;
+}
+
+.mm-rail-logo:hover .mm-rail-logo-open,
+.mm-rail-logo:focus-visible .mm-rail-logo-open {
+  display: inline-flex;
+}
+
+.mm-rail-logo:hover .mm-rail-logo-mark,
+.mm-rail-logo:focus-visible .mm-rail-logo-mark {
+  display: none;
+}
+
+/* Settings page */
+.mm-modal-title {
+  font-family: Urbanist, 'DM Sans', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.mm-settings-tabs .mantine-Tabs-list {
+  min-width: 150px;
+  padding-right: 12px;
+  margin-right: 16px;
+  border-right: 1px solid var(--mm-line);
+  gap: 2px;
+}
+
+.mm-settings-tabs .mantine-Tabs-panel {
+  min-height: 330px;
+}
+
+.mm-setting-row + .mm-setting-row {
+  border-top: 1px solid var(--mm-line);
+}
+
+@media (max-width: 36em) {
+  .mm-settings-tabs {
+    flex-direction: column;
+  }
+
+  .mm-settings-tabs .mantine-Tabs-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: 0;
+    margin: 0 0 12px;
+    padding: 0;
+  }
 }
 
 /* Floating viewport bar */
@@ -132,9 +247,27 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tile-button,
+  .mm-nav-row,
+  .mm-chevron,
   .tile-icon,
   .mm-row .mm-row-actions {
     transition: none;
   }
+}
+
+/* Idea cards */
+.mm-card {
+  border-color: var(--mm-line);
+  transition:
+    border-color 80ms ease,
+    background-color 80ms ease;
+}
+
+.mm-card:hover {
+  border-color: var(--mm-violet);
+  background: var(--mm-soft);
+}
+
+.mm-settings-tabs .mantine-Tabs-tab {
+  justify-content: flex-start;
 }

@@ -1,5 +1,5 @@
-import { ActionIcon, Group, ScrollArea, Stack, Tabs, TextInput, Tooltip } from '@mantine/core';
-import { IconCopy, IconTrash } from '@tabler/icons-react';
+import { ActionIcon, Group, ScrollArea, Stack, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
+import { IconCopy, IconLayoutSidebarRightCollapse, IconTrash } from '@tabler/icons-react';
 
 import type { SceneNode } from '../../engine/types';
 import { useProjectStore } from '../../state/projectStore';
@@ -52,22 +52,32 @@ function tabsFor(node: SceneNode): TabDef[] {
   ];
 }
 
-export function Inspector() {
+export function Inspector({ onHide }: { onHide(): void }) {
   const ids = useUiStore((s) => s.selectedIds);
   const nodes = useProjectStore((s) => s.project.nodes);
   const selected = ids.map((id) => nodes.find((n) => n.id === id)).filter((n): n is SceneNode => Boolean(n));
   return (
-    <ScrollArea h="100%" type="auto" offsetScrollbars>
-      <Stack p="sm" gap="sm" data-testid="inspector">
-        {selected.length === 0 ? (
-          <ProjectTab />
-        ) : selected.length > 1 ? (
-          <MultiTab nodes={selected} />
-        ) : (
-          <NodeInspector node={selected[0]} />
-        )}
-      </Stack>
-    </ScrollArea>
+    <Stack gap={0} h="100%">
+      <Group justify="space-between" wrap="nowrap" px="sm" pt={10} pb={2}>
+        <Text className="mm-label">Details</Text>
+        <Tooltip label="Hide details panel" position="left">
+          <ActionIcon size="lg" onClick={onHide} aria-label="Hide details panel">
+            <IconLayoutSidebarRightCollapse size={19} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+      <ScrollArea flex={1} type="auto" offsetScrollbars>
+        <Stack p="sm" pt={4} gap="sm" data-testid="inspector">
+          {selected.length === 0 ? (
+            <ProjectTab />
+          ) : selected.length > 1 ? (
+            <MultiTab nodes={selected} />
+          ) : (
+            <NodeInspector node={selected[0]} />
+          )}
+        </Stack>
+      </ScrollArea>
+    </Stack>
   );
 }
 

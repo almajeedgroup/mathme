@@ -1,4 +1,4 @@
-import { SimpleGrid, Stack, Text } from '@mantine/core';
+import { Stack, Text } from '@mantine/core';
 
 import { PATTERN_LIST } from '../engine/patterns/registry';
 import { useProjectStore } from '../state/projectStore';
@@ -16,12 +16,11 @@ export function PatternPicker() {
         ? `Changes the pattern of “${node.name}”.`
         : 'Select an object first to copy it, or start with spheres.';
   return (
-    <Stack gap={6}>
-      <Text className="mm-label">Make a pattern</Text>
-      <Text size="xs" c="dimmed">
+    <Stack gap={4}>
+      <Text size="xs" c="dimmed" px={10}>
         {hint}
       </Text>
-      <SimpleGrid cols={3} spacing={2}>
+      <Stack gap={1}>
         {PATTERN_LIST.map((p) => (
           <TileButton
             key={p.type}
@@ -32,7 +31,7 @@ export function PatternPicker() {
             testId={`pattern-${p.type}`}
           />
         ))}
-      </SimpleGrid>
+      </Stack>
     </Stack>
   );
 }

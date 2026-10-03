@@ -40,7 +40,7 @@ export function PresetsModal() {
             }
           }}
         >
-          <Card withBorder padding="sm" radius="md" h="100%" className="tile-button">
+          <Card withBorder padding="sm" radius="md" h="100%" className="mm-card">
             <Text size="xl">🫀</Text>
             <Text fw={600}>Human heart (real anatomy)</Text>
             <Text size="xs" c="dimmed">
@@ -59,7 +59,7 @@ export function PresetsModal() {
               notifications.show({ color: 'violet', message: `Opened “${p.title}”. Press Undo to go back.` });
             }}
           >
-            <Card withBorder padding="sm" radius="md" h="100%" className="tile-button">
+            <Card withBorder padding="sm" radius="md" h="100%" className="mm-card">
               <Text size="xl">{p.icon}</Text>
               <Text fw={600}>{p.title}</Text>
               <Text size="xs" c="dimmed">

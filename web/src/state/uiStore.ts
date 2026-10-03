@@ -17,7 +17,50 @@ export interface CutState {
   presetId: string | null;
 }
 
+/** Settings that are remembered in this browser. */
+export interface Prefs {
+  /** Left sidebar shrunk to a strip of icons (wide screens). */
+  navCollapsed: boolean;
+  /** Right details panel hidden (wide screens). */
+  asideHidden: boolean;
+  showGrid: boolean;
+  showAxes: boolean;
+  /** Which sidebar sections are open. */
+  sections: { shapes: boolean; patterns: boolean; scene: boolean };
+}
+
+const PREFS_KEY = 'mathme.prefs.v1';
+
+export const DEFAULT_PREFS: Prefs = {
+  navCollapsed: false,
+  asideHidden: false,
+  showGrid: true,
+  showAxes: true,
+  sections: { shapes: true, patterns: true, scene: true },
+};
+
+function loadPrefs(): Prefs {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') as Partial<Prefs>;
+    return { ...DEFAULT_PREFS, ...saved, sections: { ...DEFAULT_PREFS.sections, ...saved.sections } };
+  } catch {
+    return DEFAULT_PREFS;
+  }
+}
+
+function savePrefs(prefs: Prefs) {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  } catch {
+    /* private mode: just don't remember */
+  }
+}
+
 interface UiState {
+  prefs: Prefs;
+  settingsOpen: boolean;
+  /** Bumped to show the welcome tour again. */
+  tourRequest: number;
   selectedIds: string[];
   /** The object inside a pattern that was clicked (used by the Learn panel). */
   selectedInstance: { nodeId: string; index: number } | null;
@@ -48,7 +91,13 @@ interface UiState {
   setTransformMode(mode: TransformMode): void;
   setSnap(snap: boolean): void;
   setInspectorTab(tab: string | null): void;
-  setOpen(panel: 'exportOpen' | 'presetsOpen' | 'helpOpen' | 'navOpen' | 'asideOpen', open: boolean): void;
+  setOpen(
+    panel: 'exportOpen' | 'presetsOpen' | 'helpOpen' | 'navOpen' | 'asideOpen' | 'settingsOpen',
+    open: boolean,
+  ): void;
+  setPrefs(patch: Partial<Prefs>): void;
+  toggleSection(section: keyof Prefs['sections'], open?: boolean): void;
+  showTour(): void;
   setServiceOnline(online: boolean): void;
   registerObject(id: string, obj: Object3D | null): void;
   requestFrame(): void;
@@ -70,6 +119,9 @@ const NO_CUT: CutState = {
 };
 
 export const useUiStore = create<UiState>()((set) => ({
+  prefs: loadPrefs(),
+  settingsOpen: false,
+  tourRequest: 0,
   selectedIds: [],
   selectedInstance: null,
   transformMode: 'translate',
@@ -120,6 +172,20 @@ export const useUiStore = create<UiState>()((set) => ({
   requestFrame: () => set((s) => ({ frameRequest: s.frameRequest + 1 })),
   setCut: (patch) => set((s) => ({ cut: { ...s.cut, ...patch } })),
   setCutOpen: (cutOpen) => set({ cutOpen }),
+  setPrefs: (patch) =>
+    set((s) => {
+      const prefs = { ...s.prefs, ...patch };
+      savePrefs(prefs);
+      return { prefs };
+    }),
+  toggleSection: (section, open) =>
+    set((s) => {
+      const sections = { ...s.prefs.sections, [section]: open ?? !s.prefs.sections[section] };
+      const prefs = { ...s.prefs, sections };
+      savePrefs(prefs);
+      return { prefs };
+    }),
+  showTour: () => set((s) => ({ tourRequest: s.tourRequest + 1 })),
   resetCut: () => set({ cut: NO_CUT, cutOpen: false }),
   lookAlong: (dir, plane) =>
     set((s) => ({ lookRequest: { dir, plane, nonce: (s.lookRequest?.nonce ?? 0) + 1 } })),
