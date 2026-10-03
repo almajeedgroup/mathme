@@ -23,8 +23,15 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install the geometry service for the browser tests
+        run: pip install -e ../geometry-service
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
+        env:
+          E2E_SERVICE: '1'
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

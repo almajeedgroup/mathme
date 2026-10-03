@@ -1,6 +1,7 @@
 import { AppShell, Divider, ScrollArea, Stack } from '@mantine/core';
 import { useEffect } from 'react';
 
+import { useServiceHealth } from './services/useServiceHealth';
 import { loadAutosave, startAutosave } from './state/persistence';
 import { clearHistory, useProjectStore } from './state/projectStore';
 import { useUiStore } from './state/uiStore';
@@ -22,6 +23,7 @@ export function App() {
   const asideOpen = useUiStore((s) => s.asideOpen);
   const requestFrame = useUiStore((s) => s.requestFrame);
   useKeyboardShortcuts();
+  useServiceHealth();
   useEffect(() => {
     const saved = loadAutosave();
     if (saved) {

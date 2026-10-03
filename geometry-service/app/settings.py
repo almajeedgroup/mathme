@@ -15,6 +15,7 @@ class Settings:
     max_upload_mb: float = float(os.environ.get("MAX_UPLOAD_MB", "50"))
     max_triangles: int = int(os.environ.get("MAX_TRIANGLES", "2000000"))
     max_union_parts: int = int(os.environ.get("MAX_UNION_PARTS", "5000"))
+    timeout_s: float = float(os.environ.get("REQUEST_TIMEOUT_S", "60"))
 
     @property
     def max_upload_bytes(self) -> int:

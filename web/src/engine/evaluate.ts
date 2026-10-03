@@ -98,8 +98,22 @@ export function evaluateScene(
   const roots = opts.rootIds
     ? opts.rootIds.map((id) => nodes.find((n) => n.id === id)).filter((n): n is SceneNode => Boolean(n))
     : (byParent.get(null) ?? []);
-  for (const r of roots) visit(r, opts.rootMatrix ?? new Matrix4());
+  for (const r of roots) visit(r, opts.rootMatrix ?? ancestorMatrix(nodes, r));
   return out;
+}
+
+/** The combined placement of a node's parent groups (their first symmetry copy). */
+export function ancestorMatrix(nodes: SceneNode[], node: SceneNode): Matrix4 {
+  const chain: SceneNode[] = [];
+  let parent = nodes.find((n) => n.id === node.parentId);
+  while (parent) {
+    chain.unshift(parent);
+    const pid = parent.parentId;
+    parent = nodes.find((n) => n.id === pid);
+  }
+  const m = new Matrix4();
+  for (const p of chain) m.multiply(transformToMatrix(p.transform));
+  return m;
 }
 
 /** How many objects the scene draws (without building them). */

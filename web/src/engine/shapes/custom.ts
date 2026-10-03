@@ -10,6 +10,7 @@ import {
 import { FontLoader, type Font } from 'three/addons/loaders/FontLoader.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
 import fontJson from '../../assets/fonts/droid_sans_bold.ascii.typeface.json';
 import { decodeFloat32, decodeUint32 } from '../binary';
@@ -378,7 +379,7 @@ export const mesh: ShapeDefinition = {
     if (!stored) return g;
     g.setAttribute('position', new BufferAttribute(decodeFloat32(stored.positions), 3));
     g.setIndex(new BufferAttribute(decodeUint32(stored.indices), 1));
-    g.computeVertexNormals();
-    return g;
+    // sharp edges stay sharp, curved parts stay smooth
+    return toCreasedNormals(g, Math.PI / 6);
   },
 };

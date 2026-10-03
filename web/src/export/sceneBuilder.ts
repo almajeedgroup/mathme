@@ -210,9 +210,9 @@ export type ModelMode = 'separate' | 'merged';
  */
 export function buildModelScene(
   project: Project,
-  opts: { mode: ModelMode; scale: number; bakeToWorld?: boolean },
+  opts: { mode: ModelMode; scale: number; bakeToWorld?: boolean; rootIds?: string[] },
 ): BuiltScene {
-  const items = evaluateScene(project);
+  const items = evaluateScene(project, { rootIds: opts.rootIds });
   const geometries = new GeometryCache(project);
   const materials = new MaterialCache();
   const owned: BufferGeometry[] = [];
