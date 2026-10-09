@@ -3,6 +3,8 @@ import { countObjects } from '../engine/evaluate';
 import { emptyProject } from '../engine/project/defaults';
 import { PRESETS } from '../engine/project/presets';
 import type { Project } from '../engine/types';
+import { signedIn } from '../account/accountStore';
+import { ACCOUNTS_ON } from '../account/api';
 import { getClaudeSample, SAMPLE_GONE } from '../services/claudeSample';
 import { assist } from '../services/geometryApi';
 import { useProjectStore } from '../state/projectStore';
@@ -127,7 +129,8 @@ function planFromAnswer(answer: AiAnswer): Plan {
 
 async function aiPlan(text: string, scene: string): Promise<Plan | null> {
   const ui = useUiStore.getState();
-  if (ui.assistantOnline) {
+  // on the hosted app the AI helper is for signed-in users (it counts against their daily messages)
+  if (ui.assistantOnline && (!ACCOUNTS_ON || signedIn())) {
     try {
       return planFromAnswer(await assist(text, scene, IDEA_IDS));
     } catch {

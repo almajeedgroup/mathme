@@ -1,6 +1,9 @@
 import { AppShell } from '@mantine/core';
 import { useEffect } from 'react';
 
+import { AccountLayer } from './account/AccountLayer';
+import { AdminPage } from './account/AdminPage';
+
 import { detectClaudeSample } from './services/claudeSample';
 import { useServiceHealth } from './services/useServiceHealth';
 import { migrateLegacyAutosave, startAutosave } from './state/persistence';
@@ -52,9 +55,19 @@ export function App() {
       <PresetsModal />
       <HelpModal />
       <SettingsModal />
+      <AccountLayer />
       <Toasts />
     </>
   );
+
+  if (view === 'admin') {
+    return (
+      <>
+        <AdminPage />
+        {shared}
+      </>
+    );
+  }
 
   if (view === 'home') {
     return (

@@ -18,16 +18,20 @@ import {
 } from '@mantine/core';
 import {
   IconArrowUp,
+  IconCloudUpload,
   IconCopy,
   IconDots,
   IconPencil,
   IconPlus,
+  IconSchool,
   IconSparkles,
   IconTrash,
   IconWriting,
 } from '@tabler/icons-react';
 import { useState } from 'react';
 
+import { useAccount } from '../account/accountStore';
+import { ACCOUNTS_ON } from '../account/api';
 import { emptyProject } from '../engine/project/defaults';
 import { PRESETS } from '../engine/project/presets';
 import {
@@ -188,8 +192,41 @@ function ChatBox() {
   );
 }
 
+/** Where a project is saved, for signed-in users of the hosted app. */
+function CloudBadge({ meta }: { meta: ProjectMeta }) {
+  const signedIn = useAccount((s) => Boolean(s.me.user));
+  if (!ACCOUNTS_ON || !signedIn) return null;
+  const [label, color, tip] = meta.remote
+    ? ['Cloud', 'violet', 'Saved in the cloud; opening it downloads it to this device.']
+    : meta.cloud?.state === 'synced'
+      ? ['Cloud', 'violet', 'Saved in the cloud and on this device.']
+      : meta.cloud?.state === 'pending'
+        ? ['Saving…', 'gray', 'Changes are being saved to the cloud.']
+        : ['This device', 'gray', 'Only on this device. Use ⋯ → Save in the cloud.'];
+  return (
+    <Tooltip label={tip} withArrow>
+      <Badge size="xs" variant="light" color={color} className="mm-cloud-badge" data-testid="cloud-badge">
+        {label}
+        {meta.shared ? ' · shared' : ''}
+      </Badge>
+    </Tooltip>
+  );
+}
+
 function ProjectCard({ meta, onRename }: { meta: ProjectMeta; onRename(meta: ProjectMeta): void }) {
   const [confirm, setConfirm] = useState(false);
+  const me = useAccount((s) => s.me);
+  const inCloud = Boolean(meta.remote || meta.cloud?.state === 'synced');
+  const moveToCloud = async () => {
+    const { moveUp, explainCloudLimit } = await import('../account/cloud');
+    if ((await moveUp([meta.id])) === 0) explainCloudLimit();
+  };
+  const share = async (shared: boolean) => {
+    const { shareToClass } = await import('../account/cloud');
+    await shareToClass(meta.id, shared).catch((e: Error) =>
+      notifications.show({ color: 'red', message: e.message }),
+    );
+  };
   return (
     <div className="mm-project">
       <UnstyledButton
@@ -199,7 +236,12 @@ function ProjectCard({ meta, onRename }: { meta: ProjectMeta; onRename(meta: Pro
         data-testid="project-card"
       >
         <div className="mm-project-thumb">
-          {meta.thumb ? <img src={meta.thumb} alt="" /> : <Logo size={40} />}
+          {meta.thumb || meta.thumbUrl ? (
+            <img src={meta.thumb ?? meta.thumbUrl} alt="" />
+          ) : (
+            <Logo size={40} />
+          )}
+          <CloudBadge meta={meta} />
         </div>
         <div className="mm-project-meta">
           <Text size="sm" fw={600} truncate>
@@ -217,9 +259,23 @@ function ProjectCard({ meta, onRename }: { meta: ProjectMeta; onRename(meta: Pro
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item leftSection={<IconWriting size={14} />} onClick={() => onRename(meta)}>
+          <Menu.Item
+            leftSection={<IconWriting size={14} />}
+            onClick={() => onRename(meta)}
+            disabled={meta.remote}
+          >
             Rename
           </Menu.Item>
+          {ACCOUNTS_ON && me.user && !inCloud && (
+            <Menu.Item leftSection={<IconCloudUpload size={14} />} onClick={() => void moveToCloud()}>
+              Save in the cloud
+            </Menu.Item>
+          )}
+          {ACCOUNTS_ON && me.campus?.active && inCloud && (
+            <Menu.Item leftSection={<IconSchool size={14} />} onClick={() => void share(!meta.shared)}>
+              {meta.shared ? 'Stop sharing with my class' : 'Share with my class'}
+            </Menu.Item>
+          )}
           <Menu.Item leftSection={<IconCopy size={14} />} onClick={() => duplicateProject(meta.id)}>
             Duplicate
           </Menu.Item>
@@ -236,7 +292,8 @@ function ProjectCard({ meta, onRename }: { meta: ProjectMeta; onRename(meta: Pro
         size="sm"
       >
         <Text size="sm" mb="md">
-          “{meta.name}” will be removed from this browser. This cannot be undone.
+          “{meta.name}” will be removed from this browser{inCloud ? ' and from the cloud' : ''}. This cannot
+          be undone.
         </Text>
         <Group justify="flex-end">
           <Button variant="default" onClick={() => setConfirm(false)}>

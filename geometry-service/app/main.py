@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hmac
 import io
 import math
 import re
@@ -33,6 +34,17 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["Content-Disposition", "X-Notes"],
 )
+
+
+@app.middleware("http")
+async def require_secret(request: Request, call_next):
+    """With GEOMETRY_SECRET set, only callers that know it (the account service) get past /health."""
+    secret = settings.geometry_secret
+    if secret and request.method != "OPTIONS" and request.url.path != "/health":
+        given = request.headers.get("x-geometry-secret", "")
+        if not hmac.compare_digest(given.encode(), secret.encode()):
+            return JSONResponse(status_code=401, content={"detail": "This service only answers MathMe."})
+    return await call_next(request)
 
 
 @app.exception_handler(geometry.GeometryError)

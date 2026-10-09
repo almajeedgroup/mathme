@@ -1,0 +1,11 @@
+.venv/
+*.sqlite3
+mathme-bucket/
+.wrangler/
+python_modules/
+.venv-workers/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/

@@ -14,9 +14,18 @@ import {
   Title,
   useMantineColorScheme,
 } from '@mantine/core';
-import { IconBox, IconDatabase, IconInfoCircle, IconPalette, IconUser } from '@tabler/icons-react';
+import {
+  IconBox,
+  IconCreditCard,
+  IconDatabase,
+  IconInfoCircle,
+  IconPalette,
+  IconUser,
+} from '@tabler/icons-react';
 import { type ReactNode, useState } from 'react';
 
+import { AccountSettings } from '../account/AccountSettings';
+import { ACCOUNTS_ON } from '../account/api';
 import type { Units } from '../engine/types';
 import { GEOMETRY_API_URL } from '../services/geometryApi';
 import { deleteProject, useProjectList } from '../state/persistence';
@@ -247,6 +256,13 @@ function DataSettings() {
   );
 }
 
+const LEGAL = [
+  ['terms.html', 'Terms'],
+  ['privacy.html', 'Privacy'],
+  ['refunds.html', 'Refunds and cancellation'],
+  ['contact.html', 'Contact'],
+] as const;
+
 function AboutSettings() {
   return (
     <Stack gap="sm">
@@ -257,17 +273,26 @@ function AboutSettings() {
             MathMe 3D Studio
           </Title>
           <Text size="xs" c="dimmed">
-            Generative 3D Art &amp; Object Studio · by AL-Majeed Group
+            Generative 3D Art &amp; Object Studio
           </Text>
         </div>
       </Group>
+      <Text size="sm">Developed by Al-Majeed School of Research Methodology and Innovation.</Text>
       <Text size="sm">
         Build 3D art from simple shapes and maths patterns, see the formulas, and export GLB, STL, OBJ, PNG or
         PDF.
       </Text>
-      <Anchor href={HOME_URL} size="sm">
-        MathMe home page
-      </Anchor>
+      <Group gap="md">
+        <Anchor href={HOME_URL} size="sm">
+          MathMe home page
+        </Anchor>
+        {ACCOUNTS_ON &&
+          LEGAL.map(([file, label]) => (
+            <Anchor key={file} href={`${HOME_URL}${file}`} size="sm" target="_blank">
+              {label}
+            </Anchor>
+          ))}
+      </Group>
       <Text size="xs" c="dimmed">
         Heart model: Human Reference Atlas, HuBMAP consortium (CC BY 4.0). 3D text font: Droid Sans (Apache
         2.0).
@@ -277,6 +302,9 @@ function AboutSettings() {
 }
 
 const SECTIONS = [
+  ...(ACCOUNTS_ON
+    ? [{ value: 'account', label: 'Account', icon: IconCreditCard, render: () => <AccountSettings /> }]
+    : []),
   { value: 'project', label: 'Project', icon: IconUser, render: () => <ProjectSettings /> },
   { value: 'appearance', label: 'Appearance', icon: IconPalette, render: () => <AppearanceSettings /> },
   { value: 'view', label: '3D view', icon: IconBox, render: () => <ViewSettings /> },
@@ -287,7 +315,7 @@ const SECTIONS = [
 export function SettingsModal() {
   const open = useUiStore((s) => s.settingsOpen);
   const setOpen = useUiStore((s) => s.setOpen);
-  const [tab, setTab] = useState('project');
+  const [tab, setTab] = useState(ACCOUNTS_ON ? 'account' : 'project');
   // the Project section is about the open project, so it only shows in the studio
   const studio = useUiStore((s) => s.view === 'studio');
   const sections = SECTIONS.filter((s) => studio || s.value !== 'project');

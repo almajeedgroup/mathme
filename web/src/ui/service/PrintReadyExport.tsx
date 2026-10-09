@@ -2,6 +2,7 @@ import { Button, Group, SegmentedControl, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 
 import { downloadBlob, slugify } from '../../export/download';
+import { gate } from '../../account/limits';
 import { printReadyExport, type PrintFormat } from '../../services/geometryApi';
 import { useProjectStore } from '../../state/projectStore';
 import { notifications } from '../notify';
@@ -14,6 +15,7 @@ export function PrintReadyExport() {
   const [busy, setBusy] = useState(false);
 
   const run = async () => {
+    if (!gate({ kind: 'export', format: 'print-ready' })) return;
     setBusy(true);
     try {
       const { serviceGlb } = await import('../../export/serviceModel');

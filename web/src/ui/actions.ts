@@ -1,3 +1,5 @@
+import { gate } from '../account/limits';
+import { countObjects } from '../engine/evaluate';
 import { floorDrawing, polygonArea } from '../engine/drawing';
 import { Box3, Matrix4 } from 'three';
 
@@ -99,6 +101,13 @@ export function addCustomShape(customId: string) {
  * selected pattern, or start a new pattern of spheres.
  */
 export function applyPattern(type: PatternType) {
+  if (!gate({ kind: 'pattern', type })) return;
+  const selected =
+    ui().selectedIds.length === 1
+      ? store().project.nodes.find((n) => n.id === ui().selectedIds[0])
+      : undefined;
+  const adding = selected?.kind === 'pattern' ? 0 : getPattern(type).defaultCount;
+  if (!gate({ kind: 'objects', count: countObjects(store().project) + adding })) return;
   asUndoStep(() => applyPatternNow(type));
 }
 
@@ -186,6 +195,8 @@ export const MAX_CUSTOM_PARTS = 500;
  * into simple parts, measured from the node's own center.
  */
 export function saveAsCustomShape(nodeId: string, name: string): { ok: true } | { ok: false; error: string } {
+  if (!gate({ kind: 'myShapes', count: store().project.library.length }))
+    return { ok: false, error: 'Your plan has no room for more saved shapes.' };
   const project = store().project;
   const node = project.nodes.find((n) => n.id === nodeId);
   if (!node) return { ok: false, error: 'Nothing selected.' };
@@ -230,6 +241,12 @@ export function resetShapeSizes(nodeId: string) {
  * - Otherwise a new pattern is added.
  */
 export function applyCommand(cmd: ParsedCommand): string {
+  const pattern = cmd.pattern ?? 'spiral';
+  if (!gate({ kind: 'pattern', type: pattern }))
+    return `nothing yet: the ${pattern} pattern is not in your plan`;
+  const adding = cmd.count ?? getPattern(pattern).defaultCount;
+  if (!gate({ kind: 'objects', count: countObjects(store().project) + adding }))
+    return 'nothing yet: that would be too many objects for your plan';
   return asUndoStep(() => applyCommandNow(cmd));
 }
 

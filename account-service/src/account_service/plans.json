@@ -1,0 +1,137 @@
+{
+  "currency": "INR",
+  "gstRate": 0.18,
+  "unlimited": -1,
+  "exportFormats": {
+    "project": "Project file (.mathme.json)",
+    "png-hd": "PNG picture (HD)",
+    "png-square": "PNG picture (square)",
+    "png-4k": "PNG picture (4K poster)",
+    "png-transparent": "See-through PNG background",
+    "glb": "3D model (GLB)",
+    "stl": "3D printing (STL)",
+    "obj": "3D model (OBJ)",
+    "svg": "Vector drawing (SVG)",
+    "dxf": "CAD drawing (DXF)",
+    "pdf": "PDF project sheet",
+    "print-ready": "Print-ready joined solid"
+  },
+  "plans": {
+    "free": {
+      "label": "Free",
+      "name": "Explorer",
+      "tagline": "Start creating, no card needed.",
+      "prices": {},
+      "limits": {
+        "cloudProjects": 3,
+        "projectBytes": 5000000,
+        "maxObjects": 2000,
+        "patterns": ["spiral", "grid", "circle"],
+        "exportsPerMonth": 15,
+        "exportFormats": ["project", "png-hd"],
+        "twoDToThreeD": false,
+        "myShapes": 2,
+        "geometryJobsPerDay": 5,
+        "aiMessagesPerDay": 5,
+        "priority": false,
+        "commercialUse": false
+      },
+      "features": [
+        "2D sketch board with measurements",
+        "3D shapes and 3 patterns (spiral, grid, circle)",
+        "Up to 2,000 objects per scene",
+        "3 projects saved to the cloud, unlimited on your device",
+        "15 exports a month (PNG HD and project files)",
+        "5 AI chat messages and 5 geometry jobs a day"
+      ]
+    },
+    "plus": {
+      "label": "Plus",
+      "name": "Creator",
+      "tagline": "For students, hobbyists and creators.",
+      "prices": { "monthly": 29900, "annual": 249900 },
+      "limits": {
+        "cloudProjects": 50,
+        "projectBytes": 25000000,
+        "maxObjects": 20000,
+        "patterns": "all",
+        "exportsPerMonth": 200,
+        "exportFormats": ["project", "png-hd", "png-square", "glb", "stl", "obj", "svg", "dxf", "pdf"],
+        "twoDToThreeD": true,
+        "myShapes": 20,
+        "geometryJobsPerDay": 50,
+        "aiMessagesPerDay": 50,
+        "priority": false,
+        "commercialUse": false
+      },
+      "features": [
+        "Everything in Free",
+        "All 7 patterns and up to 20,000 objects",
+        "2D-to-3D: push up and spin sketches into solids",
+        "GLB, STL, OBJ, SVG, DXF and PDF exports",
+        "200 exports a month",
+        "50 cloud projects with backup",
+        "50 AI chat messages and 50 geometry jobs a day"
+      ]
+    },
+    "pro": {
+      "label": "Pro",
+      "name": "Professional",
+      "tagline": "For designers, researchers and educators.",
+      "prices": { "monthly": 79900, "annual": 699900 },
+      "limits": {
+        "cloudProjects": 500,
+        "projectBytes": 100000000,
+        "maxObjects": 20000,
+        "patterns": "all",
+        "exportsPerMonth": 1000,
+        "exportFormats": [
+          "project",
+          "png-hd",
+          "png-square",
+          "png-4k",
+          "png-transparent",
+          "glb",
+          "stl",
+          "obj",
+          "svg",
+          "dxf",
+          "pdf",
+          "print-ready"
+        ],
+        "twoDToThreeD": true,
+        "myShapes": -1,
+        "geometryJobsPerDay": 300,
+        "aiMessagesPerDay": 200,
+        "priority": true,
+        "commercialUse": true
+      },
+      "features": [
+        "Everything in Plus",
+        "4K and see-through PNG, print-ready joined STL",
+        "1,000 exports a month",
+        "500 cloud projects, unlimited saved shapes",
+        "300 geometry jobs a day, processed first",
+        "200 AI chat messages a day",
+        "Commercial-use rights (see the Terms)",
+        "Priority email support"
+      ]
+    },
+    "campus": {
+      "label": "Campus",
+      "name": "Education",
+      "tagline": "For schools, colleges and labs.",
+      "prices": { "annual": 1499900 },
+      "seats": { "students": 100, "teachers": 5 },
+      "studentPlan": "plus",
+      "teacherPlan": "pro",
+      "features": [
+        "100 student and 5 teacher accounts",
+        "Students get Plus, teachers get Pro",
+        "Class page: roster and shared student projects",
+        "Join codes for teachers and students",
+        "Onboarding help for your institution"
+      ]
+    }
+  }
+}

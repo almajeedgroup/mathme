@@ -1,3 +1,4 @@
+import { gate } from '../../account/limits';
 import { ActionIcon, Alert, Group, NumberInput, Select, Stack, Text, Tooltip } from '@mantine/core';
 import { IconDice5 } from '@tabler/icons-react';
 
@@ -43,7 +44,10 @@ export function PatternTab({ node }: { node: PatternNode }) {
         hardMax={MAX_OBJECTS}
         step={1}
         integer
-        onChange={(v) => update((n) => void (n.count = v))}
+        onChange={(v) => {
+          if (v > node.count && !gate({ kind: 'objects', count: total - node.count + v })) return;
+          update((n) => void (n.count = v));
+        }}
       />
       {total > WARN_OBJECTS && (
         <Alert color="orange" p="xs">

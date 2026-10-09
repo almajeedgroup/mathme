@@ -3,6 +3,7 @@ import type { Project } from '../engine/types';
 import { ensureLinkedMeshes } from '../services/modelAssets';
 import {
   createProjectEntry,
+  getMeta,
   lastProjectId,
   readProject,
   saveNow,
@@ -14,6 +15,7 @@ import { notifications } from './notify';
 import { useSketchUi } from './sketch/sketchStore';
 
 const STUDIO_HASH = '#studio';
+const ADMIN_HASH = '#admin';
 
 function setHash(hash: string) {
   try {
@@ -41,6 +43,15 @@ function showProject(project: Project) {
 }
 
 export function openProject(id: string): boolean {
+  // a project that is only in the cloud: download it first, then open it
+  if (getMeta(id)?.remote) {
+    void import('../account/cloud').then(({ download }) =>
+      download(id).then((ok) => {
+        if (ok) openProject(id);
+      }),
+    );
+    return true;
+  }
   const project = readProject(id);
   if (!project) {
     notifications.show({ color: 'red', message: 'That project could not be opened.' });
@@ -73,14 +84,25 @@ export function startNavigation(): () => void {
   const sync = () => {
     const wantStudio = location.hash === STUDIO_HASH;
     const { view } = useUiStore.getState();
-    if (wantStudio && view !== 'studio') {
+    if (location.hash === ADMIN_HASH) {
+      const id = useUiStore.getState().currentProjectId;
+      if (id) saveNow(id);
+      useUiStore.setState({ view: 'admin', currentProjectId: null, navOpen: false });
+      return;
+    }
+    if (view === 'admin') useUiStore.setState({ view: 'home' });
+    if (wantStudio && useUiStore.getState().view !== 'studio') {
       const id = lastProjectId();
       if (!id || !openProject(id)) startNewProject(starterProject());
-    } else if (!wantStudio && view !== 'home') {
+    } else if (!wantStudio && useUiStore.getState().view === 'studio') {
       goHome();
     }
   };
   sync();
   window.addEventListener('popstate', sync);
-  return () => window.removeEventListener('popstate', sync);
+  window.addEventListener('hashchange', sync);
+  return () => {
+    window.removeEventListener('popstate', sync);
+    window.removeEventListener('hashchange', sync);
+  };
 }

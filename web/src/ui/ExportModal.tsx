@@ -22,6 +22,7 @@ import {
 } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
 
+import { exportTicket, gate } from '../account/limits';
 import { countObjects } from '../engine/evaluate';
 import { downloadBlob, slugify } from '../export/download';
 import { saveProjectFile } from '../export/projectFile';
@@ -84,6 +85,7 @@ function SketchExports() {
   if (empty) return <Alert color="gray">The 2D sketch is empty. Draw some lines or circles first!</Alert>;
 
   const run = async (key: string, make: () => Promise<Blob>, filename: string) => {
+    if (!(await exportTicket(key === 'png' ? 'png-hd' : key))) return;
     setBusy(key);
     try {
       const blob = await make();
@@ -203,6 +205,10 @@ export function ExportModal() {
   const mode: ModelMode = glbMode === 'auto' ? (count > 3000 ? 'merged' : 'separate') : glbMode;
 
   const run = async (key: string, fn: () => Promise<Blob> | Blob, filename: string) => {
+    if (key === 'png' && transparent && !gate({ kind: 'export', format: 'png-transparent' })) return;
+    const format =
+      key === 'png' ? (pngSize === '4k' ? 'png-4k' : pngSize === 'square' ? 'png-square' : 'png-hd') : key;
+    if (!(await exportTicket(format))) return;
     setBusy(key);
     // let the button show its spinner before the heavy work starts
     await new Promise((r) => setTimeout(r, 30));

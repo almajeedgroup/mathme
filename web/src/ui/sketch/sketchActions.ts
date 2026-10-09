@@ -1,3 +1,4 @@
+import { gate } from '../../account/limits';
 import { uid } from '../../engine/math';
 import { createObjectNode, PALETTE } from '../../engine/project/defaults';
 import { chainPoints, emptySketch, findLoops, loopCoords, pointMap } from '../../engine/sketch/geometry';
@@ -314,6 +315,7 @@ export function pushUpShape(
   shape: NonNullable<ReturnType<typeof useSketchUi.getState>['shape']>,
   height: number,
 ) {
+  if (!gate({ kind: 'twoDToThreeD' })) return;
   const sk = getSketch();
   if (shape.kind === 'circle') {
     const c = sk.circles.find((k) => k.id === shape.id);
@@ -329,6 +331,7 @@ export function pushUpShape(
 
 /** Spin lines around the up-and-down axis (x = 0) into a 3D object. */
 export function spinLines(lineIds: string[], closed: boolean): boolean {
+  if (!gate({ kind: 'twoDToThreeD' })) return false;
   const sk = getSketch();
   const byId = pointMap(sk);
   const order = chainPoints(sk, lineIds).map((id) => {

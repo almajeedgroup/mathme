@@ -3,10 +3,20 @@
  * In development Vite forwards /api/* to it; in production set VITE_GEOMETRY_API_URL.
  */
 
+import { ApiError } from '../account/api';
+import { explainLimit } from '../account/limits';
+
 const configured = import.meta.env.VITE_GEOMETRY_API_URL as string | undefined;
 export const GEOMETRY_API_URL = (configured || '/api').replace(/\/$/, '');
 
-export class ServiceError extends Error {}
+export class ServiceError extends Error {
+  constructor(
+    message: string,
+    readonly status = 0,
+  ) {
+    super(message);
+  }
+}
 
 export interface AnalyzeResult {
   parts: number;
@@ -31,7 +41,10 @@ async function call(path: string, init: RequestInit, timeoutMs: number): Promise
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   let res: Response;
   try {
-    res = await fetch(`${GEOMETRY_API_URL}${path}`, { ...init, signal: controller.signal });
+    // X-MathMe: the hosted app's account service only accepts changes sent by the app itself
+    const headers = new Headers(init.headers);
+    headers.set('X-MathMe', '1');
+    res = await fetch(`${GEOMETRY_API_URL}${path}`, { ...init, headers, signal: controller.signal });
   } catch {
     throw new ServiceError('The geometry service is not answering. Is it running?');
   } finally {
@@ -46,7 +59,9 @@ async function call(path: string, init: RequestInit, timeoutMs: number): Promise
     } catch {
       /* not JSON */
     }
-    throw new ServiceError(detail);
+    // a used-up plan quota (402) or a signed-out visitor (401): explain and offer the way forward
+    if (res.status === 401 || res.status === 402) explainLimit(new ApiError(res.status, detail));
+    throw new ServiceError(detail, res.status);
   }
   return res;
 }

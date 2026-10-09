@@ -25,6 +25,17 @@ export interface ProjectMeta {
   objects: number;
   /** A small JPEG of the 3D view, as a data URL. */
   thumb?: string;
+  /**
+   * Cloud copy (signed in with accounts on): `version` of the last saved copy, and where it stands.
+   * synced = up to date; pending = changed here, not uploaded yet; device = over the plan's cloud limit.
+   */
+  cloud?: { version: number; state: 'synced' | 'pending' | 'device' };
+  /** Only in the cloud so far (download it before opening). */
+  remote?: boolean;
+  /** Picture address for a cloud-only project. */
+  thumbUrl?: string;
+  /** Shared with the user's Campus class. */
+  shared?: boolean;
 }
 
 export const projectKey = (id: string) => PROJECT_PREFIX + id;
@@ -69,7 +80,45 @@ export function readProject(id: string): Project | null {
 }
 
 /** Save a project. Returns false when the browser storage is full. */
-export function writeProject(id: string, project: Project, thumb?: string): boolean {
+/** Called after every local save (the cloud layer uploads from here). */
+let afterSave: ((id: string, thumb?: string) => void) | null = null;
+export function onProjectSaved(fn: typeof afterSave) {
+  afterSave = fn;
+}
+
+/** Change a project's list entry without touching the project itself. */
+export function updateMeta(id: string, patch: Partial<ProjectMeta> | ((m: ProjectMeta) => ProjectMeta)) {
+  writeIndex(
+    readIndex().map((m) => (m.id === id ? (typeof patch === 'function' ? patch(m) : { ...m, ...patch }) : m)),
+  );
+}
+
+/** Add list entries for projects that live only in the cloud, and drop cloud-only entries that are gone. */
+export function mergeRemote(remote: ProjectMeta[]) {
+  const list = readIndex();
+  const remoteIds = new Set(remote.map((r) => r.id));
+  const kept = list.filter((m) => !m.remote || remoteIds.has(m.id));
+  for (const r of remote) {
+    const local = kept.find((m) => m.id === r.id);
+    if (!local) kept.push(r);
+    else if (
+      local.cloud &&
+      local.cloud.state === 'synced' &&
+      r.cloud &&
+      r.cloud.version > local.cloud.version
+    ) {
+      // changed on another device: fetch the newer copy next time it is opened
+      Object.assign(local, { ...r, remote: true, thumb: local.thumb });
+    }
+  }
+  writeIndex(kept);
+}
+
+export function getMeta(id: string): ProjectMeta | undefined {
+  return readIndex().find((m) => m.id === id);
+}
+
+export function writeProject(id: string, project: Project, thumb?: string, notify = true): boolean {
   let ok = true;
   try {
     localStorage.setItem(projectKey(id), JSON.stringify(project));
@@ -84,8 +133,10 @@ export function writeProject(id: string, project: Project, thumb?: string): bool
     updatedAt: Date.now(),
     objects: countObjects(project),
     thumb: thumb ?? old?.thumb,
+    cloud: old?.cloud,
   };
   writeIndex(old ? list.map((m) => (m.id === id ? meta : m)) : [...list, meta]);
+  if (notify) afterSave?.(id, thumb);
   return ok;
 }
 
@@ -95,7 +146,15 @@ export function createProjectEntry(project: Project): string {
   return id;
 }
 
+/** Called before a project is deleted (the cloud layer deletes the cloud copy). */
+let beforeDelete: ((meta: ProjectMeta) => void) | null = null;
+export function onProjectDeleted(fn: typeof beforeDelete) {
+  beforeDelete = fn;
+}
+
 export function deleteProject(id: string) {
+  const meta = readIndex().find((m) => m.id === id);
+  if (meta) beforeDelete?.(meta);
   try {
     localStorage.removeItem(projectKey(id));
   } catch {
@@ -124,7 +183,7 @@ export function duplicateProject(id: string): string | null {
 export function lastProjectId(): string | null {
   try {
     const id = localStorage.getItem(LAST_KEY);
-    return id && readIndex().some((m) => m.id === id) ? id : null;
+    return id && readIndex().some((m) => m.id === id && !m.remote) ? id : null;
   } catch {
     return null;
   }

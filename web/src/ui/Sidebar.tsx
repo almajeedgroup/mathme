@@ -13,11 +13,15 @@ import {
   IconListTree,
   IconSettings,
   IconSpiral,
+  IconSparkles,
   IconSquarePlus,
   IconX,
 } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 
+import { AccountRow } from '../account/AccountRow';
+import { useAccountUi } from '../account/accountUi';
+import { ACCOUNTS_ON } from '../account/api';
 import { useProjectList } from '../state/persistence';
 import { type Prefs, useUiStore } from '../state/uiStore';
 import { Logo } from './Logo';
@@ -192,12 +196,21 @@ function SidebarFull({ wide }: { wide: boolean }) {
       </ScrollArea>
       <Stack gap={1} px={8} py={8} className="mm-sidebar-foot">
         <NavRow icon={<IconHelp size={18} />} label="Help" onClick={() => setOpen('helpOpen', true)} />
+        {ACCOUNTS_ON && (
+          <NavRow
+            icon={<IconSparkles size={18} />}
+            label="Plans"
+            onClick={() => useAccountUi.getState().set({ pricing: true })}
+            testId="open-pricing"
+          />
+        )}
         <NavRow
           icon={<IconSettings size={18} />}
           label="Settings"
           onClick={() => setOpen('settingsOpen', true)}
           testId="open-settings"
         />
+        <AccountRow />
       </Stack>
     </Stack>
   );

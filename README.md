@@ -79,6 +79,25 @@ Every project has a **2D** tab next to **3D** (top bar), a geometry board for fl
 
 `web/landing/` is the MathMe home page, styled with the colours of the MathMe presentation deck (palette in `web/landing/theme.json`). `npm run build` outputs it to `dist/landing/`, and the studio's Home button links to it. Set `VITE_HOME_URL` to point that button somewhere else.
 
+## Plans, accounts and payments
+
+The hosted product (built with `VITE_ACCOUNTS=on`) adds Google sign-in, cloud saves, paid plans and school licences. MathMe is developed by **Al-Majeed School of Research Methodology and Innovation**.
+
+| Plan | Price (before 18% GST) | For |
+| --- | --- | --- |
+| Free (Explorer) | ₹0 | 3 patterns, 2,000 objects, 3 cloud projects, 15 exports a month (PNG HD, project file) |
+| Plus (Creator) | ₹299 a month or ₹2,499 a year | all patterns, 20,000 objects, 2D-to-3D, GLB/STL/OBJ/SVG/DXF/PDF, 200 exports, 50 cloud projects |
+| Pro (Professional) | ₹799 a month or ₹6,999 a year | 4K and see-through PNG, print-ready STL, 1,000 exports, 500 cloud projects, priority jobs, commercial use |
+| Campus | ₹14,999 a year | 100 students (Plus) + 5 teachers (Pro), class page, join codes; starts with a pilot |
+| Enterprise | by quotation | through the enquiry form |
+
+- **One source of truth:** every price and limit is in [`shared/plans.json`](shared/plans.json). The app, the account service and the landing page all read it, and tests check they agree.
+- **Account service** (`account-service/`): Python (FastAPI) on Cloudflare Workers, with D1, R2, Cashfree (UPI AutoPay subscriptions, one-time orders, payment links), GST invoices (CGST+SGST or IGST), Resend email, Campus licences and the owner dashboard (`#admin`).
+- **Without `VITE_ACCOUNTS`** (local development, self-hosting, the demo) nothing changes: everything is unlocked and projects stay in the browser.
+- **Limits:** cloud saves, geometry jobs and AI chat are enforced on the server. Export formats, patterns and 2D-to-3D are checked in the app, and each export is counted by the server.
+
+Going live needs your own Cloudflare, Google, Cashfree and Resend accounts; follow [docs/DEPLOY.md](docs/DEPLOY.md). The policy pages in `web/landing/` (terms, privacy, refunds, contact) are drafts for a lawyer to review.
+
 ## Human heart slice atlas (for teaching cardiovascular anatomy)
 
 MathMe includes a **real, scan-derived human heart**: the Human Reference Atlas male reference heart, with 51 named structures (chambers, valves, septum, papillary muscles, aorta and branches, pulmonary vessels, venae cavae, coronary arteries and veins). It is licensed CC BY 4.0, with attribution in `geometry-service/data/heart/ATTRIBUTION.md`.
@@ -113,7 +132,11 @@ The atlas is for **education only**. It shows one reference heart and is not a p
 | `web/src/viewport/` | The 3D view (instanced rendering, selection, move/turn/stretch gizmo) |
 | `web/src/ui/` | Editor panels, dialogs and actions |
 | `web/src/export/` | GLB/STL/OBJ/PNG/PDF and project-file export |
+| `web/src/account/` | Sign-in, plans and limits, pricing and checkout, cloud saves, Campus class page, owner dashboard |
+| `web/landing/` | Landing page with pricing, and the draft policy pages |
 | `geometry-service/` | Python FastAPI service (trimesh + manifold3d): measurements, booleans, print-ready exports |
+| `account-service/` | Python FastAPI service for Cloudflare Workers: accounts, cloud projects, plans, Cashfree billing, GST invoices, Campus licences |
+| `shared/plans.json` | Prices and plan limits, read by the app, the account service and the tests |
 | `docs/` | Project brief and implementation plan |
 
 ## Quick start
@@ -154,9 +177,25 @@ npm run lint && npm run format:check && npm run typecheck && npm test && npm run
 npm run e2e                     # uses the preinstalled Chromium
 E2E_SERVICE=1 npm run e2e       # also starts the geometry service for its tests
 
+npm run e2e:accounts            # accounts on: account service + fake payments + test sign-in
+
 # geometry service
 cd geometry-service
 ruff check . && ruff format --check . && pytest
+
+# account service
+cd account-service
+pip install -e .[dev]
+ruff check . && ruff format --check . && pytest
+```
+
+To try the hosted product locally: run the account service with fake providers, then the app with accounts on.
+
+```bash
+cd account-service && pip install -e .[local]
+PAYMENTS=fake AUTH_TEST_LOGIN=1 COOKIE_SECURE=0 OWNER_EMAILS=you@example.com \
+  uvicorn account_service.app:app --app-dir src --port 8787
+cd web && npm run dev:accounts
 ```
 
 CI (`.github/workflows/ci.yml`) runs all of the above on every push.
@@ -168,7 +207,10 @@ CI (`.github/workflows/ci.yml`) runs all of the above on every push.
 | `VITE_GEOMETRY_API_URL` | web build | `/api` | URL of the geometry service in production, e.g. `https://geometry.example.org` |
 | `VITE_HOME_URL` | web build | `./landing/` | Where the studio's Home button goes |
 | `VITE_BASE` | web build | `/` | Sub-path the app is served from, e.g. `/mathme/` for GitHub Pages |
+| `VITE_ACCOUNTS` | web build | (off) | `on` turns on sign-in, cloud saves, plans and payments (needs the account service) |
 | `GEOMETRY_SERVICE_URL` | web dev/preview | `http://localhost:8000` | Where the `/api` proxy forwards to |
+| `ACCOUNT_SERVICE_URL` | web dev/preview | (none) | When set, all of `/api` goes to the account service instead |
+| `GEOMETRY_SECRET` | service | (none) | When set, every route except `/health` needs the `X-Geometry-Secret` header (only the account service knows it) |
 | `ANTHROPIC_API_KEY` | service | (none) | Turns on the AI chat helper (`POST /assist`; needs `pip install -e .[ai]`) |
 | `ANTHROPIC_MODEL` | service | `claude-opus-5-5` | Which Claude model the chat helper uses |
 | `ALLOWED_ORIGINS` | service | `http://localhost:5173,http://localhost:4173` | Comma-separated web origins allowed to call the service (CORS) |
@@ -190,7 +232,7 @@ The two parts are deployed separately:
   2. Run it on any container host (Render, Fly.io, Railway, Cloud Run…).
   3. Set `ALLOWED_ORIGINS` to the web app's URL.
 
-Projects are stored only in each student's browser (and in the project files they download), so no accounts or database are needed.
+Built this way, projects are stored only in each student's browser (and in the project files they download), so no accounts or database are needed. For the hosted product with accounts and payments, see [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Third-party assets
 

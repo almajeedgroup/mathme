@@ -616,3 +616,80 @@ body {
   padding-top: 6px;
   border-top: 1px solid var(--mm-line);
 }
+
+/* Accounts: plans, checkout, the owner dashboard */
+.mm-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid var(--mm-line);
+  border-radius: 20px;
+  background: var(--mantine-color-body);
+}
+
+.mm-plan-featured {
+  border: 2px solid var(--mm-violet);
+  box-shadow: 0 10px 30px rgb(145 91 255 / 0.14);
+}
+
+.mm-plan-features {
+  flex: 1;
+}
+
+.mm-plan-wide {
+  padding: 16px 18px;
+}
+
+.mm-price {
+  font-family: Urbanist, 'DM Sans', system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 34px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.mm-gst {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--mm-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.mm-upgrade-card {
+  padding: 12px 14px;
+  border: 1px solid var(--mm-line);
+  border-radius: 14px;
+  background: var(--mm-soft);
+}
+
+.mm-project-thumb {
+  position: relative;
+}
+
+.mm-cloud-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+}
+
+.mm-stat {
+  padding: 14px 16px;
+  border: 1px solid var(--mm-line);
+  border-radius: 16px;
+  background: var(--mantine-color-body);
+  min-width: 0;
+}
+
+.mm-stat-value {
+  font-family: Urbanist, 'DM Sans', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.mm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -35,6 +35,7 @@
         <a href="#maths">The maths</a>
         <a href="#heart">Heart atlas</a>
         <a href="#export">Export</a>
+        <a href="#pricing">Pricing</a>
       </nav>
       <a class="btn btn-lime nav-cta" href="../" data-studio-link>Open the studio</a>
     </header>
@@ -83,7 +84,7 @@
             <a class="btn btn-lime" href="../" data-studio-link>Start creating</a>
             <a class="btn btn-ghost" href="#how">See how it works</a>
           </div>
-          <p class="byline">by AL-Majeed Group</p>
+          <p class="byline">by Al-Majeed School of Research Methodology and Innovation</p>
         </div>
       </section>
 
@@ -300,7 +301,136 @@
         </div>
       </section>
 
-      <!-- 8. Call to action -->
+      <!-- 8. Plans and prices (prices must match shared/plans.json: a unit test checks the data-price spans) -->
+      <section class="pricing" id="pricing">
+        <div class="pricing-head">
+          <span class="num-chip">05</span>
+          <h2>Plans for every maker</h2>
+          <p>
+            Start free and upgrade when you need more. Prices are in Indian rupees; 18% GST is added at
+            checkout.
+          </p>
+        </div>
+        <div class="plans">
+          <article class="plan">
+            <p class="plan-name">Explorer</p>
+            <h3>Free</h3>
+            <p class="plan-price"><b>₹0</b> forever</p>
+            <p class="plan-alt">No card needed</p>
+            <ul class="plan-features">
+              <li>2D sketch board with measurements</li>
+              <li>3D shapes and 3 patterns (spiral, grid, circle)</li>
+              <li>Up to 2,000 objects per scene</li>
+              <li>3 projects in the cloud, unlimited on your device</li>
+              <li>15 exports a month (PNG HD and project files)</li>
+              <li>5 AI chat messages and 5 geometry jobs a day</li>
+            </ul>
+            <a class="btn btn-outline" href="../" data-studio-link>Start free</a>
+          </article>
+          <article class="plan plan-featured">
+            <span class="plan-flag">Most popular</span>
+            <p class="plan-name">Creator</p>
+            <h3>Plus</h3>
+            <p class="plan-price"><b data-price="plus">₹299</b> a month + GST</p>
+            <p class="plan-alt">or ₹2,499 a year + GST (save 30%)</p>
+            <ul class="plan-features">
+              <li>Everything in Free</li>
+              <li>All 7 patterns and up to 20,000 objects</li>
+              <li>2D-to-3D: push up and spin sketches into solids</li>
+              <li>GLB, STL, OBJ, SVG, DXF and PDF exports</li>
+              <li>200 exports a month</li>
+              <li>50 cloud projects</li>
+              <li>50 AI chat messages and 50 geometry jobs a day</li>
+            </ul>
+            <a class="btn btn-lime" href="../?pricing=1" data-studio-link>Choose Plus</a>
+          </article>
+          <article class="plan">
+            <p class="plan-name">Professional</p>
+            <h3>Pro</h3>
+            <p class="plan-price"><b data-price="pro">₹799</b> a month + GST</p>
+            <p class="plan-alt">or ₹6,999 a year + GST (save 27%)</p>
+            <ul class="plan-features">
+              <li>Everything in Plus</li>
+              <li>4K and see-through PNG, print-ready joined STL</li>
+              <li>1,000 exports a month</li>
+              <li>500 cloud projects, unlimited saved shapes</li>
+              <li>300 geometry jobs a day, processed first</li>
+              <li>200 AI chat messages a day</li>
+              <li>Commercial use of your exports</li>
+              <li>Priority email support</li>
+            </ul>
+            <a class="btn btn-outline" href="../?pricing=1" data-studio-link>Choose Pro</a>
+          </article>
+        </div>
+        <p class="pricing-note">
+          Monthly plans renew by UPI AutoPay, card or net banking, and you can stop them any time in Settings.
+          Yearly plans are one payment for 12 months and do not renew by themselves. See the
+          <a href="./refunds.html">refund and cancellation policy</a>.
+        </p>
+
+        <div class="campus" id="campus">
+          <div class="campus-copy">
+            <p class="plan-name">Schools, colleges and labs</p>
+            <h3>Campus</h3>
+            <p class="plan-price"><b data-price="campus">₹14,999</b> a year + GST</p>
+            <ul class="plan-features">
+              <li>100 student and 5 teacher accounts</li>
+              <li>Students get Plus, teachers get Pro</li>
+              <li>A class page with the class list and shared projects</li>
+              <li>Join codes for teachers and students</li>
+              <li>Help to get your institution started</li>
+            </ul>
+            <p class="campus-small">
+              Every school starts with a pilot. <b>Enterprise</b> (volume licences, team workspaces and custom
+              workflows for universities, R&amp;D teams and studios) is priced by quotation. Use the same
+              form.
+            </p>
+          </div>
+          <form class="enquiry" id="enquiry-form" novalidate>
+            <h4>Ask about a pilot</h4>
+            <div class="field-row">
+              <label>
+                <span>For</span>
+                <select name="kind">
+                  <option value="campus">A school or college (Campus)</option>
+                  <option value="enterprise">A company or lab (Enterprise)</option>
+                </select>
+              </label>
+            </div>
+            <label
+              ><span>Institution or company</span
+              ><input name="institution" required minlength="2" maxlength="200"
+            /></label>
+            <div class="field-row">
+              <label
+                ><span>Your name</span
+                ><input name="contactName" required minlength="2" maxlength="120" autocomplete="name"
+              /></label>
+              <label
+                ><span>Email</span
+                ><input name="email" type="email" required maxlength="200" autocomplete="email"
+              /></label>
+            </div>
+            <div class="field-row">
+              <label
+                ><span>Phone</span><input name="phone" type="tel" maxlength="20" autocomplete="tel"
+              /></label>
+              <label><span>City</span><input name="city" maxlength="100" /></label>
+              <label><span>Students</span><input name="students" type="number" min="0" value="100" /></label>
+            </div>
+            <label
+              ><span>Anything else?</span><textarea name="message" rows="3" maxlength="3000"></textarea>
+            </label>
+            <label class="hp" aria-hidden="true"
+              ><span>Website</span><input name="website" tabindex="-1" autocomplete="off"
+            /></label>
+            <button class="btn btn-violet" type="submit">Send</button>
+            <p class="enquiry-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- 9. Call to action -->
       <section class="cta">
         <svg class="cta-ribbon" viewBox="0 0 600 300" aria-hidden="true">
           <path
@@ -330,7 +460,61 @@
         </svg>
         MATHME
       </span>
-      <span>Generative 3D Art &amp; Object Studio · by AL-Majeed Group</span>
+      <nav class="footer-links" aria-label="Policies">
+        <a href="#pricing">Pricing</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./refunds.html">Refunds</a>
+        <a href="./contact.html">Contact</a>
+      </nav>
+      <span>Developed by Al-Majeed School of Research Methodology and Innovation</span>
     </footer>
+    <script type="module">
+      // Campus and Enterprise enquiries go to the account service. Where there is none (a static copy of this
+      // page), the form offers an email instead.
+      const form = document.getElementById('enquiry-form');
+      const status = form.querySelector('.enquiry-status');
+      const SUPPORT = 'support@mathme.app';
+      const fallback = (data) => {
+        const body = Object.entries(data)
+          .filter(([k, v]) => k !== 'website' && v !== '')
+          .map(([k, v]) => `${k}: ${v}`)
+          .join('\n');
+        const href = `mailto:${SUPPORT}?subject=${encodeURIComponent('MathMe enquiry')}&body=${encodeURIComponent(body)}`;
+        status.innerHTML = '';
+        status.append('We could not send the form from here. Please email us at ');
+        const a = Object.assign(document.createElement('a'), { href, textContent: SUPPORT });
+        status.append(a, '.');
+      };
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        const data = Object.fromEntries(new FormData(form));
+        data.students = Number(data.students) || 0;
+        status.textContent = 'Sending…';
+        let r;
+        try {
+          r = await fetch('/api/enquiries', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-MathMe': '1' },
+            body: JSON.stringify(data),
+          });
+        } catch {
+          fallback(data);
+          return;
+        }
+        if (r.ok) {
+          form.innerHTML = '<h4>Thank you!</h4><p>We will contact you within two working days.</p>';
+          return;
+        }
+        const detail = await r.json().then(
+          (j) => j.detail,
+          () => null,
+        );
+        if (r.status === 400 && typeof detail === 'string') status.textContent = detail;
+        else if (r.status === 422) status.textContent = 'Please check the details in the form.';
+        else fallback(data);
+      });
+    </script>
   </body>
 </html>

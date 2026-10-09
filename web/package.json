@@ -14,7 +14,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:accounts": "playwright test -c playwright.accounts.config.ts",
+    "dev:accounts": "VITE_ACCOUNTS=on ACCOUNT_SERVICE_URL=http://localhost:8787 vite"
   },
   "dependencies": {
     "@mantine/core": "^9.6.3",

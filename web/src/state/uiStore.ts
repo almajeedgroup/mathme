@@ -71,7 +71,7 @@ interface UiState {
   draw: DrawState;
   setDraw(patch: Partial<DrawState>): void;
   /** The project list (home) or the 3D studio. */
-  view: 'home' | 'studio';
+  view: 'home' | 'studio' | 'admin';
   /** Inside the studio: the 3D view or the 2D sketch board. */
   studioMode: '3d' | '2d';
   /** The id of the open project in the project list. */

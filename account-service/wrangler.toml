@@ -1,0 +1,39 @@
+# MathMe on Cloudflare: one Python Worker serves the app (static files from web/dist) and the /api.
+# Deploy with: uv run pywrangler deploy   (see docs/DEPLOY.md for the first-time setup)
+name = "mathme"
+main = "src/entry.py"
+compatibility_date = "2026-09-21"
+compatibility_flags = ["python_workers"]
+
+[assets]
+directory = "../web/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mathme"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "PROJECTS"
+bucket_name = "mathme-projects"
+
+[triggers]
+crons = ["30 0 * * *"] # daily at 06:00 IST: renewal reminders and expiring old plans
+
+[vars]
+PUBLIC_URL = "https://mathme.app"
+PAYMENTS = "cashfree"
+CASHFREE_ENV = "sandbox"
+EMAIL = "resend"
+EMAIL_FROM = "MathMe <hello@mathme.app>"
+SELLER_NAME = "Al-Majeed School of Research Methodology and Innovation"
+SELLER_STATE = "Karnataka"
+SUPPORT_EMAIL = "support@mathme.app"
+GEOMETRY_ORIGIN = "https://geometry.mathme.app"
+# Secrets (set with `npx wrangler secret put NAME`): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+# CASHFREE_CLIENT_ID, CASHFREE_CLIENT_SECRET, CASHFREE_WEBHOOK_SECRET, RESEND_API_KEY,
+# GEOMETRY_SECRET, OWNER_EMAILS, SELLER_GSTIN, SELLER_ADDRESS
