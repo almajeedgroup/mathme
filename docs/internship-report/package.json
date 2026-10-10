@@ -1,0 +1,15 @@
+{
+  "name": "mathme-internship-report",
+  "private": true,
+  "type": "module",
+  "description": "Builds the MathMe internship project report (PDF and Word) from content/.",
+  "scripts": {
+    "capture": "node capture.mjs",
+    "diagrams": "node diagrams.mjs && node rasterize.mjs",
+    "build": "node diagrams.mjs && node rasterize.mjs && node build-pdf.mjs && node build-docx.mjs"
+  },
+  "dependencies": {
+    "docx": "^9.5.1",
+    "pdf-lib": "^1.17.1"
+  }
+}

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" font-family="'Liberation Serif','Times New Roman',Times,serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+  </marker>
+</defs>
+<rect width="960" height="600" fill="#fff"/>
+<rect x="20" y="30" width="250" height="230" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="20" y="30" width="250" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="145" y="43" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">Browser: MathMe web app</text><text x="145" y="105.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">React 19 + TypeScript</text>
+<text x="145" y="123" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">react-three-fiber (Three.js)</text>
+<text x="145" y="140.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Mantine UI, zustand store</text>
+<text x="145" y="158" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Maths engine (patterns,</text>
+<text x="145" y="175.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">formulas, recipes, sketch)</text>
+<text x="145" y="193" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Exports: GLB, STL, OBJ,</text>
+<text x="145" y="210.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">PNG, SVG, DXF, PDF</text>
+<rect x="20" y="300" width="250" height="90" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="20" y="300" width="250" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="145" y="313" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">Browser storage</text><text x="145" y="349.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Projects saved on the device</text>
+<text x="145" y="366.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">(localStorage / IndexedDB)</text>
+<line x1="145" y1="260" x2="145" y2="300" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<rect x="355" y="30" width="270" height="230" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="355" y="30" width="270" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="490" y="43" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">Cloudflare Python Worker</text><text x="490" y="105.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">FastAPI app (Python)</text>
+<text x="490" y="123" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Sign-in, sessions, cloud projects</text>
+<text x="490" y="140.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Plans, limits and usage</text>
+<text x="490" y="158" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Cashfree checkout + webhooks</text>
+<text x="490" y="175.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">GST invoices, Campus licences</text>
+<text x="490" y="193" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Owner dashboard metrics</text>
+<text x="490" y="210.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Serves the web app files</text>
+<line x1="270" y1="120" x2="355" y2="120" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/><rect x="266.25" y="95.875" width="92.5" height="18.25" fill="#fff"/><text x="312.5" y="105" font-size="13" font-weight="400" text-anchor="middle" dominant-baseline="middle" font-style="italic">HTTPS  /api/*</text>
+<rect x="355" y="300" width="112" height="70" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><text x="411" y="326.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">D1 (SQLite)</text>
+<text x="411" y="343.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">users, plans…</text>
+<rect x="513" y="300" width="112" height="70" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><text x="569" y="326.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">R2 storage</text>
+<text x="569" y="343.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">project files</text>
+<line x1="411" y1="260" x2="411" y2="300" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<line x1="569" y1="260" x2="569" y2="300" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<rect x="700" y="30" width="240" height="100" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><text x="820" y="70.625" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">Google OAuth</text>
+<text x="820" y="89.375" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">(sign-in)</text>
+<rect x="700" y="150" width="240" height="100" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><text x="820" y="190.625" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">Cashfree Payments</text>
+<text x="820" y="209.375" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">UPI AutoPay, orders, links</text>
+<rect x="700" y="270" width="240" height="80" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><text x="820" y="300.625" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">Resend (email)</text>
+<text x="820" y="319.375" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">receipts, reminders</text>
+<line x1="625" y1="80" x2="700" y2="80" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+<line x1="625" y1="190" x2="700" y2="190" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)" marker-start="url(#arrow)"/><rect x="632.5" y="166.875" width="60" height="18.25" fill="#fff"/><text x="662.5" y="176" font-size="13" font-weight="400" text-anchor="middle" dominant-baseline="middle" font-style="italic">webhooks</text>
+<line x1="625" y1="245" x2="700" y2="300" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="355" y="440" width="270" height="140" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="355" y="440" width="270" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="490" y="453" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">Geometry service (Docker)</text><text x="490" y="496.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">FastAPI + trimesh + manifold3d</text>
+<text x="490" y="514.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Measure, join, cut, overlap</text>
+<text x="490" y="531.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Print-ready STL, heart slicer</text>
+<text x="490" y="549.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">AI chat helper (Claude API)</text>
+<line x1="490" y1="260" x2="490" y2="440" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="570" y="396.875" font-size="13" font-weight="400" text-anchor="middle" dominant-baseline="middle" font-style="italic">quota checked,</text>
+<text x="570" y="413.125" font-size="13" font-weight="400" text-anchor="middle" dominant-baseline="middle" font-style="italic">shared secret</text>
+<rect x="700" y="470" width="240" height="80" rx="4" fill="#fff" stroke="#111" stroke-width="1.4" stroke-dasharray="6 4"/><text x="820" y="500.625" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">Claude API</text>
+<text x="820" y="519.375" font-size="15" font-weight="400" text-anchor="middle" dominant-baseline="middle">(optional AI answers)</text>
+<line x1="625" y1="510" x2="700" y2="510" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="20" y="440" width="250" height="140" rx="4" fill="#fff" stroke="#111" stroke-width="1.4" stroke-dasharray="6 4"/><text x="145" y="475" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Without accounts (demo,</text>
+<text x="145" y="492.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">self-hosting) the browser</text>
+<text x="145" y="510" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">calls the geometry service</text>
+<text x="145" y="527.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">directly and everything</text>
+<text x="145" y="545" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">stays on the device.</text>
+</svg>

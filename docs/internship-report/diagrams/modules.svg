@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" width="980" height="520" font-family="'Liberation Serif','Times New Roman',Times,serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+  </marker>
+</defs>
+<rect width="980" height="520" fill="#fff"/>
+<rect x="330" y="20" width="320" height="50" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="490" y="45" font-size="17" font-weight="700" text-anchor="middle" dominant-baseline="middle">MathMe repository (monorepo)</text>
+<rect x="10" y="110" width="225" height="230" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="10" y="110" width="225" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="122.5" y="123" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">web/src/engine</text><text x="122.5" y="185.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">shapes/  (24 shapes)</text>
+<text x="122.5" y="203" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">patterns/  (7 patterns)</text>
+<text x="122.5" y="220.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">math.ts, expr.ts, rng.ts</text>
+<text x="122.5" y="238" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">command/  (recipe parser)</text>
+<text x="122.5" y="255.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">sketch/  (2D solver)</text>
+<text x="122.5" y="273" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">project/  (schema, presets)</text>
+<text x="122.5" y="290.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">measureShape.ts</text>
+<rect x="250" y="110" width="225" height="230" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="250" y="110" width="225" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="362.5" y="123" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">web/src (app)</text><text x="362.5" y="185.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">viewport/  (3D view)</text>
+<text x="362.5" y="203" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">ui/  (panels, dialogs)</text>
+<text x="362.5" y="220.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">state/  (zustand stores,</text>
+<text x="362.5" y="238" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">      undo, persistence)</text>
+<text x="362.5" y="255.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">export/  (GLB STL OBJ</text>
+<text x="362.5" y="273" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">      PNG SVG DXF PDF)</text>
+<text x="362.5" y="290.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">account/  (plans, cloud)</text>
+<rect x="500" y="110" width="225" height="230" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="500" y="110" width="225" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="612.5" y="123" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">geometry-service</text><text x="612.5" y="185.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">app/main.py  (FastAPI)</text>
+<text x="612.5" y="203" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">app/geometry.py</text>
+<text x="612.5" y="220.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">(trimesh + manifold3d)</text>
+<text x="612.5" y="238" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">app/anatomy/</text>
+<text x="612.5" y="255.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">(heart atlas, slicer)</text>
+<text x="612.5" y="273" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">app/assistant.py</text>
+<text x="612.5" y="290.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">tests/  (pytest)</text>
+<rect x="745" y="110" width="225" height="230" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="745" y="110" width="225" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="857.5" y="123" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">account-service</text><text x="857.5" y="185.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">routes/  auth, projects,</text>
+<text x="857.5" y="203" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">usage, billing, campus,</text>
+<text x="857.5" y="220.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">admin</text>
+<text x="857.5" y="238" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">cashfree.py, gst.py</text>
+<text x="857.5" y="255.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">db.py (D1 / SQLite)</text>
+<text x="857.5" y="273" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">migrations/  (SQL)</text>
+<text x="857.5" y="290.5" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">tests/  (pytest)</text>
+<line x1="490" y1="70" x2="122" y2="110" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<line x1="490" y1="70" x2="362" y2="110" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<line x1="490" y1="70" x2="612" y2="110" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<line x1="490" y1="70" x2="857" y2="110" stroke="#111" stroke-width="1.3" marker-end="url(#arrow)"/>
+<rect x="10" y="370" width="965" height="140" rx="4" fill="#fff" stroke="#111" stroke-width="1.4"/><rect x="10" y="370" width="965" height="26" rx="4" fill="#e6e6e6" stroke="#111" stroke-width="1.4"/><text x="492.5" y="383" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle">Shared files</text><text x="492.5" y="426.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">shared/plans.json: one list of plans, prices and limits, read by the web app, the account service and the tests</text>
+<text x="492.5" y="444.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">web/landing/: landing page and policy pages</text>
+<text x="492.5" y="461.75" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">docs/: plan, deployment guide and this report</text>
+<text x="492.5" y="479.25" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">.github/workflows/ci.yml: lint, format, type check, unit tests, build, browser tests and pytest on every push</text>
+</svg>
