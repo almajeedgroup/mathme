@@ -1,15 +1,21 @@
 # MathMe internship project report
 
-The internship project report for **MathMe 3D Studio**, by Sulaimaan (BCA, Semester III). It follows the internship
-report format of the Bengaluru North University BCA syllabus (course CA5P3):
-- **Parts, in order:** cover, internship certificate, college certificate, student declaration, acknowledgement,
-  contents, executive summary, Chapters I–IV, bibliography.
-- **Page format:** A4, Times New Roman, 1.5 line spacing.
-- **Look:** double page borders and "Page N of M".
+The internship project report for **MathMe 3D Studio**, by Sulaimaan (BCA, Semester III).
+
+It follows the college's report rules:
+- **Font:** Times New Roman. Headings are **16 pt bold**; all other text (body, tables, captions, lists) is **12 pt normal**.
+- **Line spacing:** 1.5 on every line.
+- **Order:** cover, certificate, college certificate, student declaration, acknowledgement, table of contents,
+  executive summary, Chapter I: Introduction, Chapter II: Description of the Organization, Chapter III:
+  Experiential Learning, Chapter IV: Internship Outcomes and Conclusion, bibliography.
+- **Screenshots:** the outputs are printed in colour, **two screenshots per page**, each named after its screen
+  (Chapter II and Section 3.5, Output Screens).
+- **Page numbers:** "Page N of M" from the cover (page 1) onwards. The table of contents starts from the
+  Executive Summary (the abstract).
 
 | File | What it is |
 |---|---|
-| `MathMe_Internship_Report.pdf` | The finished report: 60 pages (9 front pages + 51 numbered pages) |
+| `MathMe_Internship_Report.pdf` | The finished report: 59 pages |
 | `MathMe_Internship_Report.docx` | The same report in Word, to fill in and edit |
 
 ## Fill in before you submit
@@ -40,6 +46,7 @@ The build needs:
 - Node 22, with the web app's dependencies installed (for Playwright's Chromium);
 - `pdftotext` (Poppler);
 - LibreOffice Writer (`soffice`), used to find the Word page numbers for the contents.
+- the Times New Roman font installed (Microsoft core fonts), so the PDF embeds it.
 
 | Script | Job |
 |---|---|

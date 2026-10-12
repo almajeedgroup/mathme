@@ -1,5 +1,5 @@
 // Executive summary, Chapter I (Introduction) and Chapter II (Description of the Organisation / Project).
-import { BLANK, BREAK, CHAPTER, FIG, H2, H3, P, SHORT, TABLE, TITLE, UL } from './blocks.mjs';
+import { SHOTS, BLANK, BREAK, CHAPTER, FIG, H2, H3, P, SHORT, TABLE, TITLE, UL } from './blocks.mjs';
 
 export const summary = [
   { t: 'page', kind: 'body' },
@@ -14,19 +14,10 @@ export const summary = [
     'MathMe is a web application that runs in any modern browser. The user picks a shape by its width, height and radius, chooses one of seven patterns (spiral, grid, circle, wave, radial rings, sphere and random scatter) and sees hundreds or thousands of copies appear instantly in a 3D view. A “Learn” panel shows the formula behind every pattern with the user’s own numbers filled in, and a “Measure” panel works out volume and surface area step by step. Finished work can be exported as GLB, STL, OBJ, PNG or PDF files for 3D printing, games, posters and class reports.',
   ),
   P(
-    'During the internship the application grew into a complete product with the following parts:',
-  ),
-  UL([
-    'a **maths engine** written in TypeScript (shapes, patterns, formulas, a plain-language recipe parser and a 2D constraint solver);',
-    'a **3D studio** built with React, Three.js (react-three-fiber) and the Mantine component library, including a pencil tool, a 2D sketch board and an ideas gallery;',
-    'a **geometry service** written in Python with FastAPI, trimesh and manifold3d for exact measurements, joining and cutting solids, print-ready files and a real human-heart slice atlas;',
-    'an **account service** in Python for Cloudflare Workers that adds Google sign-in, cloud saves, subscription plans in Indian rupees with 18% GST, Cashfree payments, school (Campus) licences and an owner dashboard.',
-  ]),
-  P(
-    'The work followed an iterative method: small milestones, each one designed, built, tested and committed before the next. The finished system is covered by **147 unit tests and 35 browser tests** for the web application and **91 automated tests** for the two Python services, all of which pass, and a continuous-integration pipeline runs them on every change.',
+    'During the internship the application grew into a complete product: a **maths engine** in TypeScript; a **3D studio** built with React and Three.js, with a pencil tool and a 2D sketch board; a **geometry service** in Python (FastAPI, trimesh, manifold3d) for exact measurements, joining and cutting solids and a human-heart slice atlas; and an **account service** for Cloudflare Workers with Google sign-in, cloud saves, plans in Indian rupees with 18% GST, Cashfree payments, school licences and an owner dashboard.',
   ),
   P(
-    'The internship provided practical experience of the full software development life cycle: requirement analysis, system design (architecture, data-flow and entity-relationship diagrams), front-end and back-end programming, database design, payment integration, security, automated testing and technical documentation. This report describes the project setting (Chapter II), the work done and the knowledge gained week by week (Chapter III), and the outcomes, limitations and future scope of the work (Chapter IV).',
+    'The work followed an iterative method of small, tested milestones. The finished system passes **273 automated tests**, run on every change. The internship gave practical experience of the full software development life cycle, from requirements and design to programming, databases, payments, security, testing and documentation.',
   ),
   BREAK,
 ];
@@ -66,7 +57,7 @@ export const chapter1 = [
     '**Mathematics software** (for example GeoGebra 3D) shows graphs, surfaces and formulas very well, but it is not built for making artwork from hundreds of objects or for producing posters and project sheets.',
   ]),
   TABLE(
-    '1.1',
+    'compare',
     'Existing systems compared with the proposed system',
     ['Feature', 'Professional 3D tools', 'Beginner 3D tools', 'Maths software', 'MathMe (proposed)'],
     [
@@ -98,26 +89,11 @@ export const chapter1 = [
     'To test every part automatically and document the system for future maintenance and deployment.',
   ]),
   H2('1.5', 'Scope of the Project'),
-  P('**In scope.** The project covers:'),
-  UL([
-    'the complete web application (home page, 3D studio, 2D sketch board, exports, settings and help);',
-    'the geometry service and the account service;',
-    'the landing page with pricing, and draft policy pages;',
-    'automated tests and the deployment guide.',
-  ]),
   P(
-    'The application works fully without an account: projects are saved in the browser, and every feature can be used. Signing in adds cloud saves, paid plans and school features.',
+    '**In scope:** the complete web application (home page, 3D studio, 2D sketch board, exports, settings and help), the geometry and account services, the landing page with pricing, draft policy pages, automated tests and the deployment guide. The application works fully without an account; signing in adds cloud saves, paid plans and school features.',
   ),
-  P('**Out of scope.** The following were deliberately left for later phases:'),
-  UL([
-    'native mobile applications;',
-    'real-time collaborative editing;',
-    'class assignments and grading;',
-    'a marketplace for shared designs;',
-    'a public developer API.',
-  ]),
   P(
-    'The heart atlas is for education only: it shows one reference heart and is not a medical record.',
+    '**Out of scope** (left for later phases): native mobile applications, real-time collaborative editing, class assignments and grading, a marketplace and a public developer API. The heart atlas is for education only and is not a medical record.',
   ),
   H2('1.6', 'Methodology'),
   P(
@@ -132,11 +108,11 @@ export const chapter1 = [
     '**Review and commit:** read the change again, fix problems, and commit it with a clear message.',
   ]),
   P(
-    'The milestones were: project set-up; the maths engine and 3D view; custom shapes; recipes and project files; exports; the geometry service; the heart atlas; interface design and the home page; the pencil and the 2D sketch board; and finally accounts, plans, payments, school licences and the owner dashboard. Table 3.1 in Chapter III maps them to the ten weeks of the internship.',
+    'The milestones were: project set-up; the maths engine and 3D view; custom shapes; recipes and project files; exports; the geometry service; the heart atlas; interface design and the home page; the pencil and the 2D sketch board; and finally accounts, plans, payments, school licences and the owner dashboard. Table {tab:worklog} in Chapter III maps them to the ten weeks of the internship.',
   ),
   H2('1.7', 'Internship Details'),
   TABLE(
-    '1.2',
+    'internship',
     'Internship details',
     ['Particular', 'Details'],
     [
@@ -155,10 +131,10 @@ export const chapter1 = [
   ),
   H2('1.8', 'Tools and Technologies Used'),
   P(
-    'The project uses free and open-source tools throughout. Table 1.3 lists the main technologies and the purpose of each one.',
+    'The project uses free and open-source tools throughout. Table {tab:tools} lists the main technologies and the purpose of each one.',
   ),
   TABLE(
-    '1.3',
+    'tools',
     'Tools and technologies used',
     ['Area', 'Technology', 'Purpose in MathMe'],
     [
@@ -183,19 +159,15 @@ export const chapter1 = [
     [0.22, 0.32, 0.46],
   ),
   H2('1.9', 'Organisation of the Report'),
-  P('The rest of this report is organised as follows:'),
-  UL([
-    '**Chapter II** describes the project setting: MathMe’s vision and mission, its users, its products, its business model and the way the work was organised.',
-    '**Chapter III** describes the experiential learning: the weekly work log, the requirements, the system design with diagrams, the implementation of every module with screenshots, the testing, and what was learnt.',
-    '**Chapter IV** summarises the outcomes, skills gained, challenges and solutions, limitations and future enhancements, and concludes the report.',
-    'The **Bibliography** lists the books and documentation referred to during the internship.',
-  ]),
+  P(
+    '**Chapter II** describes the project setting: MathMe’s vision, users, products, business model and way of working. **Chapter III** describes the experiential learning: the weekly work log, requirements, system design, implementation, output screens, testing and what was learnt. **Chapter IV** summarises the outcomes, skills, challenges, limitations and future enhancements. The **Bibliography** lists the books and documentation used.',
+  ),
   BREAK,
 ];
 
 export const chapter2 = [
   { t: 'page', kind: 'body' },
-  CHAPTER('CHAPTER II', 'DESCRIPTION OF THE ORGANISATION / PROJECT'),
+  CHAPTER('CHAPTER II', 'DESCRIPTION OF THE ORGANIZATION'),
   P(
     'This internship was carried out as an **independent internship project** and not inside an outside company. In place of a company profile, this chapter describes the project itself as the organisation in which the work was done: its vision and mission, its users, the products it offers, its business model, and the way the work was planned and managed.',
   ),
@@ -206,7 +178,9 @@ export const chapter2 = [
   P(
     'The central idea of MathMe is that **one rule creates every object**. Instead of placing two hundred spheres by hand, the user writes a rule (how many, which pattern, which sizes) and the studio calculates every position, rotation and scale. Changing one number updates the whole artwork. Every rule explains itself in a Learn panel, so the same tool is both a creative studio and a mathematics lesson.',
   ),
-  FIG('2.1', 'The MathMe landing page', 'landing', 0.92),
+  P(
+    'The public face of MathMe is its landing page. It and its pricing section are shown in Figures {fig:landing} and {fig:landing-pricing} at the end of this chapter.',
+  ),
   H2('2.2', 'Vision and Mission'),
   P(
     '**Vision.** To make mathematics the most creative subject in school by letting every student build real 3D art and objects from simple rules.',
@@ -228,10 +202,10 @@ export const chapter2 = [
   ]),
   H2('2.4', 'Products and Services'),
   P(
-    'MathMe is organised as a set of modules that work together. Table 2.1 summarises each module and what it offers to the user.',
+    'MathMe is organised as a set of modules that work together. Table {tab:modules} summarises each module and what it offers to the user.',
   ),
   TABLE(
-    '2.1',
+    'modules',
     'MathMe modules and services',
     ['Module', 'What it offers'],
     [
@@ -254,7 +228,7 @@ export const chapter2 = [
     'MathMe follows a **“freemium”** business model. Everything can be tried for free, and paid plans add more capacity, more export formats and commercial-use rights. All prices and limits are stored in one file (shared/plans.json), which is read by the web application, the server and the tests, so that the prices shown can never disagree with the prices charged. Prices are in Indian rupees and **18% GST is added at checkout**: CGST and SGST (9% each) within the seller’s state, or IGST (18%) for other states.',
   ),
   TABLE(
-    '2.2',
+    'plans',
     'MathMe plans (prices before 18% GST)',
     ['Plan', 'Price', 'Main features'],
     [
@@ -269,13 +243,12 @@ export const chapter2 = [
   P(
     'For example, the Plus plan costs ₹299 + ₹53.82 GST = **₹352.82** a month, and the Campus licence costs ₹14,999 + ₹2,699.82 GST = **₹17,698.82** a year. Monthly plans renew through a UPI AutoPay or card mandate; yearly plans are a single payment with reminder emails before they end.',
   ),
-  FIG('2.2', 'The pricing section of the landing page', 'landing-pricing', 0.92),
   H2('2.6', 'Project Team and Roles'),
   P(
-    'Because this was an independent internship project, the student carried out every role in the project, under the supervision of the internal guide. Table 2.3 lists the roles.',
+    'Because this was an independent internship project, the student carried out every role in the project, under the supervision of the internal guide. Table {tab:roles} lists the roles.',
   ),
   TABLE(
-    '2.3',
+    'roles',
     'Roles in the internship project',
     ['Role', 'Person', 'Responsibilities'],
     [
@@ -296,7 +269,11 @@ export const chapter2 = [
     '**Continuous integration:** a GitHub Actions pipeline runs linting, formatting checks, type checking, unit tests, the production build, browser tests and the Python tests on every push.',
     '**Code quality:** ESLint and Prettier for TypeScript, ruff for Python; strict TypeScript settings; small, readable functions with comments where the reason is not obvious.',
     '**Documentation:** a project plan (docs/PLAN.md), a README with setup and checks, and a step-by-step deployment guide (docs/DEPLOY.md).',
-    '**Working hours:** about nine hours a week on a part-time basis, with a short written log of the work done each week (Table 3.1).',
+    '**Working hours:** about nine hours a week on a part-time basis, with a short written log of the work done each week (Table {tab:worklog}).',
+  ]),
+  SHOTS([
+    ['landing', 'Landing Page'],
+    ['landing-pricing', 'Pricing Section of the Landing Page'],
   ]),
   BREAK,
 ];

@@ -34,7 +34,7 @@ import {
 import JSZip from 'jszip';
 
 import { body, frontMatter } from './content/index.mjs';
-import { locate, outline, pdfPages } from './lib.mjs';
+import { chapterLine, locate, numbered, outline, pdfPages } from './lib.mjs';
 import { rasterize } from './rasterize.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -47,7 +47,10 @@ const PAGE = { width: 11906, height: 16838 };
 const MARGIN = { top: Math.round(24 * MM), bottom: Math.round(27 * MM), left: Math.round(26 * MM), right: Math.round(22 * MM) };
 const TEXT_W = PAGE.width - MARGIN.left - MARGIN.right; // twips
 const TEXT_PX = Math.round((TEXT_W / 1440) * 96); // image pixels at 96 dpi
-const LINE = 360; // 1.5 lines
+const LINE = 360; // 1.5 lines (the rules: 1.5 between every line)
+const SINGLE = 240; // only for paragraphs that hold a picture, not text
+const TEXT = 24; // 12 pt, the rules' size for text and body
+const HEAD = 32; // 16 pt bold, the rules' size for headings
 
 // ---------------------------------------------------------------- inline text
 function runs(text, base = {}) {
@@ -103,7 +106,7 @@ function tocParagraphs(entries, levels = true) {
   const head = new Paragraph({
     alignment: AlignmentType.RIGHT,
     spacing: { after: 60 },
-    children: [new TextRun({ text: 'Page', bold: true, size: 23 })],
+    children: [new TextRun({ text: 'Page', bold: true, size: TEXT })],
   });
   return [
     head,
@@ -112,35 +115,43 @@ function tocParagraphs(entries, levels = true) {
         new Paragraph({
           tabStops: [{ type: TabStopType.RIGHT, position: TEXT_W, leader: 'dot' }],
           indent: { left: levels ? [0, 320, 680][e.level ?? 1] : 0 },
-          spacing: { line: 300, before: levels && e.level === 0 ? 100 : 0, after: 0 },
+          spacing: { line: LINE, before: 0, after: 0 },
           children: [
-            ...runs(e.label, { size: e.level === 2 ? 22 : 23, bold: levels && e.level === 0 }),
-            new TextRun({ text: `\t${e.page ?? ''}`, size: 23, bold: levels && e.level === 0 }),
+            ...runs(e.label, { size: TEXT, bold: levels && e.level === 0 }),
+            new TextRun({ text: `\t${e.page ?? ''}`, size: TEXT, bold: levels && e.level === 0 }),
           ],
         }),
     ),
   ];
 }
 
+const figCaption = (f) =>
+  new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { after: 160, line: LINE },
+    children: [new TextRun({ text: `Figure ${f.num}: `, bold: true, size: TEXT }), ...runs(f.caption, { size: TEXT })],
+  });
+
 function convert(blocks, lists) {
   const out = [];
-  for (const b of blocks) {
+  for (const [i, b] of blocks.entries()) {
+    const next = blocks[i + 1];
     switch (b.t) {
       case 'page':
         break;
       case 'break':
-        out.push(new Paragraph({ pageBreakBefore: true, spacing: { after: 0, line: 240 }, children: [] }));
+        out.push(new Paragraph({ pageBreakBefore: true, spacing: { after: 0, line: SINGLE }, children: [] }));
         break;
       case 'space':
-        out.push(new Paragraph({ spacing: { before: Math.round(b.mm * MM * 0.6), after: 0, line: 240 }, children: [] }));
+        out.push(new Paragraph({ spacing: { before: Math.round(b.mm * MM * 0.45), after: 0, line: SINGLE }, children: [] }));
         break;
       case 'center':
       case 'right':
         out.push(
           new Paragraph({
             alignment: b.t === 'center' ? AlignmentType.CENTER : AlignmentType.RIGHT,
-            spacing: { after: 50, line: 276 },
-            children: runs(b.text, { size: Math.round(b.size * 2), bold: b.bold, italics: b.italic }),
+            spacing: { after: 40, line: LINE },
+            children: runs(b.text, { size: b.size >= 16 ? HEAD : TEXT, bold: b.bold, italics: b.italic }),
           }),
         );
         break;
@@ -151,13 +162,8 @@ function convert(blocks, lists) {
         out.push(
           new Paragraph({
             alignment: AlignmentType.CENTER,
-            spacing: { after: 40 },
+            spacing: { after: 40, line: SINGLE },
             children: [new ImageRun({ data, type: 'png', transformation: { width: Math.round((hPx * w) / h), height: hPx } })],
-          }),
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 80 },
-            children: [new TextRun({ text: 'MATHME', font: 'Arial', bold: true, size: 30, color: '3E1D8F', characterSpacing: 60 })],
           }),
         );
         break;
@@ -167,7 +173,7 @@ function convert(blocks, lists) {
           new Paragraph({
             heading: HeadingLevel.HEADING_1,
             alignment: AlignmentType.CENTER,
-            spacing: { after: 280 },
+            spacing: { after: 240 },
             children: runs(b.text),
           }),
         );
@@ -177,8 +183,8 @@ function convert(blocks, lists) {
           new Paragraph({
             heading: HeadingLevel.HEADING_1,
             alignment: AlignmentType.CENTER,
-            spacing: { after: 320 },
-            children: [new TextRun({ text: b.label }), new TextRun({ text: b.title, break: 1 })],
+            spacing: { after: 240 },
+            children: [new TextRun({ text: chapterLine(b) })],
           }),
         );
         break;
@@ -202,20 +208,19 @@ function convert(blocks, lists) {
             new Paragraph({
               numbering: { reference: 'bullets', level: 0 },
               alignment: AlignmentType.JUSTIFIED,
-              spacing: { after: 60 },
+              spacing: { after: 40 },
               children: runs(item),
             }),
           );
         break;
       case 'ol': {
         listCount++;
-        const size = b.compact ? 23 : 24;
         for (const item of b.items)
           out.push(
             new Paragraph({
               numbering: { reference: 'numbers', level: 0, instance: listCount },
-              spacing: { after: b.compact ? 30 : 60, line: b.compact ? 300 : LINE },
-              children: runs(item, { size }),
+              spacing: { after: 40, line: LINE },
+              children: runs(item, { size: TEXT }),
             }),
           );
         break;
@@ -225,8 +230,8 @@ function convert(blocks, lists) {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             keepNext: true,
-            spacing: { before: 120, after: 80, line: 276 },
-            children: runs(`Table ${b.num}: ${b.caption}`, { bold: true, size: 22 }),
+            spacing: { before: 120, after: 40, line: LINE },
+            children: [new TextRun({ text: `Table ${b.num}: `, bold: true, size: TEXT }), ...runs(b.caption, { size: TEXT })],
           }),
         );
         const widths = b.widths.map((w) => Math.round(w * TEXT_W));
@@ -235,12 +240,12 @@ function convert(blocks, lists) {
           new TableCell({
             width: { size: widths[i], type: WidthType.DXA },
             borders: cellBorders,
-            margins: { top: 40, bottom: 40, left: 100, right: 100 },
+            margins: { top: 20, bottom: 20, left: 100, right: 100 },
             children: [
               new Paragraph({
                 alignment: head ? AlignmentType.CENTER : AlignmentType.LEFT,
-                spacing: { after: 0, line: 264 },
-                children: runs(text, { size: 22, bold: head || undefined }),
+                spacing: { after: 0, line: LINE },
+                children: runs(text, { size: TEXT, bold: head || undefined }),
               }),
             ],
           });
@@ -254,7 +259,7 @@ function convert(blocks, lists) {
               ...b.rows.map((r) => new TableRow({ cantSplit: true, children: r.map((c, i) => cell(c, i, false)) })),
             ],
           }),
-          new Paragraph({ spacing: { after: 120, line: 240 }, children: [] }),
+          new Paragraph({ spacing: { after: 80, line: SINGLE }, children: [] }),
         );
         break;
       }
@@ -269,17 +274,33 @@ function convert(blocks, lists) {
             spacing: { before: 120, after: 60, line: 240 },
             children: [new ImageRun({ data: img.data, type: img.type, transformation: { width: w, height: h } })],
           }),
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 200, line: 276 },
-            children: [new TextRun({ text: `Figure ${b.num}: `, bold: true, size: 22 }), ...runs(b.caption, { size: 22 })],
-          }),
+          figCaption(b),
         );
+        break;
+      }
+      case 'shots': {
+        // the rules: only two screenshots on a page, each named; a page of their own
+        const w = Math.round(TEXT_PX * 0.95);
+        b.items.forEach((sh, k) => {
+          const img = image(sh.src);
+          out.push(
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              keepNext: true,
+              pageBreakBefore: k === 0,
+              spacing: { before: k === 0 ? 0 : 360, after: 60, line: SINGLE },
+              children: [new ImageRun({ data: img.data, type: img.type, transformation: { width: w, height: Math.round((w * img.h) / img.w) } })],
+            }),
+            figCaption(sh),
+          );
+        });
+        if (next?.t !== 'shots' && next?.t !== 'break')
+          out.push(new Paragraph({ pageBreakBefore: true, spacing: { after: 0, line: SINGLE }, children: [] }));
         break;
       }
       case 'code':
         out.push(
-          new Paragraph({ keepNext: true, spacing: { after: 60, line: 276 }, children: runs(b.caption, { italics: true, size: 21 }) }),
+          new Paragraph({ keepNext: true, spacing: { after: 40, line: LINE }, children: runs(b.caption, { italics: true, size: TEXT }) }),
           new Table({
             width: { size: TEXT_W, type: WidthType.DXA },
             columnWidths: [TEXT_W],
@@ -291,12 +312,12 @@ function convert(blocks, lists) {
                     width: { size: TEXT_W, type: WidthType.DXA },
                     borders: cellBorders,
                     shading: { type: ShadingType.CLEAR, color: 'auto', fill: 'F3F3F3' },
-                    margins: { top: 80, bottom: 80, left: 140, right: 140 },
+                    margins: { top: 40, bottom: 40, left: 140, right: 140 },
                     children: b.text.split('\n').map(
                       (l) =>
                         new Paragraph({
-                          spacing: { after: 0, line: 240 },
-                          children: [new TextRun({ text: l || ' ', font: 'Courier New', size: 17 })],
+                          spacing: { after: 0, line: LINE },
+                          children: [new TextRun({ text: l || ' ', size: TEXT })],
                         }),
                     ),
                   }),
@@ -329,11 +350,11 @@ function convert(blocks, lists) {
                         new Paragraph({
                           border: { top: { style: BorderStyle.SINGLE, size: 8, color: '000000', space: 4 } },
                           alignment: AlignmentType.CENTER,
-                          spacing: { after: 0, line: 276 },
-                          children: runs(label || ' ', { size: 23 }),
+                          spacing: { after: 0, line: LINE },
+                          children: runs(label || ' ', { size: TEXT }),
                         }),
                         ...(name
-                          ? [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 0, line: 276 }, children: runs(name, { size: 23 }) })]
+                          ? [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 0, line: LINE }, children: runs(name, { size: TEXT }) })]
                           : []),
                       ],
                     }),
@@ -384,6 +405,9 @@ function stripLeadingBreak(blocks) {
   return out;
 }
 
+const BREAK_BLOCK = { t: 'break' };
+const bodyBlocks = numbered(body);
+
 function makeDoc(lists) {
   listCount = 0;
   const footer = new Footer({
@@ -391,10 +415,10 @@ function makeDoc(lists) {
       new Paragraph({
         alignment: AlignmentType.RIGHT,
         children: [
-          new TextRun({ text: 'Page ', size: 21 }),
-          new TextRun({ children: [PageNumber.CURRENT], bold: true, size: 21 }),
-          new TextRun({ text: ' of ', size: 21 }),
-          new TextRun({ children: [PageNumber.TOTAL_PAGES_IN_SECTION], bold: true, size: 21 }),
+          new TextRun({ text: 'Page ', size: TEXT }),
+          new TextRun({ children: [PageNumber.CURRENT], bold: true, size: TEXT }),
+          new TextRun({ text: ' of ', size: TEXT }),
+          new TextRun({ children: [PageNumber.TOTAL_PAGES], bold: true, size: TEXT }),
         ],
       }),
     ],
@@ -405,7 +429,7 @@ function makeDoc(lists) {
     description: 'BCA Semester III internship project report',
     styles: {
       default: {
-        document: { run: { font: FONT, size: 24 }, paragraph: { spacing: { line: LINE, after: 120 } } },
+        document: { run: { font: FONT, size: TEXT }, paragraph: { spacing: { line: LINE, after: 100 } } },
       },
       paragraphStyles: [
         {
@@ -414,8 +438,8 @@ function makeDoc(lists) {
           basedOn: 'Normal',
           next: 'Normal',
           quickFormat: true,
-          run: { font: FONT, size: 32, bold: true, color: '000000' },
-          paragraph: { spacing: { before: 0, after: 280, line: 320 }, outlineLevel: 0 },
+          run: { font: FONT, size: HEAD, bold: true, color: '000000' },
+          paragraph: { spacing: { before: 0, after: 240, line: LINE }, outlineLevel: 0 },
         },
         {
           id: 'Heading2',
@@ -423,8 +447,8 @@ function makeDoc(lists) {
           basedOn: 'Normal',
           next: 'Normal',
           quickFormat: true,
-          run: { font: FONT, size: 26, bold: true, color: '000000' },
-          paragraph: { spacing: { before: 240, after: 100, line: 300 }, outlineLevel: 1 },
+          run: { font: FONT, size: HEAD, bold: true, color: '000000' },
+          paragraph: { spacing: { before: 200, after: 60, line: LINE }, outlineLevel: 1 },
         },
         {
           id: 'Heading3',
@@ -432,8 +456,8 @@ function makeDoc(lists) {
           basedOn: 'Normal',
           next: 'Normal',
           quickFormat: true,
-          run: { font: FONT, size: 24, bold: true, color: '000000' },
-          paragraph: { spacing: { before: 200, after: 80, line: 300 }, outlineLevel: 2 },
+          run: { font: FONT, size: HEAD, bold: true, color: '000000' },
+          paragraph: { spacing: { before: 200, after: 60, line: LINE }, outlineLevel: 2 },
         },
       ],
     },
@@ -449,36 +473,28 @@ function makeDoc(lists) {
         },
       ],
     },
+    // one section: the pages are numbered from the cover (page 1) to the end
     sections: [
-      { properties: pageProps(), children: convert(stripLeadingBreak(frontMatter), lists) },
       {
         properties: pageProps({ pageNumbers: { start: 1, formatType: NumberFormat.DECIMAL } }),
         footers: { default: footer },
-        children: convert(stripLeadingBreak(body), lists),
+        children: convert([...stripLeadingBreak(frontMatter), BREAK_BLOCK, ...stripLeadingBreak(bodyBlocks)], lists),
       },
     ],
   });
 }
 
 /**
- * Final touches docx-js cannot express:
- * - every line spacing is marked "auto" (multiples of a line), as Word assumes; LibreOffice otherwise reads
- *   them as exact heights and clips the pictures;
- * - the "of N" page total gets a stored value, for programs that do not compute SECTIONPAGES themselves
- *   (Word recalculates it anyway).
+ * A final touch docx-js cannot express: every line spacing is marked "auto" (multiples of a line), as
+ * Word assumes; LibreOffice otherwise reads them as exact heights and clips the pictures.
  */
-async function write(lists, file, bodyTotal = '') {
+async function write(lists, file) {
   const zip = await JSZip.loadAsync(await Packer.toBuffer(makeDoc(lists)));
   for (const name of Object.keys(zip.files).filter((n) => /^word\/(document|styles|footer\d*)\.xml$/.test(n))) {
     let xml = await zip.file(name).async('string');
     xml = xml.replace(/<w:spacing ([^>]*?)\/>/g, (m, attrs) =>
       /w:line=/.test(attrs) && !/w:lineRule=/.test(attrs) ? `<w:spacing ${attrs} w:lineRule="auto"/>` : m,
     );
-    if (bodyTotal)
-      xml = xml.replace(
-        /(<w:instrText xml:space="preserve">SECTIONPAGES<\/w:instrText><w:fldChar w:fldCharType="separate"\/>)/,
-        `$1<w:t>${bodyTotal}</w:t>`,
-      );
     zip.file(name, xml);
   }
   writeFileSync(file, await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' }));
@@ -507,7 +523,7 @@ await rasterize();
   await browser.close();
 }
 
-const lists = outline(body);
+const lists = outline(bodyBlocks);
 // pass 1: page numbers from the PDF build if it exists, so the contents have the right length
 try {
   const prev = JSON.parse(readFileSync(path.join(BUILD, 'outline.json'), 'utf8'));
@@ -517,14 +533,14 @@ try {
 }
 const draft = path.join(BUILD, 'draft.docx');
 await write(lists, draft);
+// pass 2: the real page numbers, counted from the cover; the search starts at the Executive Summary,
+// because the contents pages repeat every heading
 const pages = pdfPages(renderWithLibreOffice(draft));
 const start = pages.findIndex((p) => p.includes('This report presents the internship project'));
-locate(pages, lists.toc, start);
-locate(pages, lists.figs, start);
-locate(pages, lists.tabs, start);
+for (const l of [lists.toc, lists.figs, lists.tabs]) locate(pages, l, { from: start });
 const file = path.join(here, 'MathMe_Internship_Report.docx');
-await write(lists, file, String(pages.length - 1 - start));
+await write(lists, file);
 const check = pdfPages(renderWithLibreOffice(file));
-console.log(`Word: ${check.length - 1} pages when rendered (${start} front pages)`);
+console.log(`Word: ${check.length - 1} pages when rendered (${start} front pages); numbered from the cover`);
 const missing = [...lists.toc, ...lists.figs, ...lists.tabs].filter((e) => e.page === '?');
 if (missing.length) console.log('not found:', missing.map((e) => e.find));

@@ -8,7 +8,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(here, 'diagrams');
 mkdirSync(OUT, { recursive: true });
 
-const FONT = "'Liberation Serif','Times New Roman',Times,serif";
+const FONT = "'Times New Roman','DejaVu Serif',Times,serif";
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 function svg(w, h, body) {

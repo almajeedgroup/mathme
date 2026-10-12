@@ -17,7 +17,7 @@ export const chapter4 = [
   ]),
   H2('4.2', 'Achievements in Numbers'),
   TABLE(
-    '4.1',
+    'numbers',
     'The project in numbers',
     ['Measure', 'Value'],
     [
@@ -35,7 +35,7 @@ export const chapter4 = [
   ),
   H2('4.3', 'Skills Gained'),
   TABLE(
-    '4.2',
+    'skills',
     'Skills gained during the internship',
     ['Technical skills', 'Professional skills'],
     [
@@ -53,7 +53,7 @@ export const chapter4 = [
   ),
   H2('4.4', 'Challenges Faced and Solutions'),
   TABLE(
-    '4.3',
+    'challenges',
     'Challenges and how they were solved',
     ['Challenge', 'Solution'],
     [
@@ -69,17 +69,7 @@ export const chapter4 = [
     ],
     [0.45, 0.55],
   ),
-  H2('4.5', 'Educational and Social Impact'),
-  P(
-    'MathMe is designed to change how students feel about mathematics. When a student types a rule and immediately sees a spiral, a sunflower or a wave appear, the formula stops being an abstract line in a textbook and becomes a tool they control. The Learn panel then shows them exactly which numbers produced which object, so curiosity leads directly to understanding.',
-  ),
-  UL([
-    '**For students:** a free, installation-free studio that runs on ordinary school computers and connects geometry, trigonometry and science to creative work they can print, share and present.',
-    '**For teachers:** a ready demonstration tool for lessons on angles, sequences, area, volume and human anatomy, and a class page to see and discuss students’ work.',
-    '**For schools:** an affordable Campus licence priced in Indian rupees with proper GST invoices, which suits institutional purchasing.',
-    '**For accessibility of technology:** the whole product is built on open standards and open-source tools, and the free plan keeps the core learning features available to everyone.',
-  ]),
-  H2('4.6', 'Limitations'),
+  H2('4.5', 'Limitations'),
   UL([
     'Some limits (export formats, the pattern list and 2D-to-3D) are checked in the browser and could be bypassed by a technical user; cloud saves, geometry jobs and AI messages are enforced on the server.',
     'The Cloudflare Worker adapters and the live Cashfree integration were tested with local substitutes and still need a test on the real services before launch.',
@@ -87,7 +77,7 @@ export const chapter4 = [
     'The heart atlas shows one reference heart and is meant for education only.',
     'Very large models are limited by the memory of the user’s computer and by the size limits of the geometry service.',
   ]),
-  H2('4.7', 'Future Enhancements'),
+  H2('4.6', 'Future Enhancements'),
   UL([
     'Class assignments with deadlines, submissions and teacher feedback.',
     'Buying extra seats for a Campus licence, and changing plans with prorated prices.',
@@ -97,7 +87,7 @@ export const chapter4 = [
     'A public API for developers and offline support as an installable web app.',
     'Support for regional Indian languages in the interface.',
   ]),
-  H2('4.8', 'Conclusion'),
+  H2('4.7', 'Conclusion'),
   P(
     'The internship project “MathMe 3D Studio: Generative 3D Art & Object Studio” set out to show that mathematics can be the main tool of a creative 3D studio. The finished application lets a student write one rule, such as “100 spheres → spiral → radius 20 → rotation 30° → scale 0.5–2”, and see every object placed by the formulas they study in class, with every step explained. The same tool measures, cuts, prints and exports real files, and it now has the accounts, plans, payments and school licences needed to be offered sustainably.',
   ),
@@ -130,18 +120,13 @@ export const bibliography = [
   OL([
     'React documentation, https://react.dev',
     'Three.js documentation, https://threejs.org/docs',
-    'react-three-fiber documentation, https://r3f.docs.pmnd.rs',
     'Mantine UI documentation, https://mantine.dev',
-    'TypeScript Handbook, https://www.typescriptlang.org/docs',
     'FastAPI documentation, https://fastapi.tiangolo.com',
     'trimesh documentation, https://trimesh.org',
-    'Manifold geometry library, https://github.com/elalish/manifold',
     'Cloudflare Workers, D1 and R2 documentation, https://developers.cloudflare.com',
     'Cashfree Payments developer documentation, https://www.cashfree.com/docs',
-    'Google Identity: OAuth 2.0 for web server applications, https://developers.google.com/identity',
     'Khronos Group, glTF 2.0 specification, https://registry.khronos.org/glTF',
     'HuBMAP Consortium, Human Reference Atlas, https://humanatlas.io',
-    'Playwright documentation, https://playwright.dev',
     'Goods and Services Tax Council, GST law and invoice rules, https://gstcouncil.gov.in',
   ], { compact: true }),
 ];
